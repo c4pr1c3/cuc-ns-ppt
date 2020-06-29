@@ -333,7 +333,7 @@ NVD（National Vulnerability Database）是美国的国家漏洞数据库，其�
 
 ## ATT&CK for Enterprise 
 
-覆盖杀伤链模型的后五个阶段，ATT&CK for Enterprise 由适用于 Windows 、Linux 和 macOS 系统的技术和战术部分。
+覆盖杀伤链模型的后五个阶段，ATT&CK for Enterprise 由适用于 Windows 、Linux 和 macOS 系统的技术和战术部分共同组成。
 
 ---
 

@@ -271,7 +271,7 @@ $endif$
 $if(multiplex)$
   multiplex: {
     secret: $multiplex-secret$, //【TO REPLACE】 null so the clients do not have control of the master presentation
-    id: '$multiplex-id', // 【TO REPLACE】socketId, obtained from socket.io server
+    id: '$multiplex-id$', // 【TO REPLACE】socketId, obtained from socket.io server
     url: '$multiplex-server$'  //【TO REPLACE】Location of your socket.io server
   },
 $endif$

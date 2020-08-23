@@ -374,6 +374,7 @@ output: revealjs::revealjs_presentation
 ![从位置信息开始...](images/chap0x06/location.png)
 
 ---
+
 ## 踩点
 
 ![正常访问过程就是【踩点】](images/chap0x06/built-with-info.png)

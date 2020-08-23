@@ -88,7 +88,7 @@ output: revealjs::revealjs_presentation
 
 ---
 
-## 信息收集之踩点
+## 信息收集之踩点 {id="followup-1"}
 
 * 直接访问
     * 目标主机
@@ -102,7 +102,7 @@ output: revealjs::revealjs_presentation
 
 ---
 
-## 信息收集之踩点
+## 信息收集之踩点  {id="followup-2"}
 
 * 白盒分析
     * 通过 banner 抓取和应用指纹识别确定了开源组件信息之后
@@ -145,19 +145,19 @@ output: revealjs::revealjs_presentation
 
 ---
 
-## 信息收集的自动化
+## 信息收集的自动化 {id="intel-auto-collect-1"}
 
 ![](images/chap0x05/maltego-1.png)
 
 ---
 
-## 信息收集的自动化
+## 信息收集的自动化 {id="intel-auto-collect-2"}
 
 ![](images/chap0x05/maltego-2.png)
 
 ---
 
-## 信息收集的自动化
+## 信息收集的自动化 {id="intel-auto-collect-3"}
 
 ![](images/chap0x05/maltego-3.png)
 

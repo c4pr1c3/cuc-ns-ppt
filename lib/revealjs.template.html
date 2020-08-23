@@ -268,6 +268,13 @@ $if(mathjax)$
           },
         },
 $endif$
+$if(multiplex)$
+  multiplex: {
+    secret: $multiplex-secret$, //【TO REPLACE】 null so the clients do not have control of the master presentation
+    id: '$multiplex-id', // 【TO REPLACE】socketId, obtained from socket.io server
+    url: '$multiplex-server$'  //【TO REPLACE】Location of your socket.io server
+  },
+$endif$
 
 menu: {
 		// Specifies which side of the presentation the menu will 
@@ -282,7 +289,7 @@ menu: {
 
 		// Add slide numbers to the titles in the slide list.
 		// Use 'true' or format string (same as reveal.js slide numbers)
-		numbers: false,
+		numbers: true,
 
 		// Specifies which slide elements will be used for generating
 		// the slide titles in the menu. The default selects the first
@@ -388,7 +395,7 @@ menu: {
           { src: '$revealjs-url$/lib/js/classList.js', condition: function() { return !document.body.classList; } },
           { src: '$revealjs-url$/plugin/zoom-js/zoom.js', async: true },
 $if(notes-server)$
-          { src: '$revealjs-url$/socket.io/socket.io.js', async: true },
+          { src: '$revealjs-url$/plugin/socket.io/socket.io.js', async: true },
           { src: '$revealjs-url$/plugin/notes-server/client.js', async: true },
 $endif$
 $if(mathjax)$
@@ -399,7 +406,12 @@ $endif$
           { src: '$revealjs-url$/plugin/markdown/markdown.js'},
           { src: '$revealjs-url$/plugin/search/search.js'},
           { src: '$revealjs-url$/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
-          { src: '$revealjs-url$/plugin/notes/notes.js', async: true }
+          { src: '$revealjs-url$/plugin/notes/notes.js', async: true },
+$if(multiplex)$
+          { src: '$revealjs-url$/plugin/socket.io/socket.io.js', async: true },
+          { src: '$revealjs-url$/plugin/multiplex/master.js', async: true },
+          { src: '$revealjs-url$/plugin/multiplex/client.js', async: true },
+$endif$
         ]
       });
     </script>

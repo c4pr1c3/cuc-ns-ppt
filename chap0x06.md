@@ -57,7 +57,7 @@ output: revealjs::revealjs_presentation
 
 ---
 
-## **新** 应用场景
+## **新** 应用场景 {id="new-application"}
 
 * 区块链
 * 容器
@@ -289,7 +289,7 @@ output: revealjs::revealjs_presentation
 
 > 黑客是一群不按常理出牌的人。
 
-# 案例一：从信息收集到入侵提权
+# 案例一：从信息收集到入侵提权 {id="from-intel-to-intrusion"}
 
 ---
 
@@ -420,7 +420,7 @@ output: revealjs::revealjs_presentation
     * 后门账户隐藏
     * 后门端口隐藏
 
-# 案例二：2012 年新浪微博用户密码泄露漏洞（旁站注入） {id="2012-weibo-sqli"}
+# 案例二：2012 年新浪微博用户密码泄露漏洞（旁站注入） {id="weibo-sqli-2012"}
 
 ---
 
@@ -437,7 +437,7 @@ output: revealjs::revealjs_presentation
 * 对用户信息数据库中的敏感信息进行脱敏操作
     * 使用更安全的 [口令散列算法](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html) 处理用户的明文口令后再持久化存储，例如 `Argon2`，`PBKDF2` 和 `Bcrypt` 等
 
-# 案例三：Google Hacking
+# 案例三：Google Hacking {id="google-hacking-cases"}
 
 ---
 
@@ -453,7 +453,7 @@ output: revealjs::revealjs_presentation
 
 ---
 
-## 防范 Google Hacking
+## 防范 Google Hacking {id="prevent-google-hacking"}
 
 * 机密信息不上网
 * 小心使用 robots.txt 

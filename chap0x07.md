@@ -4,7 +4,7 @@ author: 黄玮
 output: revealjs::revealjs_presentation
 ---
 
-# 第七章 Web 应用漏洞攻防
+# 第七章 Web 应用漏洞攻防 {id="web-attack-defense"}
 
 ---
 
@@ -17,7 +17,7 @@ output: revealjs::revealjs_presentation
 ## Web 应用模型 {id="web-app-model"}
 
 |          | 浏览器(Browser)  | Web 服务器(Server)         | 后端服务(Backend)          |
-|          | --               | --                         | --                         |
+| --       | --               | --                         | --                         |
 | 业务     | UI / UE          | CRUD / RESTful             | Search / Cache / DB        |
 | 框架     | Vue.js           | Laravel / Struts2          | -                          |
 | 语言     | js / html / css  | PHP / Java / Python / Ruby | SQL / DSL                  |
@@ -255,7 +255,7 @@ curl "http://127.0.0.1:8080/exp-1.php?file=/etc/shadow"
         * [Hash 长度扩展攻击可以用来伪造消息和对应的散列值](https://blog.skullsecurity.org/2012/everything-you-need-to-know-about-hash-length-extension-attacks)
     * 对客户端提交的请求校验关键逻辑代码中的参数，一旦 `消息完整性签名` 校验失败，说明客户端尝试篡改请求参数攻击，代码逻辑直接跳过后续业务逻辑代码，给客户端返回统一的错误信息
 
-# 2. 缓冲区溢出漏洞
+# 2. 缓冲区溢出漏洞 {id="bof"}
 
 ---
 
@@ -300,7 +300,18 @@ curl "http://127.0.0.1:8080/exp-1.php?file=/etc/shadow"
 * 限制 Web 应用程序的运行权限
     * 沙盒技术
 
-# 3. 文件上传漏洞
+# 3. 文件上传漏洞 {id="file-upload-vul"}
+
+---
+
+* 允许用户上传文件可能会让黑客
+    * 在网页中嵌入恶意代码
+        * 网页木马：控制客户端（网站用户）
+        * XSS漏洞 / CSRF漏洞 / 构造钓鱼页面…
+    * 上传webshell
+        * 控制服务器
+* 文件上传漏洞原理
+* 接下来会通过 PHP 代码实例进行讲解
 
 ---
 
@@ -308,37 +319,295 @@ curl "http://127.0.0.1:8080/exp-1.php?file=/etc/shadow"
 
 * [upload-labs 一个使用 PHP 语言编写的，专门收集渗透测试和 CTF 中遇到的各种上传漏洞的靶场](https://github.com/c0ny1/upload-labs)
 
+---
+
+## 文件上传漏洞基本原理之利用方式示例
+
+![](images/chap0x07/file-upload-rce-1.png)
+
+---
+
+## 文件上传漏洞基本原理之缺陷代码片段
+
+```php
+// 摘自 upload-labs 的 Pass-02/index.php
+if (($_FILES['upload_file']['type'] == 'image/jpeg') || ($_FILES['upload_file']['type'] == 'image/png') || ($_FILES['upload_file']['type'] == 'image/gif')) { // BUG 检查用户上传文件的「文件类型」是否在白名单上
+    $temp_file = $_FILES['upload_file']['tmp_name']; // 获取用户上传文件的临时存储文件路径
+    $img_path = UPLOAD_PATH . '/' . $_FILES['upload_file']['name']; // 获取用户上传文件的原始文件名
+    if (move_uploaded_file($temp_file, $img_path)) { // 按照用户指定的文件名存储文件到服务器上指定目录
+        $is_upload = true;
+    } else {
+        $msg = '上传出错！';
+    }
+} else {
+    $msg = '文件类型不正确，请重新上传！';
+}
+```
+
+---
+
+## 有意思的 NULL 字符截断问题 {id="php-null-trim-vul"}
+
+* 何为NULL字符
+    * %00
+    * ASCII码为0
+* PHP官方在 **2010 年 12 月 9 日** `PHP 5.3.4` 版本正式修复了该漏洞
+    * [CVE-2006-7243](http://cve.mitre.org/cgi-bin/cvename.cgi?name=cve-2006-7243)
+    * **用了4 年时间修补一个漏洞！**
+    * PHP 5.3.4 之前版本仍然受此漏洞影响
+* 不仅仅是 PHP 语言受此漏洞影响！
+
+---
+
+[![asciicast](https://asciinema.org/a/lz7w9iJHZ5qUyV4a1b8Ac9xU3.svg)](https://asciinema.org/a/lz7w9iJHZ5qUyV4a1b8Ac9xU3)
+
+---
+
+```php
+# 自行体验 PHP 5.3.0 环境中的 CVE-2006-7243 漏洞利用过程
+docker run --rm -it c4pr1c3/dve-php:5.3.0 bash
+```
+
+---
+
+## 判断文件类型的安全实践 {id="check-file-type-1"}
+
+* 读取[文件头标识](https://www.garykessler.net/library/file_sigs.html)
+    * PNG(8 bytes):89 50 4E 47 0D 0A 1A 0A
+    * GIF(6 bytes):47 49 46 38 39 61 (GIF89a)
+
+![](images/chap0x07/file-hdr-demo.png)
+
+---
+
+> 文件头标识指纹匹配足够安全吗？
+
+---
+
+**No!**
+
+---
+
+* 对于 GIF 图片的有效性判定方法
+    * 补充使用 `getimagesize()`
+    * 限制上传的 `GIF` 图片分辨率尺寸在合理范围内
+
+---
+
+![](images/chap0x07/invalid-gif.png)
+
+---
+
+* 对于其他类型文件
+    * 禁用上传目录的脚本执行权限
+
+以 `Apache` 为例，可以使用 `.htaccess`
+
+```
+<Directory /upload>
+Allowoverride All
+</Directory>
+<Location /upload>
+Options None
+	Options +IncludesNoExec -ExecCGI
+	RemoveHandler .php .phtml .php3 .php4 .php5
+	RemoveType .php .phtml .php3 .php4 .php5
+	php_flag engine off
+	php_admin_flag engine off
+	AddType text/plain .html .htm .shtml .php
+</Location>
+```
+
+---
+
+## .htaccess 防御文件上传漏洞利用的潜在副作用 {id="exploit-htaccess"}
+
+> 攻击者上传精心构造的 `.htaccess` 来使得「上传目录」下对特定文件类型开启脚本解释执行功能
+
+```
+<Directory /upload>
+Allowoverride All
+</Directory>
+<Location /upload>
+	Options +IncludesNoExec +ExecCGI
+	php_flag engine on
+	php_admin_flag engine on
+    AddType application/x-httpd-php .php666 # 将 .php666 文件扩展名视为 PHP 代码解释执行
+    php_value zend.multibyte 1  # 开启 PHP 引擎的多字节支持
+    php_value display_errors 1  # 开启 PHP 代码错误信息完全显示
+</Location>
+```
+
+---
+
+## 继续文件上传漏洞的防御方法探讨
+
+* 即使
+    * 检查是否判断了上传文件类型及后缀
+    * 定义上传文件类型白名单
+    * 文件上传目录禁止脚本解析
+* 仍然推荐
+    * 定义文件名白名单
+    * 上传后文件统一重命名
+    * 杜绝 XSS 漏洞 / 文件包含漏洞 / 字符编码漏洞 …
+
 # 服务端脚本相关漏洞
 
 ---
 
-# 4. 脆弱的访问控制
+* 脆弱的访问控制
+* 认证和会话管理缺陷
+* 文件包含
+* XXE 注入
+* 反序列化漏洞
+* 第三方组件缺陷
+
+# 4. 脆弱的访问控制 {id="weak-acl"}
 
 ---
 
-# 5. 认证和会话管理缺陷
+## 示例
+
+* 文档/软件的下载链接地址保护
+    * http://victim.org/docs/1.doc
+    * http://victim.org/docs/download.do?id=1
+* Web应用程序的后台管理入口地址
+    * http://victim.org/admin
+    * http://victim.org/console/login
+* 后台操作未执行用户身份认证
+    * http://victim.org/users/deleteUser.do?userid=001
+    * http://victim.org/users/addUser.do?userid=001
 
 ---
 
-# 6. 文件包含
+## 描述
+
+* 内容或程序功能未能有效的保护以限制只允许合法用户的访问
+* 典型案例
+    * **可预测** 的服务器端对象访问唯一标识
+    * 强制浏览（直接在浏览器的地址栏中输入 URL ）
+    * 目录遍历
+    * 文件访问权限
+    * 客户端缓存
 
 ---
 
-# 7. XXE 注入
+## 可能的漏洞成因
+
+* 认证只发生在用户登录时
+* 仅对 URL 进行鉴权，而不是对完整的请求内容进行鉴权
+* 未采取集中式的授权管理，而是分散授权管理
 
 ---
 
-# 8. 反序列化漏洞
+## 安全加固方案 {id="harden-access-control-1"}
+
+* 对每个需要保护的请求进行检查，不仅是在用户第一次登录请求时进行检查
+* 避免使用自己开发的访问控制，而是使用开发框架内置的或第三方可靠安全访问控制框架
+    * 采用声明式而非硬编码的访问控制
+    * 集中化访问控制而非分散访问控制
 
 ---
 
-# 9. 第三方组件缺陷
+## 安全加固方案 {id="harden-access-control-2"}
+
+* 防止客户端缓存重要内容：设置 HTTP 响应头和 `HTML meta` 标签
+* 在服务器端使用操作系统提供的访问控制保护文件的未经授权的访问
+* 业务模型的访问控制授权建模
+    * 访问控制权限划分的三角形基本法则
+* 平行权限访问
+    * 属主权限检查
+* 提升权限访问
+    * 使用 ACL
+
+---
+
+### 访问控制的权限三角形模型
+
+![](images/chap0x07/privilege-triangle-model.png)
+
+---
+
+## 安全加固方案 {id="harden-access-control-3"}
+
+| 主键 (id) | 主体 (subject) | 客体 (object)         |
+| ---       | -------        | ------                |
+| 1         | Alice          | /srv/www/upload/1.doc |
+| 2         | Bob            | /srv/www/upload/2.doc |
+
+当发生文件访问请求时，可以通过如下的 SQL 语句来检查当前访问是否是授权操作。
+
+```sql
+-- 只有当查询结果 > 0 时才说明是授权访问，否则均是非授权访问行为
+select count(id) from tb_acl where subject=%user_name% and object=%access_file_path%
+```
+
+# 5. 认证和会话管理缺陷 {id="auth-session-weakness"}
+
+---
+
+## 示例
+
+* 未采用Session cookie，而是在URL中编码已通过认证的用户名和密码
+
+> https://host/admin/list.jsp?password=0c6ccf51b817885e&username=11335984ea80882d
+
+上面的这个 URL 很容易被一次 `XSS 攻击` 截获到
+
+---
+
+## 常见会话管理类缺陷分类
+
+* 会话预测（Session Prediction）
+* 会话劫持（Session Hijacking）
+* 会话固定（Session Fixation）
+* 会话偷渡（Session Riding）
+
+---
+
+会话预测（Session Prediction）指的是攻击者可以「预测」出服务端的合法「会话令牌」，从而达成身份冒用的效果。
+
+---
+
+* 会话劫持（Session Hijacking）可以通过中间人劫持攻击或跨站点脚本攻击方式拿到用于会话唯一标识的「会话令牌」
+* 本节所举的第一个极端简单的脆弱身份认证例子正是这种类型缺陷
+
+---
+
+* 会话固定（Session Fixation）利用到了服务端脚本对于 **身份认证前使用的「会话令牌」在身份认证通过之后没有更换新「会话令牌」** 这个设计模式的缺陷
+    * 攻击者诱骗受害用户使用攻击者提供的「会话令牌」完成身份认证，这样，攻击者手里掌握的这个「会话令牌」也就相应的同步变为「身份认证通过会话令牌」了
+    * 攻击者相当于在并不需要掌握受害用户身份认证凭据的情况下，「克隆」了受害用户的已登录会话
+* 与会话劫持相比，攻击者并不依赖于直接读取到一个已经通过身份认证的「会话令牌」，攻击者初始提供给受害用户的「会话令牌」就是未通过身份认证状态下的
+* 攻击得手之后，会话固定和会话劫持的效果是一致的：攻击者拿到了受害者用户身份对应的有效会话令牌
+
+---
+
+* 会话偷渡（Session Riding）是 `跨站点请求伪造（CSRF）` 的另一种表述
+* 攻击者不需要克隆受害用户的会话，攻击者一次会话偷渡攻击只是借用受害用户保存在客户端的「会话令牌」执行一次受害用户不知情情况下的认证会话操作，攻击者对于受害用户使用的「会话令牌」具体是什么并不知情
+
+# 6. 文件包含 {id="file-inclusion-vul"}
+
+---
+
+# 7. XXE 注入 {id="xxe"}
+
+---
+
+# 8. 反序列化漏洞 {id="deserialization"}
+
+---
+
+# 9. 第三方组件缺陷 {id="vulnerable-component"}
 
 ---
 
 # 后台相关漏洞
 
 ---
+
+* SQL 注入漏洞
+* 命令注入
+* 服务端请求伪造
 
 # 10. SQL 注入漏洞 {id="sqli"}
 
@@ -350,11 +619,11 @@ curl "http://127.0.0.1:8080/exp-1.php?file=/etc/shadow"
 
 ---
 
-# 11. 命令注入
+# 11. 命令注入 {id="command-injection"}
 
 ---
 
-# 12. 服务端请求伪造
+# 12. 服务端请求伪造 {id="ssrf"}
 
 ---
 
@@ -362,11 +631,14 @@ curl "http://127.0.0.1:8080/exp-1.php?file=/etc/shadow"
 
 ---
 
-# 13. 跨站点脚本
+* 跨站点脚本
+* 信息泄露
+
+# 13. 跨站点脚本 {id="xss"}
 
 ---
 
-# 14. 信息泄露
+# 14. 信息泄露 {id="info-leakage"}
 
 ---
 
@@ -374,7 +646,7 @@ curl "http://127.0.0.1:8080/exp-1.php?file=/etc/shadow"
 
 ---
 
-# 15. CSRF 漏洞
+# 15. CSRF 漏洞 {id="csrf"}
 
 ---
 
@@ -433,6 +705,11 @@ http://victim.org/addFriend.do?friend=attacker@gmail.com
 
 ---
 
+* Web 服务器 URI 解析类漏洞
+* 不当配置缺陷
+
+---
+
 
 # 16. Web 服务器 URI 解析类漏洞 {id="web-svr-uri-parse-vul"}
 
@@ -440,6 +717,6 @@ http://victim.org/addFriend.do?friend=attacker@gmail.com
 ---
 
 
-# 17. 不当配置缺陷
+# 17. 不当配置缺陷 {id="cce"}
 
 

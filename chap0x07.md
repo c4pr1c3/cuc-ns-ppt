@@ -1873,7 +1873,7 @@ http://victim.org/addFriend.do?friend=attacker@gmail.com
 
 ---
 
-## 防御 CSRF {id="prevention-to-csrf-4"}
+## 防御 CSRF {id="prevention-to-csrf-5"}
 
 以上 4 条防御方法通常是「组合使用」，而不是「单一」应用。
 

@@ -183,6 +183,8 @@ output: revealjs::revealjs_presentation
 
 * 有的厂商用一个特征涵盖许多攻击
 * 有些产商则会将这些特征单独列出
+* 特征与特征之间可能存在「冲突」
+    * 特别是黑名单特征与白名单特征
 
 > 如何评价 IDS 好坏？
 
@@ -539,6 +541,50 @@ output: revealjs::revealjs_presentation
 
 ![](images/chap0x09/ids-deploy.png)
 
+# Snort
+
+---
+
+## Snort 的产品定位 {id="snort-work-modes"}
+
+* [多模式报文分析工具](http://manual-snort-org.s3-website-us-east-1.amazonaws.com/node3.html)
+    * 嗅探工具
+    * 报文记录：将网络报文写入磁盘持久化存储
+    * 网络入侵检测系统(NIDS)
+* 应用场景
+    * 在线分析
+    * 离线分析
+
+---
+
+## Snort 简史 {id="snort-and-cisco"}
+
+* Snort 最早是由 `Martin Roesch` 在 1998 年用 C 语言开发
+* 2001 年应众多 Snort 商业化需求，`Martin Roesch` 创建了公司 `Sourcefire`
+* 2013 年 10 月，思科收购了 `Sourcefire` 并主导 `Snort` 的开源项目
+    * 以 `Snort` 核心代码和订阅规则为基础，开发了商业版的防火墙、入侵检测等设备与服务并持续回馈到 `Snort` 开源项目
+
+---
+
+## OpenAppID
+
+> OpenAppId is an open, application-focused detection language and processing module for Snort that enables users to create, share, and implement application and service detection.
+
+* 思科收购 `Sourcefire` 之后发布的 `Snort` 新衍生项目
+    * 解决网络流量的「深度识别」需求之一：识别产生流量的具体关联应用
+* 兼容 `Snort2` 和 `Snort3` 
+
+---
+
+## Snort3 / Snort++
+
+* 思科在 2013 年收购了 `Snort` 的母公司之后，于 2014 年发布了用 `C++` 语言重写的 `Snort3 Alpha` ，又被称为 `Snort++`
+* 相比于 `Snort2` ，`Snort3` 的产品定位从 `IDS` 悄然变为 `IPS(Intrusion Prevention System)` 
+* 相比于 `Snort2` 的 [主要变化](https://github.com/snort3/snort3) 如下：
+    - 支持多线程报文处理
+    - 配置简化，支持脚本编程
+    - 核心组件的插件化
+
 # Suricata
 
 ---
@@ -556,6 +602,122 @@ output: revealjs::revealjs_presentation
 | Snort (VRT)规则语法兼容性 | 兼容 | 兼容 |
 | Emerging Threats Rules 兼容性 | 兼容 | 兼容 |
 | 日志格式 | Unified2 |	Unified2 / JSON |
+
+---
+
+## 兼容 Snort2 的检测规则 {id="suricata-use-snort-rules"}
+
+* 不兼容 `OpenAppId`
+* 兼容 `Snort Talos(VRT)`
+
+---
+
+## [Suricata 规则](https://suricata.readthedocs.io/en/suricata-5.0.2/rules/intro.html) {id="suricata-rules"}
+
+![](images/chap0x09/suricata-rules-demo.png)
+
+* <font color="red">`action`</font> 匹配规则后执行的 `动作`
+* <font color="green">`header`</font> IP 五元组定义
+* <font color="blue">`rule options`</font> 详细规则定义
+
+---
+
+## [Emerging Threats](https://rules.emergingthreats.net/)
+
+* 支持主流开源 IDS 
+    * Suricata 5.0.x / 4.1.x / 4.0.x
+    * Snort 2.9.x
+* `Emerging Threats Ruleset` 由 `开源社区` 维护
+* `Emerging Threats Pro Ruleset` 由 [`Proofpoint/ET`](https://www.proofpoint.com/us/threat-insight/et-pro-ruleset) 维护
+
+---
+
+## 体验 Suricata {id="quick-start-of-suricata"}
+
+```bash
+sudo apt update && sudo apt install -y suricata
+
+# 检查当前 suricata 版本
+suricata -V
+# This is Suricata version 5.0.3 RELEASE
+
+# 查看 suricata-update 的内置命令帮助手册
+sudo suricata-update --help
+sudo suricata-update enable-source --help
+
+# 检查当前 suricata 可订阅的规则库
+sudo suricata-update list-sources
+
+# 检查 suricata 已启用订阅的规则库
+sudo suricata-update list-enabled-sources
+
+# 检查当前 suricata 可「免费」订阅的规则库
+sudo suricata-update list-sources --free
+# Name: et/open
+#   Vendor: Proofpoint
+#   Summary: Emerging Threats Open Ruleset
+#   License: MIT
+# Name: oisf/trafficid
+#   Vendor: OISF
+#   Summary: Suricata Traffic ID ruleset
+#   License: MIT
+# Name: ptresearch/attackdetection
+#   Vendor: Positive Technologies
+#   Summary: Positive Technologies Attack Detection Team ruleset
+#   License: Custom
+# Name: sslbl/ssl-fp-blacklist
+#   Vendor: Abuse.ch
+#   Summary: Abuse.ch SSL Blacklist
+#   License: Non-Commercial
+# Name: sslbl/ja3-fingerprints
+#   Vendor: Abuse.ch
+#   Summary: Abuse.ch Suricata JA3 Fingerprint Ruleset
+#   License: Non-Commercial
+# Name: etnetera/aggressive
+#   Vendor: Etnetera a.s.
+#   Summary: Etnetera aggressive IP blacklist
+#   License: MIT
+# Name: tgreen/hunting
+#   Vendor: tgreen
+#   Summary: Threat hunting rules
+#   License: GPLv3
+
+sudo suricata-update enable-source et/open
+sudo suricata-update enable-source oisf/trafficid
+sudo suricata-update enable-source ptresearch/attackdetection
+
+# 启用「越多」特征订阅「越好」？
+# 请回忆前述「特征库越大越好？」一节内容
+
+sudo suricata-update list-enabled-sources
+# Enabled sources:
+#   - et/open
+#   - oisf/trafficid
+#   - ptresearch/attackdetection
+
+# 下载所有「已启用」订阅源的规则库更新
+sudo suricata-update update
+
+# 所有订阅的规则被合并写入 /var/lib/suricata/rules/suricata.rules
+
+# 修改 /etc/suricata/suricata.yaml 里的 default-rule-path 值为
+# /var/lib/suricata/rules
+
+# 测试用 pcap https://c4pr1c3.github.io/cuc-ns/chap0x12/attack-trace.pcap
+suricata -r attack-trace.pcap
+
+# 默认生成 4 个日志文件
+# eve.json
+# fast.log
+# stats.log
+# suricata.log
+
+# 查看所有「告警」
+cat fast.log
+
+# 需要自行安装工具 jq
+cat eve.json | jq -c 'select(.event_type=="alert")'
+```
 
 # Zeek / Bro
 
@@ -620,6 +782,24 @@ apt show zeek-lts
 # Description: Zeek is a powerful framework for network analysis and security monitoring.
 ```
 
+# OPNsense®
+
+---
+
+* 开源易用的基于安全加固 BSD 的防火墙和路由平台（入侵防护系统）
+    * 基于 `pfSense®` 和 `m0n0wall` 自 2014 年起独立分支开发
 
 
+# 入侵检测规则的绕过
+
+---
+
+* [滥用 PHP 的查询字符串解析规则绕过 IDS/WAF](https://www.secjuice.com/abusing-php-query-string-parser-bypass-ids-ips-waf/)
+
+# 课后思考题
+
+---
+
+1. 如何理解“入侵检测系统的误报率越高，漏报率低的概率就越高”这句话？
+2. 描述入侵检测系统的误用检测算法和异常检测算法，并各举一实际算法说明
 

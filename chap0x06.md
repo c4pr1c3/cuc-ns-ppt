@@ -260,11 +260,18 @@ output: revealjs::revealjs_presentation
 
 ---
 
-## 网络空间杀伤链（Cyber Kill Chain）模型
+## 网络空间杀伤链（Cyber Kill Chain）模型 {id="cyber-kill-chain-1"}
 
 洛克希德-马丁公司提出的网络空间杀伤链如下图所示：
 
 [![](images/chap0x06/THE-CYBER-KILL-CHAIN-body.png)](https://www.lockheedmartin.com/en-us/capabilities/cyber/cyber-kill-chain.html)
+
+---
+
+## 网络空间杀伤链（Cyber Kill Chain）模型 {id="cyber-kill-chain-2"}
+
+* 识别 - 武器化 - 投递 - 漏洞利用 - 安装（后门） - 命令与控制 - 达成目标 
+* Reconnaissance - Weaponization - Delivery - Exploitation - Installation - Command & Control - Actions on Objective
 
 ---
 
@@ -273,7 +280,7 @@ output: revealjs::revealjs_presentation
 * 发现 - 定位- 跟踪  - 瞄准   - 打击   - 评价
 * Find - Fix - Track - Target - Engage - Assess
     * F2T2EA
-* 可以用于对抗上述「网络空间杀伤链」模型，又被称为「反杀伤链」模型
+* 可以用于对抗上述「网络空间杀伤链」模型，所以又被称为「反杀伤链」模型
 
 ---
 

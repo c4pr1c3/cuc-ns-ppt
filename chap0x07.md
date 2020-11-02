@@ -1430,7 +1430,7 @@ http://192.168.56.144:7080/Less-2/?id=2 union all select 1,concat(id,0x3a,userna
 
 ### 过滤是把“双刃剑” {id="filter-is-a-double-sword-2"}
 
-[PHPMailer 小于 5.2.18 版本的 RCE 漏洞，官方在补丁中使用了 escapeshellarg() 来修复漏洞](https://paper.seebug.org/164/)。但在 PHPMailer 的 `mail.c` 的函数内部又使用了一遍 `escapeshellcmd()` ，导致输入数据中经过 `escapeshellarg()` 处理后单引号先被 **\** 转义一次，再用单引号对输入参数的左右两部分进行了包围处理。后来遇到 `escapeshellcmd()` 处理时，先前被添加的 **\** 又被转义了一次，变成了 **\\**，并且命令中所有的单引号又被转义了一次，最终导致输入参数又变回了一个可以被执行的操作系统命令。
+[PHPMailer 小于 5.2.18 版本的 RCE 漏洞，官方在补丁中使用了 escapeshellarg() 来修复漏洞](https://paper.seebug.org/164/)。但在 PHPMailer 的 `mail.c` 的函数内部又使用了一遍 `escapeshellcmd()` ，导致输入数据中经过 `escapeshellarg()` 处理后单引号先被 **\\** 转义一次，再用单引号对输入参数的左右两部分进行了包围处理。后来遇到 `escapeshellcmd()` 处理时，先前被添加的 **\\** 又被转义了一次，变成了 **\\**，并且命令中所有的单引号又被转义了一次，最终导致输入参数又变回了一个可以被执行的操作系统命令。
 
 ---
 

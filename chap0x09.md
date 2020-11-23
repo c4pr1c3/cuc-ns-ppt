@@ -65,7 +65,7 @@ output: revealjs::revealjs_presentation
 
 ---
 
-## 检测检测经典模型 {id="ids-classic-model"}
+## 经典检测模型 {id="ids-classic-model"}
 
 通用的入侵检测系统抽象模型
 

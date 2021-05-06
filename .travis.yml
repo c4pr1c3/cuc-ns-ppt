@@ -34,7 +34,7 @@ after_script:
   - mv lib/reveal.js.v4_tmp lib/reveal.js.v4
   - rm -rf lib/reveal.js/.git
   - rm -rf lib/reveal.js.v4/.git
-  - rm -rf lib/reveal.js.v4/reveal.js-plugins/.git
+  - rm -rf lib/reveal.js.v4/plugin/reveal.js-plugins/.git
   - rm -rf lib/reveal.js.v4/plugin/reveal.js-plugins/menu/.git
   - git add lib/reveal.js
   - git add lib/reveal.js.v4

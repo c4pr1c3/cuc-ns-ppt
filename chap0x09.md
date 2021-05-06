@@ -51,7 +51,7 @@ output: revealjs::revealjs_presentation
 
 ---
 
-## 入侵检测经典理论 {id="ids-james-p-anderson-1"}
+## 入侵检测经典理论 {id="ids-james-p-anderson-2"}
 
 系统访问控制要面对三类用户
 

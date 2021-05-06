@@ -93,7 +93,7 @@ output: revealjs::revealjs_presentation
 
 ## PHP Web 漏洞复现环境 {id="php-web-sec-lab"}
 
-```bash
+```{.bash .number-lines}
 # （可选步骤）新版 Kali 已在默认安装时禁用 root 用户
 # 允许 root 用户远程 SSH 登录
 # root 用户权限执行以下命令
@@ -158,7 +158,7 @@ php -S 0.0.0.0:8080
 
 ## 缺陷代码示例
 
-```php
+```{.php .number-lines}
 <?php
 $file = $_GET['file'];
 echo file_get_contents($file);

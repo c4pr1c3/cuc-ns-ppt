@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="黄玮">
+  <title>网络安全</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="lib/reveal.js/css/reveal.css">
+  <style type="text/css">code{white-space: pre;}</style>
+
+
+    <!-- For syntax highlighting using highlight.js-->
+    <link rel="stylesheet" href="lib/reveal.js/lib/css/zenburn.css">
+
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="lib/reveal.js/css/theme/white.css" id="theme">
+  <!-- Printing and PDF exports -->
+<link rel="stylesheet" media="print" href="lib/reveal.js/css/print/pdf.css" />
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'lib/reveal.js/css/print/pdf.css' : 'lib/reveal.js/css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="lib/reveal.js/lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">网络安全</h1>
+  <p class="author">黄玮</p>
+</section>
+
+<section>
+<section id="第八章-防火墙" class="title-slide slide level1">
+<h1>第八章 防火墙</h1>
+
+</section>
+<section id="温故" class="slide level2">
+<h2>温故</h2>
+<ul>
+<li>网络与系统渗透无孔不入
+<ul>
+<li>人</li>
+<li>应用程序</li>
+<li>网络设备</li>
+<li>主机/服务器操作系统</li>
+<li>物理设备</li>
+</ul></li>
+<li>掌握网络与系统渗透方法
+<ul>
+<li>知己知彼，百战不殆</li>
+</ul></li>
+</ul>
+</section>
+<section id="知新" class="slide level2">
+<h2>知新</h2>
+<ul>
+<li>防火墙在网络与系统防御中的作用和地位</li>
+<li>防火墙实现的关键技术</li>
+<li>防火墙实例及应用</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="防火墙概述" class="title-slide slide level1">
+<h1>防火墙概述</h1>
+
+</section>
+<section id="定义" class="slide level2">
+<h2>定义</h2>
+<blockquote>
+<p>在两个 <strong>信任程度不同</strong> 的网络之间设置的、用于加强 <code>访问控制</code> 的 <strong>软硬件</strong> 保护措施。</p>
+</blockquote>
+<p><img data-src="images/chap0x08/firewall-definition.png" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="信任程度不同的网络">信任程度不同的网络</h3>
+<ul>
+<li>外网：外部网络，不仅包括互联网，泛指一切非当前防火墙保护范围的网络</li>
+<li>内网：内部网络，此处特指防火墙保护范围内的网络</li>
+<li>边界：外网和内网之间的通信过程必须经过「防火墙」的 <code>访问控制</code> ，此时防火墙在整个网络拓扑中的逻辑位置相当于就是网络「边界」</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="network-acl-1">访问控制</h3>
+<ul>
+<li>入站（<code>Inbound</code>）。从 <code>外网</code> 发起，目的地是 <code>内网</code> 的流量方向</li>
+<li>出站（<code>Outbound</code>）。从 <code>内网</code> 发起，目的地是 <code>外网</code> 的流量方向</li>
+<li>防外不防内
+<ul>
+<li>防外：与外部网络有关的流量可以被防火墙审查，进而达到保护效果</li>
+<li>不防内：非 <code>入站</code> 和 <code>出站</code> 流量，属于内部网络中节点之间的流量由于不流经防火墙，所以防火墙无法对流量进行审查，自然就无法保护了</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="network-acl-2">访问控制</h3>
+<ul>
+<li>粗粒度防护：取决于网络防火墙对网络流量的检查 <strong>粒度</strong> ，绝大多数情况下我们使用的都是网络层防火墙，不具备 <strong>深度包检测</strong> 能力</li>
+<li>深度包检测（<code>Deep Packet Insepction</code>, <code>DPI</code>）：又称 <strong>完全数据包探测（complete packet inspection）</strong> 或 <strong>信息萃取（Information eXtraction，IX）</strong>，是一种网络数据包过滤技术，用来检查通过检测点数据包的内容负载部分（也可能包含其报文头部）</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p>为什么要强调 <strong>深度包检测</strong> 这个概念？</p>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>因为只有看见，才能让「访问控制」有的放矢，才能落实保护。</p>
+</blockquote>
+</section>
+<section id="防火墙发展简史" class="slide level2">
+<h2>防火墙发展简史</h2>
+<p><img data-src="images/chap0x08/firewall-history.png" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="legacy-fw">“上古” 防火墙</h3>
+<ul>
+<li>第一代防火墙
+<ul>
+<li>采用了包过滤技术</li>
+</ul></li>
+<li>第二代、第三代防火墙
+<ul>
+<li>1989 年，推出了电路层防火墙和应用层防火墙的初步结构</li>
+</ul></li>
+<li>第四代防火墙
+<ul>
+<li>1992 年，开发出了基于动态包过滤技术的第四代防火墙</li>
+</ul></li>
+<li>第五代防火墙
+<ul>
+<li>1998 年，NAI公司推出一种自适应代理技术，可以称之为第五代防火墙</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="modern-fw">现代防火墙</h3>
+<ul>
+<li>一体化安全网关 UTM
+<ul>
+<li>统一威胁管理</li>
+<li>整合防火墙、入侵检测、入侵保护、防病毒、防垃圾邮件等综合功能</li>
+</ul></li>
+<li>应用防火墙
+<ul>
+<li>又可以称为IPS：入侵保护</li>
+<li>普遍采用了 <code>深度包检测</code> 技术
+<ul>
+<li>病毒防火墙</li>
+<li>Web 防火墙</li>
+<li>VoIP 防火墙</li>
+<li>。。。</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="fw-status-and-future-1" class="slide level2">
+<h2>防火墙现状与发展</h2>
+<ul>
+<li>网络安全基础设施必有一席之地</li>
+<li>开源产品和商业产品百家齐放
+<ul>
+<li>开源防火墙代表：<a href="https://www.pfsense.org/">pfSense</a>、<a href="https://opnsense.org/">OPNSense</a>、<a href="https://www.untangle.com/">Untangle – NG Firewall</a>、<a href="https://www.clearos.com/">ClearOS</a>、<a href="https://www.ipfire.org/">IPFire</a>、<a href="http://www.smoothwall.org/">Smoothwall Express</a>、<a href="https://distrowatch.com/">IPCop</a>、<a href="https://help.ubuntu.com/community/UFW">ufw</a>、<a href="http://www.shorewall.org/">Shorewall</a>、<a href="https://www.endian.com/">Endian Firewall Community</a>、<a href="https://www.vyos.io/">VyOS</a></li>
+</ul></li>
+<li>不断提升的 <strong>吞吐性能</strong>
+<ul>
+<li>接入带宽：百兆 / 千兆 / 万兆</li>
+<li>并发处理能力（状态检测防火墙）：千、万、十万、百万</li>
+</ul></li>
+</ul>
+</section>
+<section id="fw-status-and-future-2" class="slide level2">
+<h2>防火墙现状与发展</h2>
+<ul>
+<li>持续发展的 <code>深度包检测</code>
+<ul>
+<li>支持识别的应用层协议种类越来越多</li>
+<li>加密流量的处理方式「八仙过海各显神通」</li>
+<li>集成恶意代码、垃圾信息检测等多样化防护能力</li>
+</ul></li>
+<li>增值功能越来越多
+<ul>
+<li>代理、负载均衡、计费、VPN 等</li>
+</ul></li>
+<li>满足云计算环境中的防火墙部署需求
+<ul>
+<li>虚拟化能力</li>
+<li>SDN 能力</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x08/gartner-2019-fw-magic-quadrant.png" /></p>
+<blockquote>
+<p>华为、深信服（Sangfor）、启明星辰（Venustech）、山石网科（Hillstone）、新华三（H3C）</p>
+</blockquote>
+</section>
+</section>
+<section>
+<section id="防火墙技术原理" class="title-slide slide level1">
+<h1>防火墙技术原理</h1>
+
+</section>
+<section id="防火墙关键技术" class="slide level2">
+<h2>防火墙关键技术</h2>
+<ul>
+<li>包过滤技术</li>
+<li>状态检测技术</li>
+<li>应用级代理技术</li>
+</ul>
+</section>
+<section id="包过滤技术" class="slide level2">
+<h2>包过滤技术</h2>
+<p><img data-src="images/chap0x08/packet-filter.png" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="检查数据包的报头信息">检查数据包的报头信息</h3>
+<ol type="1">
+<li>IP 数据报的源 IP 地址、目的 IP 地址、协议类型，选项字段等</li>
+<li>TCP 数据包的源端口、目标端口、标志段等</li>
+<li>UDP 数据包的源端口、目标端口</li>
+<li>ICMP 类型</li>
+</ol>
+</section>
+<section class="slide level2">
+
+<h3 id="包过滤技术的优点">包过滤技术的优点</h3>
+<ul>
+<li>不需要内部网络用户做任何配置，对用户来说是完全透明的</li>
+<li>过滤速度快，效率高</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="包过滤技术的缺点">包过滤技术的缺点</h3>
+<ul>
+<li>不能进行数据内容级别的访问控制</li>
+<li>一些应用协议不适合用数据报过滤</li>
+<li>过滤规则的配置复杂，容易产生冲突和漏洞</li>
+</ul>
+</section>
+<section id="状态检测技术" class="slide level2">
+<h2>状态检测技术</h2>
+<p><img data-src="images/chap0x08/state-check-1.png" /></p>
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x08/state-check-2.png" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="状态检测技术的优点">状态检测技术的优点</h3>
+<ul>
+<li>状态表是动态建立的，可以实现对一些复杂协议建立的临时端口进行有效的管理</li>
+<li>状态检测技术是为每一个会话连接建立、维护其状态信息，并利用这些状态信息对数据包进行过滤</li>
+<li>动态状态表是状态检测防火墙的核心，利用其可以实现比包过滤防火墙更强的控制访问能力</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="状态检测技术的缺点">状态检测技术的缺点</h3>
+<ul>
+<li>没有对数据包内容进行检测，不能进行数据内容级别的控制</li>
+<li>允许外网主机与内网主机直接连接，增加了内网主机被外部攻击者直接攻击的风险</li>
+</ul>
+</section>
+<section id="应用级代理" class="slide level2">
+<h2>应用级代理</h2>
+<p><img data-src="images/chap0x08/proxy-1.png" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="应用级代理示例">应用级代理示例</h3>
+<p><img data-src="images/chap0x08/proxy-2.png" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="应用级代理优点">应用级代理优点</h3>
+<ul>
+<li>内部网络的拓扑、IP 地址等被代理防火墙屏蔽，能有效实现内外网络的隔离</li>
+<li>具有强鉴别和日志能力，支持用户身份识别，实现用户级的安全</li>
+<li>能进行数据内容的检查，实现基于内容的过滤，对通信进行严密的监控</li>
+<li>过滤规则比数据包过滤规则简单</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="应用级代理缺点">应用级代理缺点</h3>
+<ul>
+<li>代理服务的额外处理请求降低了过滤性能，其过滤速度比包过滤器速度慢</li>
+<li>需要为每一种应用服务编写代理软件模块，提供的服务数目有限</li>
+<li>对操作系统的依赖程度高，容易因操作系统和应用软件的缺陷而受到攻击</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="防火墙的实现技术" class="title-slide slide level1">
+<h1>防火墙的实现技术</h1>
+
+</section>
+<section class="slide level2">
+
+<p>以 Linux 操作系统上的 Netfilter/iptables 机制为例</p>
+</section>
+<section id="netfilteriptables-框架简介" class="slide level2">
+<h2>Netfilter/iptables 框架简介</h2>
+<ul>
+<li><code>Netfilter/iptables</code> 从 <code>Linux</code> 内核版本 <code>2.4</code> 开始，默认被包含在内核源代码树中</li>
+<li>可以对操作系统的流入和流出数据报文进行控制
+<ul>
+<li>防火墙</li>
+<li>NAT</li>
+<li>数据报文自定义修改</li>
+</ul></li>
+<li><code>Netfilter</code> 工作在系统内核层</li>
+<li><code>iptables</code> 工作在用户态</li>
+</ul>
+</section>
+<section id="netfilter-iptables-arch-1" class="slide level2">
+<h2>Netfilter/iptables 架构</h2>
+<p><img data-src="images/chap0x08/netfilter-iptables-arch-1.png" /></p>
+</section>
+<section id="netfilter-iptables-arch-2" class="slide level2">
+<h2>Netfilter/iptables 架构</h2>
+<p><img data-src="images/chap0x08/netfilter-iptables-arch-2.png" /></p>
+</section>
+<section id="iptables-basics-1" class="slide level2">
+<h2>iptables 基本概念</h2>
+<ul>
+<li>表(tables)
+<ul>
+<li>filter表、nat表、mangle表、raw表</li>
+</ul></li>
+<li>链(chains)
+<ul>
+<li>数据包的传输路径，每条链其实就是众多规则中的一个检查清单
+<ul>
+<li>Input、Forward、PreRouting、PostRouting、Output</li>
+</ul></li>
+</ul></li>
+<li>规则(rules)
+<ul>
+<li>网络管理员预定义的网络 <strong>访问控制策略</strong></li>
+</ul></li>
+</ul>
+</section>
+<section id="iptables-basics-2" class="slide level2">
+<h2>iptables 基本概念</h2>
+<ul>
+<li>filter 表
+<ul>
+<li>报文过滤</li>
+<li>只读过滤报文</li>
+</ul></li>
+<li>nat 表
+<ul>
+<li>实现 NAT 服务</li>
+</ul></li>
+<li>mangle表
+<ul>
+<li>报文处理：修改报文和附加额外数据到报文</li>
+</ul></li>
+<li>raw表
+<ul>
+<li>可以对收到的报文在连接跟踪前进行处理</li>
+<li>只作用于 <code>PreRouting</code> 和 <code>Output</code> 链</li>
+</ul></li>
+</ul>
+</section>
+<section id="iptables-workflow" class="slide level2">
+<h2>iptables 中的报文检查流程</h2>
+<p><img data-src="images/chap0x08/netfilter-iptables-workflow.png" /></p>
+<blockquote>
+<p>raw &gt; mangle &gt; nat &gt; filter</p>
+</blockquote>
+</section>
+<section id="netfilter-internal-workflow" class="slide level2">
+<h2>netfilter 架构的数据流图</h2>
+<p><img data-src="images/chap0x08/netfilter-iptables-arch-3.png" /></p>
+</section>
+<section id="netfilter-iptables-on-host" class="slide level2">
+<h2>部署了 Netfilter/iptables 的操作系统</h2>
+<p><img data-src="images/chap0x08/netfilter-iptables-on-host.png" /></p>
+</section>
+<section id="硬件防火墙" class="slide level2">
+<h2>硬件防火墙</h2>
+<ul>
+<li>通用 CPU 架构</li>
+<li>ASIC 架构</li>
+<li>网络处理器架构</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="x86-fw">通用 CPU 架构防火墙</h3>
+<ul>
+<li>又被称为x86架构
+<ul>
+<li>采用通用CPU和PCI总线接口</li>
+</ul></li>
+<li>可编程性高
+<ul>
+<li>更灵活</li>
+<li>更易扩展</li>
+</ul></li>
+<li>产品功能主要由软件实现</li>
+<li>代表产品
+<ul>
+<li>大部分的开源/商业软件防火墙（基于*nix系统）</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="asic-fw">ASIC 架构防火墙</h3>
+<ul>
+<li>Application Specific Integrated Circuit
+<ul>
+<li>专用集成电路</li>
+<li>一种带有逻辑处理的加速处理器</li>
+</ul></li>
+<li>把一些原先由 CPU 完成的经常性和重复工作交给 ASIC 芯片来负责完成
+<ul>
+<li>交换机、路由器、智能 IC 卡</li>
+</ul></li>
+<li>通常配合通用CPU单元来完成复杂运算</li>
+<li>代表产品
+<ul>
+<li>大部分国外的商业硬件防火墙</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="np-fw">NP 架构防火墙</h3>
+<ul>
+<li>Network Processor：网络处理器</li>
+<li>通用 CPU 架构和 ASIC 架构的折衷
+<ul>
+<li>开发难度</li>
+<li>性能</li>
+<li>灵活性/可扩展性</li>
+</ul></li>
+<li>代表产品
+<ul>
+<li>大部分国内的商业硬件防火墙</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="三种硬件架构的横向比较">三种硬件架构的横向比较</h3>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">架构类型</th>
+<th style="text-align: left;">X86</th>
+<th style="text-align: left;">NP</th>
+<th style="text-align: left;">ASIC</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">灵活性</td>
+<td style="text-align: left;">★★★</td>
+<td style="text-align: left;">★★</td>
+<td style="text-align: left;">★</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">扩展性</td>
+<td style="text-align: left;">★★★</td>
+<td style="text-align: left;">★★</td>
+<td style="text-align: left;">★</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">性能</td>
+<td style="text-align: left;">★</td>
+<td style="text-align: left;">★★</td>
+<td style="text-align: left;">★★★</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">安全性</td>
+<td style="text-align: left;">★</td>
+<td style="text-align: left;">★★</td>
+<td style="text-align: left;">★★★</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">价格</td>
+<td style="text-align: left;">低</td>
+<td style="text-align: left;">中等</td>
+<td style="text-align: left;">较高</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section>
+<section id="setup-iptables" class="title-slide slide level1">
+<h1>防火墙的配置和应用</h1>
+
+</section>
+<section id="路由模式" class="slide level2">
+<h2>路由模式</h2>
+<p><img data-src="images/chap0x08/routing-mode.png" /></p>
+</section>
+<section id="透明模式" class="slide level2">
+<h2>透明模式</h2>
+<p><img data-src="images/chap0x08/transparent-mode.png" /></p>
+</section>
+<section id="混合模式" class="slide level2">
+<h2>混合模式</h2>
+<p><img data-src="images/chap0x08/hybrid-mode.png" /></p>
+</section>
+<section id="fw-setup-tips-1" class="slide level2">
+<h2>防火墙部署的其他细节</h2>
+<ul>
+<li>双机热备模式
+<ul>
+<li>避免单点故障</li>
+</ul></li>
+<li>负载均衡模式
+<ul>
+<li>性能扩展</li>
+<li>避免单点故障</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="负载均衡模式部署的防火墙">负载均衡模式部署的防火墙</h3>
+<p><img data-src="images/chap0x08/lb-fw.png" /></p>
+</section>
+<section id="fw-setup-tips-2" class="slide level2">
+<h2>防火墙部署的其他细节</h2>
+<p><img data-src="images/chap0x08/tips-fw.png" /></p>
+</section>
+<section id="单机防火墙配置" class="slide level2">
+<h2>单机防火墙配置</h2>
+<ul>
+<li>ufw
+<ul>
+<li>ufw 简介</li>
+<li>ufw 使用</li>
+</ul></li>
+<li>iptables
+<ul>
+<li>iptables 简介</li>
+<li>iptables 使用</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="ufw---uncomplicated-firewall">UFW - Uncomplicated Firewall</h3>
+<ul>
+<li>UFW 是 <code>Ubuntu</code> 开发团队为 <code>Ubuntu</code> 发行版量身定制的简化版 <code>iptables</code> 命令行配置工具</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="ufw-howto-use">ufw 使用</h3>
+<p><a href="https://help.ubuntu.com/community/UFW">UFW 官网文档</a></p>
+</section>
+<section id="iptables" class="slide level2">
+<h2>iptables</h2>
+<blockquote>
+<p>sudo iptables –help</p>
+</blockquote>
+</section>
+<section class="slide level2">
+
+<h3 id="recommended-rules-manage">推荐的 iptables 规则管理方法</h3>
+<pre class="bash"><code># 需要 root 权限
+# 导出当前防火墙规则到文件
+iptables-save &gt; iptables.rules
+
+# 备份当前规则文件
+cp iptables.rules iptables.rules.bak
+
+# 用文本编辑器编辑上一步备份出来的当前 iptables 规则文件的副本 iptables.rules
+
+# 应用编辑后的防火墙规则
+# -c  指定在还原 iptables 时候，重置当前的数据包计数器和字节计数器的值为零
+iptables-restore &lt; iptables.rules
+
+# 随时可以使用之前备份的 iptables.rules.bak 来重置回最近一次没问题的规则</code></pre>
+</section>
+</section>
+<section>
+<section id="nat-based-on-fw" class="title-slide slide level1">
+<h1>基于防火墙实现 NAT</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>私有地址（private address）属于非注册地址，是专门为组织机构内部使用而划定的。如下图：</li>
+</ul>
+<p><img data-src="images/chap0x08/private-addr-range.png" /></p>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>NAT 是将一个地址域（如专用 Intranet）映射到另一个地址域（如 Internet）的标准方法</li>
+<li>NAT 可以将内部网络中的所有节点的地址转换成一个 IP 地址，反之亦然</li>
+<li>可以应用到防火墙技术里，把个别 IP 地址隐藏起来不被外部发现，使外部无法直接访问内部网络设备</li>
+</ul>
+</section>
+<section id="nat-internals" class="slide level2">
+<h2>NAT 工作原理</h2>
+<ul>
+<li>静态网络地址转换</li>
+<li>动态网络地址转换</li>
+<li>网络地址端口映射</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="静态地址转换">静态地址转换</h3>
+<ul>
+<li>将公网 IP 地址一一对应地转换为内部私有 IP 地址</li>
+</ul>
+<p><img data-src="images/chap0x08/nat-type-1.png" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="动态地址转换">动态地址转换</h3>
+<ul>
+<li>将内部本地地址与内部合法地址一对一的进行转换 与静态地址转换不同的是它是从内部合法地址池动态分配临时的 IP 地址来对内部本地地址进行转换</li>
+</ul>
+<p><img data-src="images/chap0x08/nat-type-2.png" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="网络地址端口映射">网络地址端口映射</h3>
+<p>将公网 IP 映射到私有 IP ，而外网多个 IP 被映射到同一内部共有 IP 地址的不同端口</p>
+<p><img data-src="images/chap0x08/nat-type-3.png" /></p>
+</section>
+</section>
+<section>
+<section id="防火墙规则调试和审查" class="title-slide slide level1">
+<h1>防火墙规则调试和审查</h1>
+
+</section>
+<section id="防火墙规则调试" class="slide level2">
+<h2>防火墙规则调试</h2>
+<p>按照课本里的 <a href="https://c4pr1c3.github.io/cuc-ns/chap0x08/exp.html#%E5%AE%9E%E9%AA%8C%E5%9B%9B%EF%BC%9A%E9%98%B2%E7%81%AB%E5%A2%99%E8%A7%84%E5%88%99%E8%B0%83%E8%AF%95">实验四：防火墙规则调试</a> 动手实验完成。</p>
+</section>
+<section id="防火墙规则审查" class="slide level2">
+<h2>防火墙规则审查</h2>
+<ul>
+<li>静态分析工具（主要是商业工具，缺开源解决方案）
+<ul>
+<li>防火墙规则的语义理解
+<ul>
+<li>数据流图分析</li>
+<li>自动化规则树生成</li>
+</ul></li>
+</ul></li>
+<li>黑盒测试工具
+<ul>
+<li>基于网络扫描器的模糊测试</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="nftables" class="title-slide slide level1">
+<h1>nftables</h1>
+
+</section>
+<section class="slide level2">
+
+<p>摘录 <a href="https://www.netfilter.org/projects/nftables/index.html">nftables 官网</a> 的一句话描述</p>
+<blockquote>
+<p><strong>nftables</strong> replaces the popular <strong>{ip,ip6,arp,eb}tables</strong>. This software provides a new in-kernel packet classification framework that is based on a network-specific Virtual Machine (VM) and a new <strong>nft</strong> userspace command line tool. <strong>nftables</strong> reuses the existing Netfilter subsystems such as the existing hook infrastructure, the connection tracking system, NAT, userspace queueing and logging subsystem.</p>
+</blockquote>
+</section>
+<section id="nftables-vs-iptables" class="slide level2">
+<h2>nftables 与 iptables 的关系</h2>
+<ul>
+<li>均基于 <code>Netfilter</code> 内核</li>
+<li><code>nftables</code> 简化了配置语法和新增了「语法糖」
+<ul>
+<li>一个工具整合了多重协议栈多个独立工具 {ip,ip6,arp,eb}tables</li>
+<li>允许一条规则定义多重匹配条件</li>
+<li>允许一条规则匹配后执行多个 action</li>
+</ul></li>
+<li><code>nftables</code> 提升了规则匹配和报文处理性能</li>
+<li><code>nftables</code> 支持导出数据为 <code>JSON</code> 和 <code>XML</code> 格式</li>
+<li><code>nftables</code> 增强了调试便利性</li>
+<li><code>nftables</code> 没有内置默认「表/链」</li>
+</ul>
+</section>
+<section id="moving-from-iptables-to-nftables" class="slide level2">
+<h2><a href="https://wiki.nftables.org/wiki-nftables/index.php/Moving_from_iptables_to_nftables">从 iptables 迁移到 nftables</a></h2>
+<pre class="bash"><code># 检查当前系统内核是否加载了 nf_tables 内核模块
+modinfo nf_tables
+# 如下输出信息表示已加载
+# filename:       /lib/modules/5.7.0-kali1-amd64/kernel/net/netfilter/nf_tables.ko
+# alias:          nfnetlink-subsys-10
+# author:         Patrick McHardy &lt;kaber@trash.net&gt;
+# license:        GPL
+# depends:        nfnetlink
+# retpoline:      Y
+# intree:         Y
+# name:           nf_tables
+# vermagic:       5.7.0-kali1-amd64 SMP mod_unload modversions
+
+# 检查加载了哪些 nf_tables 有关的模块
+lsmod | grep nf_tableso
+# nf_tables             229376  237 nft_compat,nft_counter,nft_chain_nat
+# nfnetlink              16384  4 nft_compat,nf_conntrack_netlink,nf_tables
+# 检查当前系统上是否已安装 nftables 工具
+
+apt policy nftables
+# nftables:
+#   Installed: 0.9.6-1
+#   Candidate: 0.9.6-1
+#   Version table:
+#  *** 0.9.6-1 500
+#         500 http://http.kali.org/kali kali-rolling/main amd64 Packages
+#         100 /var/lib/dpkg/status
+
+# 如果没有安装，则执行安装操作
+sudo apt update &amp;&amp; sudo apt install nftables
+
+# 导出 iptables 规则
+iptables-save &gt; iptables.rules
+
+# 使用 iptables-restore-translate 翻译 iptables 规则并保存
+iptables-restore-translate -f iptables.rules &gt; ruleset.nft
+
+# 查看当前 nftables 规则
+nft list ruleset
+
+# 确认已备份当前主机的防火墙规则
+# nftables 已加载了当前防火墙规则
+# 清空 iptables 规则，并准备禁用 iptables 只保留 nftables 用来规则防火墙规则
+sudo iptables -F
+sudo ip6tables -F</code></pre>
+</section>
+<section id="主流-linux-发行版对-nftables-的支持情况" class="slide level2">
+<h2>主流 Linux 发行版对 nftables 的支持情况</h2>
+<ul>
+<li>从 2014 年 1 月 19 日发布的 Linux 内核源代码 3.13 开始支持 <code>nftables</code></li>
+<li><a href="https://fedoraproject.org/wiki/Releases/32/ChangeSet#Firewalld_Default_to_nftables">2020 年 4 月 28 日发布的 Fedora 32 默认启用 nftables 代替 iptables</a></li>
+<li><a href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/configuring_and_managing_networking/getting-started-with-nftables_configuring-and-managing-networking">2019 年 5 月 7 日发布的 RedHat 企业版 8 开始默认启用 nftables 代替 iptables</a></li>
+<li><a href="https://wiki.debian.org/nftables">2019 年 7 月 6 日发布的 Debian Buster(10.0) 版本开始默认启用 nftables 代替 iptables</a></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="网闸" class="title-slide slide level1">
+<h1>网闸</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>其他别名：安全隔离与信息交换系统 / 物理隔离网闸 / 安全隔离网闸</li>
+<li>实现 <strong>不同安全级别网络</strong> 之间的安全隔离，并提供适度可控的 <strong>数据交换</strong> 的软硬件系统
+<ul>
+<li>从「隔离」网络的角度来说，和防火墙的作用有相似之处</li>
+</ul></li>
+</ul>
+</section>
+<section id="ng-vs-fw-1" class="slide level2">
+<h2>网闸与防火墙的区别与联系</h2>
+<ul>
+<li>网闸是相对新的一个产品概念，与防火墙相比，网闸缺少标准化的学术模型
+<ul>
+<li>只应用在「高安全等级」网络保护环境</li>
+</ul></li>
+<li>网闸直接采用 <code>物理隔离</code> 方式实现 <strong>不同信任程度</strong> 之间网络的隔离</li>
+</ul>
+</section>
+<section id="ng-vs-fw-2" class="slide level2">
+<h2>网闸与防火墙的区别与联系</h2>
+<ul>
+<li>网闸采用基于非 TCP/IP 协议的 <strong>数据交换</strong> 方式，杜绝基于 TCP/IP 协议的网络攻击手段</li>
+<li>网闸软硬件实现均不基于通用操作系统，而是走定制化（基于 BSD 或精简安全加固后 Linux 系统、嵌入式操作系统 VxWorks 等）专用操作系统路线</li>
+<li>网闸不支持跨网络的访问，不同网络之间实现 <strong>通信协议</strong> 级别隔离，只支持 <strong>数据交换</strong> ，且同一时刻只允许「 <strong>单向</strong> 数据流动」
+<ul>
+<li>类似「自动化」U 盘数据摆渡系统</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="防水墙" class="title-slide slide level1">
+<h1>防水墙</h1>
+
+</section>
+<section class="slide level2">
+
+<p>填补防火墙「防外不防内」的防护能力空白：专注于「内部网络」安全问题</p>
+<ul>
+<li>信息泄露</li>
+<li>限制内网的「横向移动」行为</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>和网闸类似，防水墙同样缺少标准化的学术模型，防水墙的安全能力边界并没有统一定义</li>
+<li>缺少开源解决方案，只有商业解决方案</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="课后思考题" class="title-slide slide level1">
+<h1>课后思考题</h1>
+
+</section>
+<section class="slide level2">
+
+<ol type="1">
+<li>防火墙的典型网络部署方式有哪些</li>
+<li>防火墙能实现的和不能实现的防护各有哪些</li>
+</ol>
+</section>
+</section>
+    </div>
+  </div>
+
+  <script src="lib/reveal.js/lib/js/head.min.js"></script>
+  <script src="lib/reveal.js/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Display the page number of the current slide
+        slideNumber: true,
+        // Push each slide change to the browser history
+        history: true,
+        // Transition style
+        transition: 'fade', // none/fade/slide/convex/concave/zoom
+        math: {
+          mathjax: '',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+menu: {
+		// Specifies which side of the presentation the menu will 
+		// be shown. Use 'left' or 'right'.
+		side: 'left',
+
+		// Specifies the width of the menu.
+		// Can be one of the following:
+		// 'normal', 'wide', 'third', 'half', 'full', or
+		// any valid css length value
+		width: 'normal',
+
+		// Add slide numbers to the titles in the slide list.
+		// Use 'true' or format string (same as reveal.js slide numbers)
+		numbers: true,
+
+		// Specifies which slide elements will be used for generating
+		// the slide titles in the menu. The default selects the first
+		// heading element found in the slide, but you can specify any
+		// valid css selector and the text from the first matching
+		// element will be used.
+		// Note: that a section data-menu-title attribute or an element
+		// with a menu-title class will take precedence over this option
+		titleSelector: 'h1, h2, h3, h4, h5, h6',
+
+		// If slides do not have a matching title, attempt to use the
+		// start of the text content as the title instead
+		useTextContentForMissingTitles: false,
+
+		// Hide slides from the menu that do not have a title.
+		// Set to 'true' to only list slides with titles.
+		hideMissingTitles: false,
+
+		// Adds markers to the slide titles to indicate the 
+		// progress through the presentation. Set to 'false'
+		// to hide the markers.
+		markers: true,
+
+		// Specify custom panels to be included in the menu, by
+		// providing an array of objects with 'title', 'icon'
+		// properties, and either a 'src' or 'content' property.
+		custom: false,
+
+		// Specifies the themes that will be available in the themes
+		// menu panel. Set to 'true' to show the themes menu panel
+		// with the default themes list. Alternatively, provide an
+		// array to specify the themes to make available in the
+		// themes menu panel, for example...
+		// [
+		//     { name: 'Black', theme: 'css/theme/black.css' },
+		//     { name: 'White', theme: 'css/theme/white.css' },
+		//     { name: 'League', theme: 'css/theme/league.css' }
+		// ]
+		themes: false,
+
+		// Specifies the path to the default theme files. If your
+		// presentation uses a different path to the standard reveal
+		// layout then you need to provide this option, but only
+		// when 'themes' is set to 'true'. If you provide your own 
+		// list of themes or 'themes' is set to 'false' the 
+		// 'themesPath' option is ignored.
+		themesPath: 'css/theme/',
+
+		// Specifies if the transitions menu panel will be shown.
+		// Set to 'true' to show the transitions menu panel with
+		// the default transitions list. Alternatively, provide an
+		// array to specify the transitions to make available in
+		// the transitions panel, for example...
+		// ['None', 'Fade', 'Slide']
+		transitions: false,
+
+		// Adds a menu button to the slides to open the menu panel.
+		// Set to 'false' to hide the button.
+		openButton: true,
+
+		// If 'true' allows the slide number in the presentation to
+		// open the menu panel. The reveal.js slideNumber option must 
+		// be displayed for this to take effect
+		openSlideNumber: false,
+
+		// If true allows the user to open and navigate the menu using
+		// the keyboard. Standard keyboard interaction with reveal
+		// will be disabled while the menu is open.
+		keyboard: true,
+
+		// Normally the menu will close on user actions such as
+		// selecting a menu item, or clicking the presentation area.
+		// If 'true', the sticky option will leave the menu open
+		// until it is explicitly closed, that is, using the close
+		// button or pressing the ESC or m key (when the keyboard 
+		// interaction option is enabled).
+		sticky: false,
+
+		// If 'true' standard menu items will be automatically opened
+		// when navigating using the keyboard. Note: this only takes 
+		// effect when both the 'keyboard' and 'sticky' options are enabled.
+		autoOpen: true,
+
+		// If 'true' the menu will not be created until it is explicitly
+		// requested by calling RevealMenu.init(). Note this will delay
+		// the creation of all menu panels, including custom panels, and
+		// the menu button.
+		delayInit: false,
+
+		// If 'true' the menu will be shown when the menu is initialised.
+		openOnInit: false,
+
+		// By default the menu will load it's own font-awesome library
+		// icons. If your presentation needs to load a different
+		// font-awesome library the 'loadIcons' option can be set to false
+		// and the menu will not attempt to load the font-awesome library.
+		loadIcons: true
+	},
+
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'lib/reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'lib/reveal.js/plugin/zoom-js/zoom.js', async: true },
+          { src: 'lib/reveal.js/plugin/math/math.js', async: true },
+          { src: 'lib/reveal.js/plugin/menu/menu.js'},
+          { src: 'lib/reveal.js/plugin/markdown/marked.js'},
+          { src: 'lib/reveal.js/plugin/markdown/markdown.js'},
+          { src: 'lib/reveal.js/plugin/search/search.js'},
+          { src: 'lib/reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'lib/reveal.js/plugin/notes/notes.js', async: true },
+        ]
+      });
+    </script>
+    </body>
+</html>

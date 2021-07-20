@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="黄玮">
+  <title>网络安全</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="lib/reveal.js.v4/dist/reset.css">
+  <link rel="stylesheet" href="lib/reveal.js.v4/dist/reveal.css">
+
+  <!-- For syntax highlighting using highlight.js-->
+  <link rel="stylesheet" href="lib/reveal.js.v4/plugin/highlight/monokai.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="lib/reveal.js.v4/dist/theme/my-white.css" id="theme">
+
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">网络安全</h1>
+  <p class="author">黄玮</p>
+</section>
+
+<section>
+<section id="课程概况" class="title-slide slide level1">
+<h1>课程概况</h1>
+
+</section>
+<section id="先修课程" class="slide level2">
+<h2>先修课程</h2>
+<ul>
+<li>计算机安全与维护</li>
+<li>计算机⽹络A</li>
+<li><a href="https://c4pr1c3.github.io/cuc-wiki/linux.html">Linux 系统与网络管理</a></li>
+<li><a href="https://c4pr1c3.github.io/cuc-wiki/ac.html">密码学应用实践（推荐）</a></li>
+</ul>
+</section>
+<section id="本课程使用教材" class="slide level2">
+<h2>本课程使用教材</h2>
+<p><a href="https://c4pr1c3.github.io/cuc-ns/">自编教材 - 在线</a></p>
+</section>
+<section id="硬件和软件环境" class="slide level2">
+<h2>硬件和软件环境</h2>
+<ul>
+<li>PC</li>
+<li>Linux (Kali)</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="关于课程的教学方法和原则" class="title-slide slide level1">
+<h1>关于课程的教、学方法和原则</h1>
+
+</section>
+<section id="教" class="slide level2">
+<h2>教</h2>
+<ul>
+<li>授⼈以渔</li>
+<li>重思路、⽅向讲解，轻傻瓜式重复</li>
+</ul>
+</section>
+<section id="学" class="slide level2">
+<h2>学</h2>
+<ul>
+<li>兴趣第⼀</li>
+<li>尽信师，不如⽆师：质疑、思考、实践</li>
+<li>会用、用好互联⽹，特别是“搜索”</li>
+<li>⼀定要亲自动⼿实践</li>
+</ul>
+</section>
+<section id="学习金字塔" class="slide level2">
+<h2>学习金字塔</h2>
+<p><img data-src="images/chap0x01/pyramid-1.jpg" /></p>
+</section>
+<section id="遗忘金字塔" class="slide level2">
+<h2>遗忘金字塔</h2>
+<p><img data-src="images/chap0x01/pyramid-2.jpg" /></p>
+</section>
+<section id="重要的事情说三遍" class="slide level2">
+<h2>重要的事情说三遍</h2>
+<ul>
+<li>主动 <strong>学</strong> 主动 <font color='red'><strong>做</strong></font> 主动 <strong>讲</strong></li>
+<li>主动 <strong>学</strong> 主动 <font color='red'><strong>做</strong></font> 主动 <strong>讲</strong></li>
+<li>主动 <strong>学</strong> 主动 <font color='red'><strong>做</strong></font> 主动 <strong>讲</strong></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="课程目标" class="title-slide slide level1">
+<h1>课程目标</h1>
+
+</section>
+<section class="slide level2">
+
+<p>通过本课程的讲授和实验操作</p>
+<ul>
+<li>你能了解到
+<ul>
+<li>⽹络攻防基本原理</li>
+<li>⽹络攻防基本⼿段</li>
+</ul></li>
+<li>你不能了解到
+<ul>
+<li>如何编写恶意代码</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="课程体系" class="title-slide slide level1">
+<h1>课程体系</h1>
+
+</section>
+<section class="slide level2">
+
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">内容主题</th>
+<th style="text-align: center;">讲授学时</th>
+<th style="text-align: center;">实验学时</th>
+<th style="text-align: center;">难度评级</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">计算机网络安全基础</td>
+<td style="text-align: center;">6</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">⭐️⭐️</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">网络监听与扫描</td>
+<td style="text-align: center;">6</td>
+<td style="text-align: center;">6</td>
+<td style="text-align: center;">⭐️⭐️⭐️</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">网络与系统渗透</td>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;">10</td>
+<td style="text-align: center;">⭐️⭐️⭐️⭐️</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">网络与系统防御</td>
+<td style="text-align: center;">12</td>
+<td style="text-align: center;">14</td>
+<td style="text-align: center;">⭐️⭐️⭐️⭐️⭐️</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section>
+<section id="考核方式" class="title-slide slide level1">
+<h1>考核方式</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>平时成绩 30%
+<ul>
+<li>上课考勤</li>
+<li>主观评价：随堂测试，积极参与课堂讨论</li>
+</ul></li>
+<li>实验报告 70%
+<ul>
+<li>5+ 次实验报告</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="qa" class="title-slide slide level1">
+<h1>Q&amp;A</h1>
+
+</section>
+<section class="slide level2">
+
+<p>欢迎提问😁</p>
+</section>
+</section>
+    </div>
+  </div>
+
+  <script src="lib/reveal.js.v4/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="lib/reveal.js.v4/plugin/notes/notes.js"></script>
+  <script src="lib/reveal.js.v4/plugin/search/search.js"></script>
+  <script src="lib/reveal.js.v4/plugin/zoom/zoom.js"></script>
+  <script src="lib/reveal.js.v4/plugin/math/math.js"></script>
+  <script src="lib/reveal.js.v4/plugin/markdown/markdown.js"></script>
+  <script src="lib/reveal.js.v4/plugin/highlight/highlight.js"></script>
+  <script src="lib/reveal.js.v4/plugin/reveal.js-plugins/menu/menu.js"></script>
+  <script src="lib/reveal.js.v4/plugin/reveal.js-plugins/chalkboard/plugin.js"></script>
+  <script src="lib/reveal.js.v4/plugin/reveal.js-plugins/audio-slideshow/plugin.js"></script>
+
+  <script>
+    
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+      
+        // Display the page number of the current slide
+        slideNumber: true,
+        // Push each slide change to the browser history
+        history: true,
+        // Transition style
+        transition: 'fade', // none/fade/slide/convex/concave/zoom
+        math: {
+          mathjax: '',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+    menu: {
+  		// Specifies which side of the presentation the menu will 
+  		// be shown. Use 'left' or 'right'.
+  		side: 'left',
+  
+  		// Specifies the width of the menu.
+  		// Can be one of the following:
+  		// 'normal', 'wide', 'third', 'half', 'full', or
+  		// any valid css length value
+  		width: 'normal',
+  
+  		// Add slide numbers to the titles in the slide list.
+  		// Use 'true' or format string (same as reveal.js slide numbers)
+  		numbers: true,
+  
+  		// Specifies which slide elements will be used for generating
+  		// the slide titles in the menu. The default selects the first
+  		// heading element found in the slide, but you can specify any
+  		// valid css selector and the text from the first matching
+  		// element will be used.
+  		// Note: that a section data-menu-title attribute or an element
+  		// with a menu-title class will take precedence over this option
+  		titleSelector: 'h1, h2, h3, h4, h5, h6',
+  
+  		// If slides do not have a matching title, attempt to use the
+  		// start of the text content as the title instead
+  		useTextContentForMissingTitles: false,
+  
+  		// Hide slides from the menu that do not have a title.
+  		// Set to 'true' to only list slides with titles.
+  		hideMissingTitles: false,
+  
+  		// Adds markers to the slide titles to indicate the 
+  		// progress through the presentation. Set to 'false'
+  		// to hide the markers.
+  		markers: true,
+  
+  		// Specify custom panels to be included in the menu, by
+  		// providing an array of objects with 'title', 'icon'
+  		// properties, and either a 'src' or 'content' property.
+  		custom: false,
+  
+  		// Specifies the themes that will be available in the themes
+  		// menu panel. Set to 'true' to show the themes menu panel
+  		// with the default themes list. Alternatively, provide an
+  		// array to specify the themes to make available in the
+  		// themes menu panel, for example...
+  		// [
+  		//     { name: 'Black', theme: 'css/theme/black.css' },
+  		//     { name: 'White', theme: 'css/theme/white.css' },
+  		//     { name: 'League', theme: 'css/theme/league.css' }
+  		// ]
+  		themes: false,
+  
+  		// Specifies the path to the default theme files. If your
+  		// presentation uses a different path to the standard reveal
+  		// layout then you need to provide this option, but only
+  		// when 'themes' is set to 'true'. If you provide your own 
+  		// list of themes or 'themes' is set to 'false' the 
+  		// 'themesPath' option is ignored.
+  		themesPath: 'css/theme/',
+  
+  		// Specifies if the transitions menu panel will be shown.
+  		// Set to 'true' to show the transitions menu panel with
+  		// the default transitions list. Alternatively, provide an
+  		// array to specify the transitions to make available in
+  		// the transitions panel, for example...
+  		// ['None', 'Fade', 'Slide']
+  		transitions: false,
+  
+  		// Adds a menu button to the slides to open the menu panel.
+  		// Set to 'false' to hide the button.
+  		openButton: true,
+  
+  		// If 'true' allows the slide number in the presentation to
+  		// open the menu panel. The reveal.js slideNumber option must 
+  		// be displayed for this to take effect
+  		openSlideNumber: false,
+  
+  		// If true allows the user to open and navigate the menu using
+  		// the keyboard. Standard keyboard interaction with reveal
+  		// will be disabled while the menu is open.
+  		keyboard: true,
+  
+  		// Normally the menu will close on user actions such as
+  		// selecting a menu item, or clicking the presentation area.
+  		// If 'true', the sticky option will leave the menu open
+  		// until it is explicitly closed, that is, using the close
+  		// button or pressing the ESC or m key (when the keyboard 
+  		// interaction option is enabled).
+  		sticky: false,
+  
+  		// If 'true' standard menu items will be automatically opened
+  		// when navigating using the keyboard. Note: this only takes 
+  		// effect when both the 'keyboard' and 'sticky' options are enabled.
+  		autoOpen: true,
+  
+  		// If 'true' the menu will not be created until it is explicitly
+  		// requested by calling RevealMenu.init(). Note this will delay
+  		// the creation of all menu panels, including custom panels, and
+  		// the menu button.
+  		delayInit: false,
+  
+  		// If 'true' the menu will be shown when the menu is initialised.
+  		openOnInit: false,
+  
+  		// By default the menu will load it's own font-awesome library
+  		// icons. If your presentation needs to load a different
+  		// font-awesome library the 'loadIcons' option can be set to false
+  		// and the menu will not attempt to load the font-awesome library.
+  		loadIcons: true
+
+    },
+
+    chalkboard: {
+        boardmarkerWidth: 3,
+        chalkWidth: 7,
+        chalkEffect: 1.0,
+        storage: null,
+        src: null,
+        readOnly: undefined,
+        toggleChalkboardButton: { left: "80px" },
+				toggleNotesButton: { left: "130px" },
+        transition: 800,
+        theme: "chalkboard",
+    },
+
+        // reveal.js plugins
+        plugins: [
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom,
+          RevealMarkdown, 
+          RevealMenu, 
+          RevealHighlight,
+          RevealChalkboard
+        ]
+      });
+    </script>
+    </body>
+</html>

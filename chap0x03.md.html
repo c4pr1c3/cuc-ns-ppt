@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="黄玮">
+  <title>网络安全</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="lib/reveal.js/css/reveal.css">
+  <style type="text/css">code{white-space: pre;}</style>
+
+
+    <!-- For syntax highlighting using highlight.js-->
+    <link rel="stylesheet" href="lib/reveal.js/lib/css/zenburn.css">
+
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="lib/reveal.js/css/theme/white.css" id="theme">
+  <!-- Printing and PDF exports -->
+<link rel="stylesheet" media="print" href="lib/reveal.js/css/print/pdf.css" />
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'lib/reveal.js/css/print/pdf.css' : 'lib/reveal.js/css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="lib/reveal.js/lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">网络安全</h1>
+  <p class="author">黄玮</p>
+</section>
+
+<section>
+<section id="第三章-网络安全应用基础" class="title-slide slide level1">
+<h1>第三章 网络安全应用基础</h1>
+
+</section>
+<section id="温故" class="slide level2">
+<h2>温故</h2>
+<ul>
+<li>TCP/IP网络分层模型</li>
+<li>安全三要素: CIA</li>
+<li>私有地址</li>
+<li>公有地址</li>
+<li>数字标识
+<ul>
+<li>网络标识</li>
+<li>主机标识</li>
+</ul></li>
+</ul>
+</section>
+<section id="知新" class="slide level2">
+<h2>知新</h2>
+<ul>
+<li>IP地址不能作为确认攻击者身份的唯一标识</li>
+<li>源和目的地址都是私有地址的数据包也能在“公网”上传输</li>
+<li>代理服务的实现形式多种多样
+<ul>
+<li>公开协议</li>
+<li>私有协议</li>
+</ul></li>
+</ul>
+</section>
+<section id="本章内容提要" class="slide level2">
+<h2>本章内容提要</h2>
+<ul>
+<li>常见代理服务
+<ul>
+<li>HTTP代理</li>
+<li>虚拟专用网(VPN)</li>
+<li>SOCKS代理</li>
+</ul></li>
+<li>高级代理服务</li>
+<li>代理服务的检测</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="经典代理服务模型" class="title-slide slide level1">
+<h1>经典代理服务模型</h1>
+
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x03/proxy-model.png" alt="" /><figcaption>经典代理服务模型</figcaption>
+</figure>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>代理服务器同时扮演服务器和客户端两种角色</li>
+<li>代理服务器是客户与服务器关系的 <font color="red">中间人</font></li>
+<li>「缓存」作为可选组件是常见的「安全风险点」</li>
+</ul>
+</section>
+<section id="网络代理的基本类型" class="slide level2">
+<h2>网络代理的基本类型</h2>
+<ul>
+<li><strong>正向</strong> 代理
+<ul>
+<li>转发代理，最常见
+<ul>
+<li>开放代理
+<ul>
+<li>互联网上人人可访问的 <code>转发代理</code></li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li><strong>反向</strong> 代理
+<ul>
+<li>将客户端请求转发给后端服务器集群中的某个节点处理并返回处理结果给客户端</li>
+</ul></li>
+</ul>
+</section>
+<section id="正向代理的应用场景" class="slide level2">
+<h2>正向代理的应用场景</h2>
+<ul>
+<li>过滤
+<ul>
+<li>内容过滤</li>
+</ul></li>
+<li>缓存</li>
+<li>绕过内容过滤和网络审查</li>
+<li>日志和嗅探</li>
+<li>私有网络的网关</li>
+<li>匿名服务访问</li>
+</ul>
+</section>
+<section id="反向代理的应用场景" class="slide level2">
+<h2>反向代理的应用场景</h2>
+<ul>
+<li>提升加密链接性能</li>
+<li>负载均衡</li>
+<li>静态内容缓存</li>
+<li>压缩（代理）</li>
+<li>适配低网速客户端</li>
+<li>安全网关</li>
+<li>外网发布</li>
+</ul>
+</section>
+<section id="proxy-apps-1" class="slide level2">
+<h2>网络代理的应用 —— 亦正亦邪</h2>
+<ul>
+<li>✅ 加密通信数据*
+<ul>
+<li>防止通信数据被窃听和篡改（机密性和完整性保护）</li>
+</ul></li>
+<li>⛑ 审查网络通信数据*
+<ul>
+<li>恶意流量检测和过滤</li>
+<li>失泄密行为发现和阻止</li>
+</ul></li>
+<li>💡 改变网络拓扑结构*
+<ul>
+<li>跨局域网/异构网络通信</li>
+</ul></li>
+</ul>
+<blockquote>
+<p><code>* 视具体代理服务实现技术而定</code></p>
+</blockquote>
+</section>
+<section class="slide level2">
+
+<h3 id="审查网络通信数据">⛑ 审查网络通信数据</h3>
+<ul>
+<li>用户隐私 🆚 网络与系统安全</li>
+</ul>
+</section>
+<section id="proxy-apps-2" class="slide level2">
+<h2>网络代理的应用 —— 亦正亦邪</h2>
+<ul>
+<li>⚠️ 隐藏来源 IP</li>
+<li>⚠️ 绕过网络安全审查/检测机制</li>
+</ul>
+<blockquote>
+<p>威胁网络安全检测、监测、审计机制</p>
+</blockquote>
+</section>
+<section class="slide level2">
+
+<p>网络安全的 <font color="red">对抗</font> 本质在「代理技术」的应用中体现地淋漓尽致。</p>
+</section>
+</section>
+<section>
+<section id="http-proxy" class="title-slide slide level1">
+<h1>HTTP 代理</h1>
+
+</section>
+<section id="http-review-1" class="slide level2">
+<h2>回顾 HTTP</h2>
+<ul>
+<li>RFC 2616: Hypertext Transfer Protocol – HTTP/1.1</li>
+<li>RFC 2617: HTTP Authentication: Basic and Digest Access Authentication</li>
+<li>RFC 2818: HTTP Over TLS</li>
+<li>RFC 6265: HTTP State Management Mechanism</li>
+<li>RFC 2145 : Use and Interpretation of HTTP Version Numbers - Informational</li>
+<li>MIME相关RFC
+<ul>
+<li>RFC 2045, RFC 2046, RFC 2047, RFC 4288, RFC 4289, RFC 2049</li>
+</ul></li>
+</ul>
+</section>
+<section id="http-review-2" class="slide level2">
+<h2>回顾 HTTP</h2>
+<ul>
+<li>HTTP （会话）基本过程
+<ul>
+<li>建立连接（连接准备、连接）</li>
+<li>客户端发送请求 / 服务器发送响应</li>
+<li>关闭连接</li>
+</ul></li>
+</ul>
+</section>
+<section id="http-proxy-types" class="slide level2">
+<h2>HTTP 代理类型</h2>
+<ul>
+<li>正向代理
+<ul>
+<li>通常意义上的“代理”
+<ul>
+<li>改变通信数据内容*</li>
+</ul></li>
+</ul></li>
+<li>反向代理
+<ul>
+<li>面向用户完全透明
+<ul>
+<li>对通信内容无修改*</li>
+</ul></li>
+</ul></li>
+</ul>
+<blockquote>
+<p>`* 和HTTP 代理的工作模式有关</p>
+</blockquote>
+</section>
+<section class="slide level2">
+
+<h3 id="不同浏览器的正向代理设置方法">不同浏览器的（正向）代理设置方法</h3>
+<blockquote>
+<p><浏览器名称> 设置代理</p>
+</blockquote>
+<p><img data-src="images/chap0x03/proxy-setup-chrome-example.png" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="proxy-setup-pitfalls-1">浏览器代理设置的常见陷阱</h3>
+<p><img data-src="images/chap0x03/proxy-setup-firefox-options-1.png" /></p>
+</section>
+<section class="slide level2">
+
+<h4 id="what-happened-after-url-typedin-1">浏览器输入URL 后发生了什么</h4>
+<figure>
+<img data-src="images/chap0x03/what-happened-after-url-typedin.png" alt="" /><figcaption>精简版浏览器访问 Web 站点流程图</figcaption>
+</figure>
+</section>
+<section class="slide level2">
+
+<h3 id="proxy-setup-pitfalls-2">浏览器代理设置的常见陷阱</h3>
+<p><img data-src="images/chap0x03/proxy-setup-firefox-options-2.png" /></p>
+</section>
+<section class="slide level2">
+
+<h4 id="what-happened-after-url-typedin-2">浏览器输入URL 后发生了什么</h4>
+<figure>
+<img data-src="images/chap0x03/what-happened-after-url-typedin-proxy-mode.png" alt="" /><figcaption>代理模式的访问流程简图</figcaption>
+</figure>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>如果 DNS 解析的结果「被污染」？</li>
+<li>如果 <code>代理服务器</code> 审查用户的 <code>访问请求</code> 和服务器 <code>响应内容</code> ？</li>
+</ul>
+</section>
+<section id="http-代理的主要用途" class="slide level2">
+<h2>HTTP 代理的主要用途</h2>
+<ul>
+<li>访问受限制的Web站点
+<ul>
+<li>限制机制：根据客户端来源IP过滤</li>
+</ul></li>
+<li>优化Web站点访问速度
+<ul>
+<li>预先缓存客户端要访问的数据</li>
+</ul></li>
+<li>内容审查
+<ul>
+<li>发现恶意内容并加以过滤阻止</li>
+</ul></li>
+</ul>
+</section>
+<section id="http-代理的工作模式" class="slide level2">
+<h2>HTTP 代理的工作模式</h2>
+<ul>
+<li><code>X-Forwarded-For</code> (XFF)
+<ul>
+<li>非 RFC 标准定义</li>
+<li>Squid 代理的开发人员最早引入该 HTTP 消息头</li>
+<li>标识客户端真实IP</li>
+<li><code>X-Forwarded-For: client1, proxy1, proxy2</code></li>
+</ul></li>
+<li>匿名代理
+<ul>
+<li>不提供 <code>X-Forwarded-For</code> 字段</li>
+</ul></li>
+<li>非匿名代理
+<ul>
+<li>提供 <code>X-Forwarded-For</code> 字段</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="实际应用中的-http-代理类型">实际应用中的 HTTP 代理类型</h3>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;">REMOTE_ADDR</th>
+<th style="text-align: left;">HTTP_VIA</th>
+<th style="text-align: left;">HTTP_X_FORWARDED_FOR</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">透明代理</td>
+<td style="text-align: left;">最后一个代理服务器IP</td>
+<td style="text-align: left;">代理服务器IP或内部代理别名</td>
+<td style="text-align: left;">客户端真实IP，或（经过多个代理时）遵循XFF标准</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">普通匿名</td>
+<td style="text-align: left;">最后一个代理服务器IP</td>
+<td style="text-align: left;">代理服务器IP或内部代理别名</td>
+<td style="text-align: left;">部分遵循XFF标准（隐藏客户端真实IP）</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">欺骗代理</td>
+<td style="text-align: left;">代理服务器IP</td>
+<td style="text-align: left;">代理服务器IP或内部代理别名</td>
+<td style="text-align: left;">伪造经过的代理服务器IP列表</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">高匿名代理</td>
+<td style="text-align: left;">代理服务器IP</td>
+<td style="text-align: left;">无数值或不显示</td>
+<td style="text-align: left;">无数值或不显示</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><a href="https://www.php.net/manual/en/reserved.variables.server.php">$_SERVER in PHP</a></p>
+</blockquote>
+</section>
+<section class="slide level2">
+
+<h3 id="代理地址实例">代理地址实例</h3>
+<p><img data-src="images/chap0x03/proxy-server-examples.png" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="本地代理模拟小实验">本地代理模拟小实验</h3>
+<pre class="php"><code>// proxy.php
+&lt;?php
+var_dump($_SERVER);</code></pre>
+<pre class="bash"><code># 开启 PHP 测试用服务器
+php -S 0.0.0.0:8080 proxy.php</code></pre>
+<pre class="bash"><code># 使用 curl 模拟使用代理服务器的客户端
+curl -H &quot;X-Forwarded-For: 8.8.8.8&quot; http://127.0.0.1:8080/proxy.php
+# 样例输出（节选）
+# array(18) {
+#   [&quot;REMOTE_ADDR&quot;]=&gt;
+#   string(9) &quot;127.0.0.1&quot;
+#   [&quot;HTTP_X_FORWARDED_FOR&quot;]=&gt;
+#   string(7) &quot;8.8.8.8&quot;
+# }</code></pre>
+</section>
+<section id="reverse-http-proxy" class="slide level2">
+<h2>HTTP 反向代理</h2>
+<p><img data-src="images/chap0x03/reverse-http-proxy.png" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="reverse-http-proxy-usage">HTTP 反向代理主要用途</h3>
+<ul>
+<li>内网对外服务的堡垒主机
+<ul>
+<li>负载均衡</li>
+<li>缓冲</li>
+</ul></li>
+<li>内容小偷网站
+<ul>
+<li>黑帽SEO</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="http-proxy-exp" class="title-slide slide level1">
+<h1>HTTP 正向代理实验</h1>
+
+</section>
+<section id="必备理论知识" class="slide level2">
+<h2>必备理论知识</h2>
+<ul>
+<li><strong>H</strong>TTP <strong>S</strong>trict <strong>T</strong>ransport <strong>S</strong>ecurity</li>
+<li><code>HSTS</code> 强制客户端和服务器之间的所有通信流量必须使用 HTTPS</li>
+<li><code>HSTS</code> 的实现强烈依赖于「客户端」支持
+<ul>
+<li>内置 <code>HSTS</code> 站点名单</li>
+<li>首次访问后按照服务器约定，在浏览器本地存储</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="hsts-compatibility-check-matrix">HSTS 的浏览器支持情况汇总</h3>
+<p><a href="https://caniuse.com/#feat=stricttransportsecurity"><img data-src="images/chap0x03/hsts-browser-support.png" /></a></p>
+</section>
+<section class="slide level2">
+
+<h3 id="以-google-chrome-浏览器为例">以 Google Chrome 浏览器为例</h3>
+<p><a href="chrome://net-internals/#hsts">chrome://net-internals/#hsts</a></p>
+<p><img data-src="images/chap0x03/hsts-in-chrome.png" /></p>
+<blockquote>
+<p>auth.alipay.com 只有访问一次才能被「记忆」</p>
+</blockquote>
+<ul>
+<li><a href="https://www.chromium.org/hsts/">Chromium 内置 HSTS 站点列表</a></li>
+</ul>
+</section>
+<section id="实验环境" class="slide level2">
+<h2>实验环境</h2>
+<ul>
+<li>Kali Rolling</li>
+<li><a href="https://tinyproxy.github.io/">tinyproxy</a></li>
+<li>wireshark</li>
+<li><a href="https://portswigger.net/burp">burpsuite</a> （课后实验用）</li>
+</ul>
+</section>
+<section id="主要操作步骤" class="slide level2">
+<h2>主要操作步骤</h2>
+<pre class="bash"><code># 安装 tinyproxy
+apt update &amp;&amp; apt install tinyproxy
+
+# 启动 tinyproxy
+systemctl start tinyproxy
+
+# 访问前述 proxy.php
+curl -x http://127.0.0.1:8888 http://127.0.0.1:8080/proxy.php
+# array(19) {
+#   [&quot;REMOTE_ADDR&quot;]=&gt;
+#   string(9) &quot;127.0.0.1&quot;
+#   [&quot;HTTP_HOST&quot;]=&gt;
+#   string(14) &quot;127.0.0.1:8080&quot;
+#   [&quot;HTTP_VIA&quot;]=&gt;
+#   string(32) &quot;1.1 tinyproxy (tinyproxy/1.10.0)&quot;
+# }
+
+# 在客户端请求头中加入客户端真实 IP
+sed -i.bak &quot;s/#XTinyproxy Yes/XTinyproxy Yes/&quot; /etc/tinyproxy/tinyproxy.conf
+
+# 重启 tinyproxy 服务
+systemctl restart tinyproxy
+
+# 在独立 shell 窗口开启 tinyproxy 日志监控小程序
+tail -F /var/log/tinyproxy/tinyproxy.log
+
+# 访问 HTTPS 站点
+curl -x http://127.0.0.1:8888 https://auth.alipay.com/login/index.htm
+
+# 查看
+# CONNECT   Jul 06 17:17:15 [7672]: Connect (file descriptor 7): localhost [127.0.0.1]
+# CONNECT   Jul 06 17:17:15 [7672]: Request (file descriptor 7): CONNECT auth.alipay.com:443 HTTP/1.1
+# INFO      Jul 06 17:17:15 [7672]: No upstream proxy for auth.alipay.com
+# INFO      Jul 06 17:17:15 [7672]: opensock: opening connection to auth.alipay.com:443
+# INFO      Jul 06 17:17:15 [7672]: opensock: getaddrinfo returned for auth.alipay.com:443
+# CONNECT   Jul 06 17:17:15 [7672]: Established connection to host &quot;auth.alipay.com&quot; using file descriptor 8.
+# INFO      Jul 06 17:17:15 [7672]: Not sending client headers to remote machine
+# INFO      Jul 06 17:17:15 [7672]: Closed connection between local client (fd:7) and remote client (fd:8)
+
+# 查看 HSTS 响应头
+curl -I -x http://127.0.0.1:8888 https://auth.alipay.com/login/index.htm
+# HTTP/1.0 200 Connection established
+# Proxy-agent: tinyproxy/1.10.0
+# 
+# HTTP/2 302
+# server: nginx/1.6.2
+# date: Mon, 06 Jul 2020 09:19:07 GMT
+# content-length: 0
+# location: https://authsa127.alipay.com:443/error.htm?exception_marking=the+requestMethod+%5BHEAD%5D+is+not+supported+by+handlers%2Cyou+can+try+with+%5BGET%2CPOST%5D%21&amp;messageCode=common.uncaughtException
+# set-cookie: zone=RZ54A; Domain=.alipay.com; Path=/
+# strict-transport-security: max-age=31536000
+# set-cookie: JSESSIONID=05BCA44886FEE4B2C3368F9167D55C83; Path=/; HttpOnly
+# set-cookie: JSESSIONID=05BCA44886FEE4B2C3368F9167D55C83; Path=; HttpOnly
+# set-cookie: ALIPAYJSESSIONID=RZ54drLXXabsSYlmZr5T8qeGb1zCKyauthRZ54; Domain=.alipay.com; Path=/
+# set-cookie: ctoken=UH5ZAmhY7PZUtB7I; Domain=.alipay.com; Path=/
+# content-language: zh-CN
+# set-cookie: spanner=8YfCP1RF/xNEmob8naEHjZVRrhGwKYJXXt2T4qEYgj0=;path=/;secure;
+# via: spanner-internet-5405.sa127[302]</code></pre>
+</section>
+<section id="课后实验" class="slide level2">
+<h2>课后实验</h2>
+<ul>
+<li><a href="https://c4pr1c3.github.io/cuc-ns/chap0x03/exp.html">详见课本中本章实验</a></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="虚拟专用网vpn" class="title-slide slide level1">
+<h1>虚拟专用网（VPN）</h1>
+
+</section>
+<section id="简介" class="slide level2">
+<h2>简介</h2>
+<ul>
+<li><strong>V</strong>irtual <strong>P</strong>rivate <strong>N</strong>etwork</li>
+<li>VPN 是企业网在因特网等公共网络的延伸</li>
+<li>VPN 通过一个私有的通道来创建一个安全的私有的连接</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x03/vpn-usage.png" alt="" /><figcaption>VPN 典型使用场景</figcaption>
+</figure>
+</section>
+<section id="虚拟专用网的主要用途" class="slide level2">
+<h2>虚拟专用网的主要用途</h2>
+<ul>
+<li>保障通信过程的机密性和完整性</li>
+<li>实现自主可控的跨网络专用通信网
+<ul>
+<li>使局域网的拓扑延伸到互联网上的任意一个终端
+<ul>
+<li>远程访问局域网资源的可行技术手段</li>
+</ul></li>
+<li>相比较于物理链路专用的通信网解决方案成本更低</li>
+</ul></li>
+</ul>
+</section>
+<section id="虚拟专用网的分类" class="slide level2">
+<h2>虚拟专用网的分类</h2>
+<ul>
+<li>按应用类型分类
+<ul>
+<li>Access VPN（详见课本）</li>
+<li>Intranet VPN（详见课本）</li>
+<li>Extranet VPN（详见课本）</li>
+</ul></li>
+<li>按实现的层次分类
+<ul>
+<li>二层隧道 VPN</li>
+<li>三层隧道 VPN</li>
+<li>应用层隧道VPN：SSL VPN</li>
+</ul></li>
+</ul>
+</section>
+<section id="二层隧道协议" class="slide level2">
+<h2>二层隧道协议</h2>
+<ul>
+<li>L2F: Layer 2 Forwarding</li>
+<li>PPTP: Point To Point Tunnel Protocol</li>
+<li>L2TP: Layer 2 Tunnel Protocol (<a href="https://datatracker.ietf.org/doc/rfc2661/">RFC 2661</a>)</li>
+</ul>
+</section>
+<section id="三层隧道协议" class="slide level2">
+<h2>三层隧道协议</h2>
+<ul>
+<li>GRE: General Routing Encapsulation</li>
+<li>IPSec: IP Security Protocol</li>
+</ul>
+</section>
+<section id="应用层隧道协议-ssl-vpn" class="slide level2">
+<h2>应用层隧道协议 —— SSL VPN</h2>
+<ul>
+<li><a href="https://tools.cisco.com/security/center/resources/ssl_vpn_security">安全性</a>
+<ul>
+<li>与IPSEC VPN相当</li>
+<li>支持访问控制</li>
+</ul></li>
+<li>易用性
+<ul>
+<li>客户端只需要有支持ssl的浏览器即可</li>
+<li>客户端基本零配置</li>
+<li>非常适合远程用户访问企业内部网</li>
+</ul></li>
+<li>局限性
+<ul>
+<li>*仅支持Web应用</li>
+</ul></li>
+</ul>
+</section>
+<section id="layer23-data-frames" class="slide level2">
+<h2>二层/三层隧道协议的报文结构</h2>
+<p><a href="https://www.researchgate.net/publication/287458379_Efficiency_Consideration_for_Data_Packets_Encryption_within_Wireless_VPN_Tunneling_for_Video_Streaming/figures"><img data-src="images/chap0x03/vpn-data-frames.png" /></a></p>
+</section>
+<section class="slide level2">
+
+<h3 id="pptp-pcapr">PPTP 实例</h3>
+<p><a href="https://www.pcapr.net/view/mu/2009/0/2/15/PPTP-MS-Chap-v.1.Cap.html"><img data-src="images/chap0x03/pptp-pcapr.png" /></a></p>
+</section>
+<section id="一图总结常见隧道协议" class="slide level2">
+<h2>一图总结常见隧道协议</h2>
+<p><img data-src="images/chap0x03/vpn-by-layers.png" /></p>
+</section>
+<section id="vpn-summary" class="slide level2">
+<h2>一表格总结常见 VPN 协议</h2>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;">PPTP</th>
+<th style="text-align: left;">L2TP/IPSec</th>
+<th style="text-align: left;">OpenVPN</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">背景</td>
+<td style="text-align: left;">PPP, MS oldest VPN, No Enc/Auth</td>
+<td style="text-align: left;">RFC3193</td>
+<td style="text-align: left;">开源VPN解决方案</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">数据加密</td>
+<td style="text-align: left;">MPPE(RSA/RC4/128bit)</td>
+<td style="text-align: left;">L2TP+IPSec, RFC 4835(3DES/AES)</td>
+<td style="text-align: left;">OpenSSL(3DES/AES/RC5/Blowfish)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">速度</td>
+<td style="text-align: left;">128bit 加密性能略高于 256bit</td>
+<td style="text-align: left;">数据封装2次，导致性能下降</td>
+<td style="text-align: left;">UDP模式下性能达到最佳</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">安全漏洞</td>
+<td style="text-align: left;">爆破 + 比特翻转攻击</td>
+<td style="text-align: left;">少, AES-GCM 增加安全性</td>
+<td style="text-align: left;">少，AES-GCM 增加安全性</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">客户端兼容性</td>
+<td style="text-align: left;">全平台</td>
+<td style="text-align: left;">全平台</td>
+<td style="text-align: left;">全平台</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">综合评分</td>
+<td style="text-align: left;">★☆☆☆☆</td>
+<td style="text-align: left;">★★★★☆</td>
+<td style="text-align: left;">★★★★★</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="vpn-design-principles" class="slide level2">
+<h2>VPN 设计原则</h2>
+<ul>
+<li>安全性
+<ul>
+<li>隧道与加密</li>
+<li>数据验证</li>
+<li>用户验证</li>
+<li>防火墙与攻击检测</li>
+</ul></li>
+<li>可靠性</li>
+<li>经济性与扩展性</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="socks-代理" class="title-slide slide level1">
+<h1>SOCKS 代理</h1>
+
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x03/socks-proxy.png" alt="" /><figcaption>SOCKS 代理基本原理</figcaption>
+</figure>
+</section>
+<section id="socks-proxy-usage" class="slide level2">
+<h2>SOCKS 代理的应用</h2>
+<ul>
+<li>电子邮件</li>
+<li>新闻组软件</li>
+<li>网络传呼</li>
+<li>网络聊天</li>
+<li>使用代理服务器「联网」打游戏</li>
+</ul>
+</section>
+<section id="实战体验" class="slide level2">
+<h2>实战体验</h2>
+<pre class="bash"><code># 建立宿主机到虚拟机的 SSH 隧道（socks5 代理）
+# 推荐使用 Host-only 网卡对应的 VM IP 作为目标 IP
+ssh -D 127.0.0.1:1080 cuc@192.168.56.136 -q -C -N -v
+
+# 使用上述建立的 SSH 隧道访问虚拟机内的「本地网页」
+curl http://127.0.0.1:8080/proxy.php -x socks5://127.0.0.1:1080
+
+# 使用远程服务器完成 DNS 解析请求
+curl http://127.0.0.1:8080/proxy.php -x socks5://127.0.0.1:1080 --socks5-hostname 127.0.0.1:1080
+
+# 自行抓包研究通信过程
+# TODO 是否存在「可辨识」的「网页访问」行为痕迹？
+
+# 查看 PHP 终端日志
+# TODO 访问来源 IP 是「宿主机」IP 吗？</code></pre>
+</section>
+<section id="常见代理服务小结" class="slide level2">
+<h2>常见代理服务小结</h2>
+<ul>
+<li>使用开放代理要谨慎
+<ul>
+<li>避免敏感数据被嗅探</li>
+<li>避免重要数据被篡改</li>
+</ul></li>
+<li>一般情况下的代理安全性排序
+<ul>
+<li>VPN ≥ Socks代理 &gt; HTTP代理</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="高级代理服务" class="title-slide slide level1">
+<h1>高级代理服务</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>匿名的基本概念</li>
+<li>匿名保护的形式</li>
+<li>匿名通信面临的技术性攻击</li>
+<li>匿名通信的实现</li>
+</ul>
+</section>
+<section id="anonymity-1" class="slide level2">
+<h2>匿名基本概念</h2>
+<ul>
+<li>定义：一个对象在一组对象的集合（即匿名集合，Anonymityset）中不可识别的状态</li>
+<li>匿名集合：指发生某个行为（如发送一封电子邮件或者访问某个网站）的可能实体（如用户）的集合
+<ul>
+<li>匿名集的概念是研究匿名技术的基础</li>
+</ul></li>
+</ul>
+</section>
+<section id="anonymity-2" class="slide level2">
+<h2>匿名基本概念</h2>
+<ul>
+<li>匿名行为
+<ul>
+<li>借助于其他实体的行为来隐藏自己的行为</li>
+<li>匿名集合越大，分布越均匀，匿名性就越强</li>
+</ul></li>
+<li>不可关联性
+<ul>
+<li>两个或多个对象（如实体、消息、事件、行为等）之间的不可关联性是指系统中的这些对象，相对于其先验知识的关联性来说，其关联性没有发生变化</li>
+<li>攻击发生前后，对象可被关联的概率保持不变</li>
+</ul></li>
+</ul>
+</section>
+<section id="anonymity-3" class="slide level2">
+<h2>匿名基本概念</h2>
+<ul>
+<li>不可观察性
+<ul>
+<li>不能从发送或接收事件集合中分辨出某个发送或接收事件</li>
+</ul></li>
+<li>假名
+<ul>
+<li>对象使用假名作为其 <code>身份标识</code>，假名与对象之间具有不可关联性，是实现匿名的一种方法</li>
+<li>使用不变的假名可以建立问责制和声誉机制，防止匿名系统被滥用</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>通信系统中的发送者和接收者的身份信息也是机密的情况</li>
+<li>一个匿名系统的攻击者希望得到的是“谁和谁”在通信，甚至要控制或破坏通信过程</li>
+</ul>
+<figure>
+<img data-src="images/chap0x03/anonymity-system.png" alt="" /><figcaption>匿名通信要研究的问题</figcaption>
+</figure>
+</section>
+<section id="匿名保护的形式" class="slide level2">
+<h2>匿名保护的形式</h2>
+<ul>
+<li>发送者匿名
+<ul>
+<li>保护通信发起者的身份标识</li>
+</ul></li>
+<li>接收者匿名
+<ul>
+<li>保护通信响应者的身份标识</li>
+</ul></li>
+<li>通信关系匿名
+<ul>
+<li>保护通信关系不被攻击者观察到，使发送者和接收者无法被关联起来</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x03/anonymity-system-protection.png" alt="" /><figcaption>匿名保护形式</figcaption>
+</figure>
+</section>
+<section id="匿名通信面临的技术性攻击" class="slide level2">
+<h2>匿名通信面临的技术性攻击</h2>
+<ul>
+<li>流量形状攻击
+<ul>
+<li>通信模式攻击</li>
+<li>消息频度攻击</li>
+<li>报文计数攻击</li>
+</ul></li>
+<li>交集攻击</li>
+<li>重放攻击</li>
+<li>刷新攻击</li>
+<li>时间攻击</li>
+</ul>
+</section>
+<section id="匿名通信的实现" class="slide level2">
+<h2>匿名通信的实现</h2>
+<ul>
+<li>代理方法</li>
+<li>MIX-NET</li>
+<li>Crowds</li>
+<li>Tarzan</li>
+<li>洋葱路由</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="代理方法">代理方法</h3>
+<ul>
+<li>代理方法的原理
+<ul>
+<li>前述匿名代理原理</li>
+</ul></li>
+<li>代理分类
+<ul>
+<li>匿名代理</li>
+<li>假名代理</li>
+<li>MIX 增强匿名代理</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>代理方法的优点
+<ul>
+<li>发送方匿名的协议简单</li>
+<li>高效性</li>
+</ul></li>
+<li>代理方法的缺点
+<ul>
+<li>用户身份对代理来说不是保密的，因而要求代理必须是可信任的</li>
+<li>采用单点代理实现方法易遭到攻击者的控制和跟踪</li>
+<li>用户接入匿名或假名代理采用明文形式，攻击者易于进行流量分析</li>
+<li>匿名代理需要做过滤操作，易成为系统瓶颈</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="mix-net">MIX-NET</h3>
+<ul>
+<li>MIX节点接收消息并处理
+<ul>
+<li>通过加密或填充等手段修改消息的外观</li>
+<li>通过延迟或重排序等手段来修改消息的顺序</li>
+</ul></li>
+<li>实现隐藏输入输出对应关系的方式输出消息
+<ul>
+<li>保证攻击者无法准确推断通信参与者的通信关系</li>
+</ul></li>
+<li>多台MIX服务器可以以级联或网络的形式进行连接</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x03/mix-net-1.png" /></p>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x03/mix-net-2.png" alt="" /><figcaption>只要有一台服务器正常工作就可以保证系统的匿名性</figcaption>
+</figure>
+</section>
+<section class="slide level2">
+
+<h3 id="crowds">Crowds</h3>
+<ul>
+<li><strong>史上最早</strong> 基于P2P网络结构思想构建的匿名通信网络
+<ul>
+<li>消息在P2P网络节点之间随机转发</li>
+</ul></li>
+<li>使用 <strong>可信第三方服务器</strong> 作为 Crowds <strong>会员信息中心</strong> 节点服务器</li>
+<li>提供两种匿名保护机制
+<ul>
+<li>发送者匿名</li>
+<li>通信关系匿名</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x03/crowds-network.png" alt="" /><figcaption>Crowds 网络原理示意图</figcaption>
+</figure>
+<blockquote>
+<p>消息在不同服务器之间随机转发，最终发送给目的节点</p>
+</blockquote>
+</section>
+<section class="slide level2">
+
+<h3 id="tarzan">Tarzan</h3>
+<ul>
+<li>Tarzan在英文中的意思为“泰山”</li>
+<li>Tarzan是一个P2P的匿名IP叠加网络，它通过数据多层加密和消息多跳路由来实现匿名性。</li>
+<li>Tarzan将mix-net的匿名方法扩展到P2P环境中，结点之间通过中继结点序列（这一序列结点构成一条隧道）来通信。</li>
+<li>提供3种匿名保护机制
+<ul>
+<li>发送者匿名</li>
+<li>接收者匿名</li>
+<li>关系匿名</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x03/tarzan.png" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="洋葱路由">洋葱路由</h3>
+<ul>
+<li>匿名传输代理服务器Tor是基于洋葱路由
+<ul>
+<li>用户在本机运行一个洋葱代理服务器，这个代理周期性地与其他Tor交流，从而在Tor网络中构成虚拟环路</li>
+</ul></li>
+<li>Tor 是在7层协议栈中的应用层进行加密</li>
+<li>每个（洋葱）路由器间的传输都经过对称密钥来加密，形成有层次的结构</li>
+<li>一个通用可用于如 Internet 开放式网络上的匿名通信体系</li>
+<li>通过适当的代理支持多类的应用如：HTTP, FTP, SMTP ……</li>
+<li>应用数据通过动态建立的匿名连接传输</li>
+<li>具有分布式，容错，安全等特性</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="tor-network-setup">洋葱路由——网络设置和操作</h3>
+<ul>
+<li>在邻居路由器间长期保持的socket连接</li>
+<li>一个连接上的两邻居采用两个DES加密key，每个方向一个确保通信安全</li>
+<li>多个匿名连接可以复用在一个连接上，这时每个匿名连接分配一个ACI标识（局部性的标识）</li>
+<li>消息类似ATM传输，分成48bytes定长信元。信元用DES加密。传输中来自不同连接的信元mix复用，但保持连接有序</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="tor-network-arch">洋葱路由——总体架构</h3>
+<p><img data-src="images/chap0x03/tor-network-arch.png" /></p>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x03/tor-control-panel.png" alt="" /><figcaption>洋葱路由应用演示（老版本）</figcaption>
+</figure>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x03/tor-applications.png" alt="" /><figcaption>洋葱路由切换 IP（老版本）</figcaption>
+</figure>
+</section>
+<section id="联想" class="slide level2">
+<h2>联想</h2>
+<ul>
+<li>匿名通信技术放大了网络安全对抗的复杂性
+<ul>
+<li>根据IP地址识别？
+<ul>
+<li>不靠谱</li>
+</ul></li>
+<li>根据路由识别？
+<ul>
+<li>不靠谱</li>
+</ul></li>
+</ul></li>
+<li>混合应用多种代理技术就可以逃避网络安全审计？
+<ul>
+<li>魔高一尺道高一丈</li>
+</ul></li>
+<li>网络安全不可抱有侥幸心理</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="代理服务的检测" class="title-slide slide level1">
+<h1>代理服务的检测</h1>
+
+</section>
+<section id="检测需求" class="slide level2">
+<h2>检测需求</h2>
+<ul>
+<li>网络流量计费
+<ul>
+<li>避免计费误差和损失</li>
+</ul></li>
+<li>网络安全审计
+<ul>
+<li>打击网络攻击源头</li>
+</ul></li>
+<li>网络滥用
+<ul>
+<li>打击网络滥用源头</li>
+</ul></li>
+</ul>
+</section>
+<section id="检测手段" class="slide level2">
+<h2>检测手段</h2>
+<ul>
+<li>静态特征
+<ul>
+<li>协议关键字</li>
+</ul></li>
+<li>动态特征
+<ul>
+<li>流量统计特征</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="静态特征检测">静态特征检测</h3>
+<ul>
+<li>端口扫描</li>
+<li>协议字段变量特征
+<ul>
+<li>网络数据报文
+<ul>
+<li>头部字段</li>
+<li>负载数据</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="端口扫描检测方式">端口扫描检测方式</h3>
+<ul>
+<li>端口扫描方式主要适用于对代理服务器的检测</li>
+<li>代理服务器一般最为常用的端口有8080/3218等，可以通过扫描这些端口获得</li>
+<li>对于采用非常用端口的代理服务器，端口扫描方式的效率低，准确性也差</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="变量特征">变量特征</h3>
+<ul>
+<li>HTTP 代理常见的变量特征：
+<ul>
+<li>VIA</li>
+<li>X-FORWARDED-FOR</li>
+<li>CACHE-CONTROL</li>
+<li>FORWAREDED</li>
+<li>PROXY-CONNECTION</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="动态特征">动态特征</h3>
+<ul>
+<li>协议行为特征（照搬「对匿名通信系统」的攻击）
+<ul>
+<li>流量形状攻击
+<ul>
+<li>通信模式攻击</li>
+<li>消息频度攻击</li>
+<li>报文计数攻击</li>
+</ul></li>
+<li>交集攻击</li>
+<li>重放攻击</li>
+<li>刷新攻击</li>
+<li>时间攻击</li>
+</ul></li>
+</ul>
+</section>
+<section id="代理服务检测" class="slide level2">
+<h2>代理服务检测</h2>
+<ul>
+<li>设置浏览器使用HTTP代理</li>
+<li>伪造HTTP请求头
+<ul>
+<li>X-Forwarded-For 设置单个、多个IP地址</li>
+<li>X-Forwarded-For 设置任意字符</li>
+</ul></li>
+<li>洋葱路由匿名代理服务的检测
+<ul>
+<li>利用 cookie 机制</li>
+<li>小心 remote_host 字段泄漏：你正在使用tor！</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x03/tor-exit-node.png" alt="" /><figcaption>Tor 退出节点的假名标识</figcaption>
+</figure>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x03/foxy-proxy.png" alt="" /><figcaption>防范 Cookie 泄露身份信息</figcaption>
+</figure>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x03/browser-fingerprinting.png" alt="" /><figcaption>顺着网线找到你</figcaption>
+</figure>
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x03/tor-detection.png" /></p>
+<ul>
+<li>代理检测方法的效果取决于检测方所拥有的资源多少、权限大小
+<ul>
+<li>主机、交换机、路由器、核心网交换机、ISP路由器。。。</li>
+<li>主机监控软件、网络嗅探、网络篡改。。。</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x03/cyber-security-internals.png" alt="" /><figcaption>无对抗不安全</figcaption>
+</figure>
+</section>
+</section>
+<section>
+<section id="课后思考题" class="title-slide slide level1">
+<h1>课后思考题</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>代理技术在网络攻防中的意义？
+<ul>
+<li>对攻方的意义？</li>
+<li>对守方的意义？</li>
+</ul></li>
+<li>常规代理技术和高级代理技术的设计思想区别与联系？</li>
+</ul>
+</section>
+</section>
+    </div>
+  </div>
+
+  <script src="lib/reveal.js/lib/js/head.min.js"></script>
+  <script src="lib/reveal.js/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Display the page number of the current slide
+        slideNumber: true,
+        // Push each slide change to the browser history
+        history: true,
+        // Transition style
+        transition: 'fade', // none/fade/slide/convex/concave/zoom
+        math: {
+          mathjax: '',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+menu: {
+		// Specifies which side of the presentation the menu will 
+		// be shown. Use 'left' or 'right'.
+		side: 'left',
+
+		// Specifies the width of the menu.
+		// Can be one of the following:
+		// 'normal', 'wide', 'third', 'half', 'full', or
+		// any valid css length value
+		width: 'normal',
+
+		// Add slide numbers to the titles in the slide list.
+		// Use 'true' or format string (same as reveal.js slide numbers)
+		numbers: true,
+
+		// Specifies which slide elements will be used for generating
+		// the slide titles in the menu. The default selects the first
+		// heading element found in the slide, but you can specify any
+		// valid css selector and the text from the first matching
+		// element will be used.
+		// Note: that a section data-menu-title attribute or an element
+		// with a menu-title class will take precedence over this option
+		titleSelector: 'h1, h2, h3, h4, h5, h6',
+
+		// If slides do not have a matching title, attempt to use the
+		// start of the text content as the title instead
+		useTextContentForMissingTitles: false,
+
+		// Hide slides from the menu that do not have a title.
+		// Set to 'true' to only list slides with titles.
+		hideMissingTitles: false,
+
+		// Adds markers to the slide titles to indicate the 
+		// progress through the presentation. Set to 'false'
+		// to hide the markers.
+		markers: true,
+
+		// Specify custom panels to be included in the menu, by
+		// providing an array of objects with 'title', 'icon'
+		// properties, and either a 'src' or 'content' property.
+		custom: false,
+
+		// Specifies the themes that will be available in the themes
+		// menu panel. Set to 'true' to show the themes menu panel
+		// with the default themes list. Alternatively, provide an
+		// array to specify the themes to make available in the
+		// themes menu panel, for example...
+		// [
+		//     { name: 'Black', theme: 'css/theme/black.css' },
+		//     { name: 'White', theme: 'css/theme/white.css' },
+		//     { name: 'League', theme: 'css/theme/league.css' }
+		// ]
+		themes: false,
+
+		// Specifies the path to the default theme files. If your
+		// presentation uses a different path to the standard reveal
+		// layout then you need to provide this option, but only
+		// when 'themes' is set to 'true'. If you provide your own 
+		// list of themes or 'themes' is set to 'false' the 
+		// 'themesPath' option is ignored.
+		themesPath: 'css/theme/',
+
+		// Specifies if the transitions menu panel will be shown.
+		// Set to 'true' to show the transitions menu panel with
+		// the default transitions list. Alternatively, provide an
+		// array to specify the transitions to make available in
+		// the transitions panel, for example...
+		// ['None', 'Fade', 'Slide']
+		transitions: false,
+
+		// Adds a menu button to the slides to open the menu panel.
+		// Set to 'false' to hide the button.
+		openButton: true,
+
+		// If 'true' allows the slide number in the presentation to
+		// open the menu panel. The reveal.js slideNumber option must 
+		// be displayed for this to take effect
+		openSlideNumber: false,
+
+		// If true allows the user to open and navigate the menu using
+		// the keyboard. Standard keyboard interaction with reveal
+		// will be disabled while the menu is open.
+		keyboard: true,
+
+		// Normally the menu will close on user actions such as
+		// selecting a menu item, or clicking the presentation area.
+		// If 'true', the sticky option will leave the menu open
+		// until it is explicitly closed, that is, using the close
+		// button or pressing the ESC or m key (when the keyboard 
+		// interaction option is enabled).
+		sticky: false,
+
+		// If 'true' standard menu items will be automatically opened
+		// when navigating using the keyboard. Note: this only takes 
+		// effect when both the 'keyboard' and 'sticky' options are enabled.
+		autoOpen: true,
+
+		// If 'true' the menu will not be created until it is explicitly
+		// requested by calling RevealMenu.init(). Note this will delay
+		// the creation of all menu panels, including custom panels, and
+		// the menu button.
+		delayInit: false,
+
+		// If 'true' the menu will be shown when the menu is initialised.
+		openOnInit: false,
+
+		// By default the menu will load it's own font-awesome library
+		// icons. If your presentation needs to load a different
+		// font-awesome library the 'loadIcons' option can be set to false
+		// and the menu will not attempt to load the font-awesome library.
+		loadIcons: true
+	},
+
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'lib/reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'lib/reveal.js/plugin/zoom-js/zoom.js', async: true },
+          { src: 'lib/reveal.js/plugin/math/math.js', async: true },
+          { src: 'lib/reveal.js/plugin/menu/menu.js'},
+          { src: 'lib/reveal.js/plugin/markdown/marked.js'},
+          { src: 'lib/reveal.js/plugin/markdown/markdown.js'},
+          { src: 'lib/reveal.js/plugin/search/search.js'},
+          { src: 'lib/reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'lib/reveal.js/plugin/notes/notes.js', async: true },
+        ]
+      });
+    </script>
+    </body>
+</html>

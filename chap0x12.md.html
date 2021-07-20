@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="黄玮">
+  <title>网络安全</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="lib/reveal.js/css/reveal.css">
+  <style type="text/css">code{white-space: pre;}</style>
+
+
+    <!-- For syntax highlighting using highlight.js-->
+    <link rel="stylesheet" href="lib/reveal.js/lib/css/zenburn.css">
+
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="lib/reveal.js/css/theme/white.css" id="theme">
+  <!-- Printing and PDF exports -->
+<link rel="stylesheet" media="print" href="lib/reveal.js/css/print/pdf.css" />
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'lib/reveal.js/css/print/pdf.css' : 'lib/reveal.js/css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="lib/reveal.js/lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">网络安全</h1>
+  <p class="author">黄玮</p>
+</section>
+
+<section>
+<section id="第十二章-计算机取证" class="title-slide slide level1">
+<h1>第十二章 计算机取证</h1>
+
+</section>
+<section id="温故" class="slide level2">
+<h2>温故</h2>
+<ul>
+<li>用蜜罐和蜜网扭转信息安全对抗的不对称局面
+<ul>
+<li>工作量不对称</li>
+<li>信息不对称</li>
+<li>后果不对称</li>
+</ul></li>
+<li>蜜罐和蜜网技术可以应用于计算机取证</li>
+</ul>
+</section>
+<section id="知新" class="slide level2">
+<h2>知新</h2>
+<ul>
+<li>入侵取证不等于计算机取证</li>
+<li>计算机取证的概念包含了入侵取证</li>
+<li>了解计算机证据的概念</li>
+<li>了解计算机取证理论和关键技术</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="计算机取证发展史" class="title-slide slide level1">
+<h1>计算机取证发展史</h1>
+
+</section>
+<section id="twenty-70th" class="slide level2">
+<h2>20 世纪 70 年代</h2>
+<ul>
+<li>涉及电子数据的犯罪不断增加
+<ul>
+<li>特别在金融领域，很多执法部门人员不懂计算机，无法询问正确的问题
+<ul>
+<li>或无法有效保存证据</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="twenty-80th" class="slide level2">
+<h2>20 世纪 80 年代</h2>
+<ul>
+<li>PC 逐步发展，出现不同操作系统</li>
+<li>电脑取证工具很简单
+<ul>
+<li>Xtree Gold : 可识别多种文件类型、恢复删除的文件</li>
+<li>Norton DiskEdit / Pctools : 查找删除文件的最好的工具</li>
+</ul></li>
+<li>1984年 FBI 成立了计算机分析响应组 <code>CART</code> (the <code>Computer Analysis and Response Team</code>)</li>
+</ul>
+</section>
+<section id="twenty-90th-1" class="slide level2">
+<h2>20 世纪 90 年代</h2>
+<ul>
+<li><code>International Association of Computer Investigative Specialists</code> (<code>IACIS</code>)
+<ul>
+<li>专门培训取证分析软件</li>
+<li>ExpertWitness for Mac
+<ul>
+<li>第一个图形化计算机取证软件</li>
+<li>恢复删除的文件和文件碎片</li>
+</ul></li>
+<li>磁盘容量增大给调查带来困难</li>
+</ul></li>
+</ul>
+</section>
+<section id="twenty-90th-2" class="slide level2">
+<h2>20 世纪 90 年代</h2>
+<ul>
+<li>1993 年，举行了第一届计算机证据的国际会议</li>
+<li>1995 年，建立计算机证据的国际组织 <code>IOCE</code>（<code>International Organization on Computer Evidence</code>）</li>
+<li>1997 年，八国集团在莫斯科宣称：司法部门的职员应得到新的培训、新装备以应对高技术犯罪。</li>
+<li>1998 年，八国集团指定 <code>IOCE</code> 组织建立处理数据证据的国际准则</li>
+</ul>
+</section>
+<section id="twenty-one-1" class="slide level2">
+<h2>2001 年</h2>
+<ul>
+<li>计算机取证技术概念于 2001 年从国外引入国内，从入侵取证反黑客开始，逐渐形成</li>
+<li>取证相关法律方面的建设仍不健全，随着技术的快速发展，计算机犯罪手段的不断提高，我们需要健全规范的计算机取证流程，加强计算机取证技术研究，制定和完善相关的法律法规</li>
+</ul>
+</section>
+<section id="twenty-one-11" class="slide level2">
+<h2>2011 年</h2>
+<ul>
+<li>云取证概念在 2011 年数字取证领域权威会议 <code>IFIP WG 11.9 International Conference on Digital Forensics</code> 首次提出</li>
+<li>移动取证正在发展成为数字取证的主要工作
+<ul>
+<li>移动设备取证、移动系统取证、移动网络取证、移动应用取证</li>
+</ul></li>
+<li>多媒体数字内容取证
+<ul>
+<li>图像取证、视频取证、音频取证
+<ul>
+<li>复制粘贴、篡改、合成</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="计算机取证理论" class="title-slide slide level1">
+<h1>计算机取证理论</h1>
+
+</section>
+<section id="computer-forensics-1" class="slide level2">
+<h2>计算机取证的定义 (1/3)</h2>
+<ul>
+<li>Lee Garber 在 <code>IEEE Computer</code> 发表的文章 <a href="https://www.computer.org/csdl/magazine/co/2001/01/r1022/13rRUwgQpxO">Computer Forensics: High-Tech Law Enforcement</a></li>
+</ul>
+<blockquote>
+<p>计算机取证是分析硬盘、光盘、软盘、Zip和Jazz磁盘、内存缓冲以及其他形似的存储介质以发现犯罪证据的过程</p>
+</blockquote>
+<ul>
+<li>计算机取证资深专家 <code>Judd Robbins</code> 给出了如下的定义</li>
+</ul>
+<blockquote>
+<p>计算机取证是将计算机调查和分析技术应用于潜在的、有法律效力的证据的确定和获取</p>
+</blockquote>
+</section>
+<section id="computer-forensics-2" class="slide level2">
+<h2>计算机取证的定义 (2/3)</h2>
+<ul>
+<li>计算机紧急事件响应组 CERT 和取证咨询公司 NTI</li>
+</ul>
+<blockquote>
+<p>计算机取证包括了对以磁介质编码信息方式存储的计算机证据的保护、确认、提取和归档</p>
+</blockquote>
+<ul>
+<li>SANS 公司</li>
+</ul>
+<blockquote>
+<p>计算机取证是使用软件和工具，按照一些预先定义的程序，全面地检查计算机系统，以提取和保护有关计算机犯罪的证据</p>
+</blockquote>
+</section>
+<section id="computer-forensics-3" class="slide level2">
+<h2>计算机取证的定义 (3/3)</h2>
+<ul>
+<li>国内通行定义</li>
+</ul>
+<blockquote>
+<p>计算机取证是运用计算机及其相关科学和技术的原理和方法获取与计算机相关的证据以证明某个客观事实的过程。它包括计算机证据的确定、收集、保护、分析、归档以及法庭出示。</p>
+</blockquote>
+<ul>
+<li>我的总结—— about 计算机取证
+<ul>
+<li>目的
+<ul>
+<li>提供证据，证明事实</li>
+</ul></li>
+<li>手段
+<ul>
+<li>计算机调查和分析技术</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="concepts-1" class="slide level2">
+<h2>概念比较</h2>
+<ul>
+<li>Computer forensics 计算机取证
+<ul>
+<li>重点调查从计算机硬盘和其他存储介质中获得的数据</li>
+</ul></li>
+<li>Network forensics 网络取证
+<ul>
+<li>重点调查针对通过网络的犯罪行为或入侵行为</li>
+</ul></li>
+<li>Data recovery 数据恢复
+<ul>
+<li>恢复意外原因删除或丢失的信息
+<ul>
+<li>意外掉电或服务器崩溃</li>
+</ul></li>
+<li>通常明确知道需要查找的东西</li>
+</ul></li>
+</ul>
+</section>
+<section id="concepts-2" class="slide level2">
+<h2>概念比较</h2>
+<ul>
+<li>Computer forensics 计算机取证
+<ul>
+<li>是恢复隐藏或删除的，可以用于证据的数据</li>
+<li>证据可以是“使人定罪的”或“辨明无罪的”</li>
+</ul></li>
+<li>Disaster recovery 灾难恢复
+<ul>
+<li>使用计算机取证技术恢复客户丢失的信息
+<ul>
+<li>数据恢复</li>
+<li>业务重建</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="司法鉴定" class="slide level2">
+<h2>司法鉴定</h2>
+<ul>
+<li>司法鉴定是鉴定人运用科学技术或者专门知识对涉及诉讼的专门性问题进行检验、鉴别和判断并提供鉴定结论的活动</li>
+<li>计算机司法鉴定的检验、鉴别和判断等活动属于计算机取证的一部分</li>
+</ul>
+</section>
+<section id="司法鉴定中的证据" class="slide level2">
+<h2>司法鉴定中的证据</h2>
+<ul>
+<li>证据是法官判定罪与非罪的标准</li>
+<li>在人类的司法证明发展过程中，证明方法和手段经历了两次重大转变。
+<ul>
+<li>第一次是从以“神证”为主的证明向以“人证”为主的证明的转变</li>
+<li>第二次是从以“人证”为主的证明向以“物证”或“科学证据”为主的证明的转变</li>
+</ul></li>
+</ul>
+</section>
+<section id="证据的基本属性" class="slide level2">
+<h2>证据的基本属性</h2>
+<ul>
+<li>证据的三个基本属性
+<ul>
+<li>客观性、关联性、合法性</li>
+</ul></li>
+<li>计算机证据与传统证据一样，计算机证据必须是
+<ul>
+<li>可信的</li>
+<li>准确的</li>
+<li>完整的，使法官信服的</li>
+<li>符合法律法规的，即可为法庭所接受的</li>
+</ul></li>
+</ul>
+</section>
+<section id="计算机证据的特点" class="slide level2">
+<h2>计算机证据的特点</h2>
+<ul>
+<li>同时具有较高的精密性和脆弱易逝性</li>
+<li>较强的隐蔽性</li>
+<li>多媒性</li>
+<li>收集迅速、易于保存、占用空间少、容量大、传送和运输方便、可以反复重现、易于使用、便于操作</li>
+<li>相关数据的“挥发性”</li>
+</ul>
+</section>
+<section id="计算机证据电子证据数字证据" class="slide level2">
+<h2>计算机证据？电子证据？数字证据？</h2>
+<ul>
+<li>从概念和内涵上来说
+<ul>
+<li>电子证据 = 数字证据 &gt; 计算机证据</li>
+<li>电子证据的提法更为普遍</li>
+</ul></li>
+<li>本章仅从技术的角度来探讨如何
+<ul>
+<li>获取电子证据</li>
+<li>确保电子证据的原始性和完整性</li>
+<li>保证计算机取证手段的科学性</li>
+<li>计算机取证过程的可再现性</li>
+</ul></li>
+</ul>
+</section>
+<section id="laws-1" class="slide level2">
+<h2>我国法律中的「证据」与「电子证据」</h2>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th><a href="http://www.npc.gov.cn/npc/c12435/201811/59b0fd9941804636b9e403d17d6e3ebf.shtml">刑事诉讼法</a></th>
+<th><a href="http://www.npc.gov.cn/wxzl/gongbao/2012-11/12/content_1745518.htm">民事诉讼法</a></th>
+<th><a href="http://www.npc.gov.cn/zgrdw/npc/xinwen/2017-06/29/content_2024894.htm">行政诉讼法</a></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>更新时间</td>
+<td>2018-10-26</td>
+<td>2012-08-31</td>
+<td>2017-06-27</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>第五十条</td>
+<td>第六十三条</td>
+<td>第三十三条</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td>书证</td>
+<td>书证</td>
+<td>书证</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>物证</td>
+<td>物证</td>
+<td>物证</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td>视听资料、电子数据</td>
+<td>视听资料</td>
+<td>视听资料</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>证人证言</td>
+<td>电子数据</td>
+<td>电子数据</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td>被害人陈述</td>
+<td>证人证言</td>
+<td>证人证言</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>犯罪嫌疑人、被告人供述和辩解</td>
+<td>当事人的陈述</td>
+<td>当事人的陈述</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td>鉴定意见</td>
+<td>鉴定意见</td>
+<td>鉴定意见</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>勘验、检查、辨认、侦查实验等笔录</td>
+<td>勘验笔录</td>
+<td>勘验笔录、现场笔录</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="laws-2" class="slide level2">
+<h2>我国法律中的「证据」与「电子证据」</h2>
+<p><a href="http://www.npc.gov.cn/npc/c30834/201912/9bce4fdad6734765b316f06279aba6b8.shtml">《最高人民法院关于修改<关于民事诉讼证据的若干规定>的决定》</a> 已于2019年10月14日由最高人民法院审判委员会第1777次会议通过，自2020年5月1日起施行。现摘录其中关于 <strong>电子数据</strong> 的认定说明如下：</p>
+<blockquote>
+<p>第十四条 电子数据包括下列信息、电子文件：</p>
+</blockquote>
+<blockquote>
+<p>（一）网页、博客、微博客等网络平台发布的信息；</p>
+</blockquote>
+<blockquote>
+<p>（二）手机短信、电子邮件、即时通信、通讯群组等网络应用服务的通信信息；</p>
+</blockquote>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>（三）用户注册信息、身份认证信息、电子交易记录、通信记录、登录日志等信息；</p>
+</blockquote>
+<blockquote>
+<p>（四）文档、图片、音频、视频、数字证书、计算机程序等电子文件；</p>
+</blockquote>
+<blockquote>
+<p>（五）其他以数字化形式存储、处理、传输的能够证明案件事实的信息。</p>
+</blockquote>
+</section>
+<section id="computer-forensics-and-crime-1" class="slide level2">
+<h2>计算机取证与计算机犯罪</h2>
+<ul>
+<li>我国对计算机犯罪进行规定的法律条文主要有
+<ul>
+<li>非法侵入计算机信息系统罪</li>
+<li>破坏计算机信息系统罪</li>
+<li>《刑法》第二百八十七条规定</li>
+<li>《最高人民法院、最高人民检察院关于办理危害计算机信息系统安全刑事案件应用法律若干问题的解释》
+<ul>
+<li>2011年6月20日最高人民法院审判委员会第1524次会议、2011年7月11日最高人民检察院第十一届检察委员会第63次会议通过</li>
+<li>自2011年9月1日起施行</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="computer-forensics-and-crime-2" class="slide level2">
+<h2>计算机取证与计算机犯罪</h2>
+<ul>
+<li>计算机取证是以打击计算机犯罪为目标的观点是片面的</li>
+<li>犯罪侦查需要计算机取证技术</li>
+<li>民事案件的调查、鉴定等也会应用计算机取证技术</li>
+<li>国家安全部门、军事部门都会使用计算机取证技术进行取证</li>
+</ul>
+</section>
+<section id="计算机取证技术面临的主要挑战" class="slide level2">
+<h2>计算机取证技术面临的主要挑战</h2>
+<ol type="1">
+<li>在海量数据中准确有效地查找计算机犯罪证据</li>
+<li>计算机证据的出示困难</li>
+<li>计算机取证专业⼈员及具备⼀定取证知识的计算机系统、⽹络等⽅面的安全管理⼈员比较缺乏</li>
+</ol>
+</section>
+<section id="计算机取证技术的发展趋势" class="slide level2">
+<h2>计算机取证技术的发展趋势</h2>
+<ol type="1">
+<li>计算机取证需求逐步融⼊系统的研究与设计，主动取证措施将普遍化</li>
+<li>取证⼯具自动化与集成化</li>
+<li>计算机取证领域继续扩⼤，取证⼯具出现专门化趋势</li>
+<li>标准化⼯作将逐步展开，法律法规将逐步完善</li>
+<li>计算机取证、计算机司法鉴定等的规范管理</li>
+</ol>
+</section>
+<section id="小结" class="slide level2">
+<h2>小结</h2>
+<ul>
+<li>计算机取证是近几年发展起来的新学科，其领域涉及计算机科学、法学、刑事侦查学等</li>
+<li>计算机取证目标
+<ul>
+<li>谁（Who）、在什么时间（When）、从哪里（Where）、怎样地（How）进行了什么（What）（非法）活动</li>
+<li>联系《第十二章 蜜罐》中的蜜罐数据分析目的
+<ul>
+<li>还原入侵（4W1H）</li>
+</ul></li>
+<li>蜜罐/蜜网均可以用于计算机取证</li>
+<li>计算机取证手段不局限于蜜罐/蜜网</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="计算机取证关键技术" class="title-slide slide level1">
+<h1>计算机取证关键技术</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>计算机取证技术流程</li>
+<li>数据获取技术</li>
+<li>数据分析技术</li>
+<li>计算机犯罪分析</li>
+<li>数据解密技术</li>
+<li>证据保管、证据完整性的实现技术</li>
+<li>反取证技术</li>
+</ul>
+</section>
+<section id="计算机取证技术流程" class="slide level2">
+<h2>计算机取证技术流程</h2>
+<ol type="1">
+<li>保护现场</li>
+<li>证据获取</li>
+<li>证据鉴定与分析</li>
+<li>证据追踪与提交结果</li>
+</ol>
+</section>
+<section id="数据获取技术数据来源" class="slide level2">
+<h2>数据获取技术——数据来源</h2>
+<ul>
+<li>存储介质</li>
+<li>网络通信数据
+<ul>
+<li>通过网络嗅探方式将捕获的数据持久化存储</li>
+<li>转换为存储介质数据获取问题</li>
+</ul></li>
+</ul>
+</section>
+<section id="datasource-1" class="slide level2">
+<h2>数据获取技术</h2>
+<ul>
+<li>获取状态
+<ul>
+<li>静态获取</li>
+<li>实时在线获取</li>
+</ul></li>
+<li>四种方法
+<ul>
+<li>位对位：整盘至镜像文件</li>
+<li>位对位：整盘至整盘</li>
+<li>逻辑磁盘分区至磁盘</li>
+<li>选型性拷贝（挑选文件或文件夹）</li>
+</ul></li>
+</ul>
+</section>
+<section id="datasource-2" class="slide level2">
+<h2>数据获取技术</h2>
+<ul>
+<li>位对位: 整盘至镜像文件 (disk-to-image)
+<ul>
+<li>最通用的方式</li>
+<li>支持同时制作多个备份</li>
+<li>是对原始磁盘位对位的复制</li>
+</ul></li>
+<li>位对位: 整盘至整盘 (disk-to-disk)
+<ul>
+<li>适用于某些无法创建镜像文件的场景</li>
+<li>需要考虑目标磁盘容量</li>
+</ul></li>
+</ul>
+</section>
+<section id="datasource-3" class="slide level2">
+<h2>数据获取技术</h2>
+<ul>
+<li>逻辑获取 或 选择数据获取
+<ul>
+<li>时间问题（海量数据）</li>
+<li>法律问题（隐私泄露）</li>
+<li>状态问题（服务器）</li>
+<li>逻辑获取只能获取与相关调查案件相关的数据</li>
+<li>选择数据获取还可以收集未分配空间数据(删除的)</li>
+</ul></li>
+</ul>
+</section>
+<section id="datasource-4" class="slide level2">
+<h2>数据获取技术</h2>
+<ul>
+<li>当进行获取时，需要考虑：
+<ul>
+<li>嫌疑磁盘的容量
+<ul>
+<li>无损压缩</li>
+<li>数据校验</li>
+</ul></li>
+<li>对于大容量磁盘进行获取，也可采用磁带备份的方式</li>
+<li>事前了解是否可以封存嫌疑磁盘</li>
+</ul></li>
+</ul>
+</section>
+<section id="数据分析技术" class="slide level2">
+<h2>数据分析技术</h2>
+<ul>
+<li>语义还原
+<ul>
+<li>重构特定类型文件</li>
+<li>元数据分析
+<ul>
+<li>文件系统元数据</li>
+<li>文档元数据</li>
+<li>邮件元数据</li>
+<li>图片元数据</li>
+</ul></li>
+</ul></li>
+<li>场景还原
+<ul>
+<li>从网络嗅探数据还原入侵过程</li>
+</ul></li>
+</ul>
+</section>
+<section id="计算机犯罪分析" class="slide level2">
+<h2>计算机犯罪分析</h2>
+<ul>
+<li>动机
+<ul>
+<li>窃密 / 破坏 / 控制 / 篡改</li>
+</ul></li>
+<li>过程
+<ul>
+<li>犯罪现场重现
+<ul>
+<li>现实空间</li>
+<li>虚拟空间（网络空间：数字孪生）</li>
+</ul></li>
+</ul></li>
+<li>影响
+<ul>
+<li>经济 / 政治 / 社会 / 人身安全</li>
+</ul></li>
+</ul>
+</section>
+<section id="decryption-1" class="slide level2">
+<h2>数据解密技术</h2>
+<ul>
+<li>软件破解工具
+<ul>
+<li>加密文档 / 磁盘 / 镜像 / WiFi 的破解</li>
+</ul></li>
+<li>彩虹表
+<ul>
+<li>采用空间换时间方式，利用预计算的表提高破解速度</li>
+<li>彩虹表对 Office、PDF 等加密文件解密能力强大。并可批量解密，且操作简便</li>
+</ul></li>
+</ul>
+</section>
+<section id="decryption-2" class="slide level2">
+<h2>数据解密技术</h2>
+<ul>
+<li>雷表（Thunder Table）
+<ul>
+<li>ElcomSoft 公司的专利技术</li>
+<li>雷表体积小（彩虹表的大小一般为TB级，雷表仅为GB级）</li>
+<li>制作雷表非常耗时</li>
+</ul></li>
+<li>GPU 破解
+<ul>
+<li>单机</li>
+<li>集群</li>
+</ul></li>
+</ul>
+</section>
+<section id="电子证据保管" class="slide level2">
+<h2>电子证据保管</h2>
+<ul>
+<li>原始格式（ raw, dd ）</li>
+<li>专有格式（ e01, Smart, FinalForensics ）</li>
+<li>AFF格式（ Advanced Forensics Format ）</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="电子证据保管的原始格式">电子证据保管的原始格式</h3>
+<ul>
+<li>可以将原始磁盘数据写入一个镜像文件中保存</li>
+<li>优点
+<ul>
+<li>数据传输较快</li>
+<li>可以忽略源盘数据读取中的一些小错误</li>
+<li>大部分数据获取工具可以读取原始dd格式镜像。</li>
+<li>一旦中断，已获取数据可继续使用。</li>
+</ul></li>
+<li>不足
+<ul>
+<li>需要与原始磁盘或数据相同容量的空间</li>
+<li>无法获取某些坏扇区</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="电子证据保管的专有格式">电子证据保管的专有格式</h3>
+<ul>
+<li>基本特点
+<ul>
+<li>可以选择是否压缩</li>
+<li>可以分卷或分段（将一个镜像分为若干小片断）</li>
+<li>可以在镜像文件中加入元数据</li>
+<li>一旦中断，已获取数据不可使用</li>
+</ul></li>
+<li>不足
+<ul>
+<li>不同取证工具可能无法打开</li>
+<li>分卷大小、文件大小受限制</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="电子证据保管的-aff-格式">电子证据保管的 AFF 格式</h3>
+<ul>
+<li>Advanced Forensics Format</li>
+<li>由Dr. Simson L. Garfinkel 设计开发</li>
+<li>设计目的
+<ul>
+<li>提供压缩的或非压缩的证据文件</li>
+<li>磁盘之镜像方法，没有大小限制</li>
+<li>为镜像文件或分段镜像文件保存元数据</li>
+<li>设计简单便于扩展</li>
+<li>针对多系统平台设计， <strong>开源</strong></li>
+<li>可进行内部完整性校验</li>
+<li>扩展名包括.afd 分段文件和 .afm 元数据</li>
+</ul></li>
+</ul>
+</section>
+<section id="checksum-1" class="slide level2">
+<h2>数据校验</h2>
+<ul>
+<li>通信传输过程中的差错检测算法
+<ul>
+<li>奇偶校验, CRC 校验</li>
+</ul></li>
+<li>密码学散列算法
+<ul>
+<li>MD5, SHA-1, SHA-1 至 SHA-512（256，384）</li>
+</ul></li>
+</ul>
+</section>
+<section id="checksum-2" class="slide level2">
+<h2>数据校验</h2>
+<ul>
+<li>数字签名：从完整性保护到真实性保护</li>
+<li>通常「数据校验和」或「数字签名」是保存在电子证据的「元数据」中</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="md5-碰撞生成工具"><a href="https://www.mathstat.dal.ca/~selinger/md5collision/">MD5 碰撞生成工具</a></h3>
+<p><img data-src="images/chap0x12/md5-collision-pe.png" /></p>
+</section>
+<section id="反取证技术" class="slide level2">
+<h2>反取证技术</h2>
+<ul>
+<li>数据销毁
+<ul>
+<li>覆写法</li>
+<li>消磁法</li>
+<li>捣碎法/剪碎法</li>
+<li>焚毁法</li>
+</ul></li>
+<li>数据隐藏
+<ul>
+<li>数据加密</li>
+<li>更改文件扩展名</li>
+<li>隐写术</li>
+<li>改变系统环境</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="大数据取证技术" class="title-slide slide level1">
+<h1>大数据取证技术</h1>
+
+</section>
+<section id="保护现场" class="slide level2">
+<h2>保护现场</h2>
+<ul>
+<li>传统取证对象通常有明确的物理实体
+<ul>
+<li>计算机、手机、移动存储介质以及各种可穿戴电子设备等</li>
+</ul></li>
+<li>大数据的取证对象庞杂
+<ul>
+<li>无法确定数据载体介质、数据载体所属电信机房等</li>
+<li>数据可能遍布于「云管端」</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="bigdata-source">数据来源</h3>
+<table>
+<thead>
+<tr class="header">
+<th>数据来源</th>
+<th>举例</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>应用层</td>
+<td>云存储、云备份、云操作系统</td>
+</tr>
+<tr class="even">
+<td>系统层</td>
+<td>文件系统、结构化数据存储、访问控制</td>
+</tr>
+<tr class="odd">
+<td>宿主层</td>
+<td>操作系统、虚拟机、容器</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="证据获取" class="slide level2">
+<h2>证据获取</h2>
+<ul>
+<li>远程取证技术需求量更大</li>
+<li>异构的数据存储、传输和使用节点</li>
+<li>异地分布式保存的数据</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="宿主层数据获取">宿主层数据获取</h3>
+<ul>
+<li>宿主系统被攻陷导致的应用层数据篡改风险
+<ul>
+<li>大数据系统的宿主层系统可以是主流单机操作系统，也可以是虚拟机、容器等</li>
+<li>大数据文件系统对所存储数据的深度定制化封装导致在宿主层进行应用层数据提取挑战巨大</li>
+</ul></li>
+<li>传统取证手段为主
+<ul>
+<li>磁盘介质中数据的提取与恢复</li>
+<li>宿主系统的访问日志</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="系统层数据获取">系统层数据获取</h3>
+<ul>
+<li>典型的大数据系统的系统层组件：Hadoop, hbase, flume</li>
+<li>数据对象：分布式存储的文件和文件相关的元数据
+<ul>
+<li>缺乏标准化的统一数据获取接口，需要针对不同系统层组件进行个性化数据获取指令或编程实现</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="应用层数据获取">应用层数据获取</h3>
+<ul>
+<li>数据直接保存于云端应用</li>
+<li>云端应用的客户端本地同样存在部分数据备份</li>
+<li>远程使用云端应用的过程中产生的通信数据可能以缓存、通信控制指令等形式碎片化保存于通信链路上的多处节点</li>
+</ul>
+</section>
+<section id="证据鉴定与分析" class="slide level2">
+<h2>证据鉴定与分析</h2>
+<ul>
+<li>原始数据真实性和完整性鉴定</li>
+<li>取证过程合法性鉴定</li>
+</ul>
+</section>
+<section id="证据追踪与提交结果" class="slide level2">
+<h2>证据追踪与提交结果</h2>
+<ul>
+<li>大数据系统的复杂性决定了从大数据系统中提取出来的电子证据提交形式是多样化的
+<ul>
+<li>固定的原始存储介质，例如硬盘</li>
+<li>封存的电子数据，比如提取的系统进程、日志、用户浏览记录等易失数据</li>
+<li>远程冻结的嫌疑人账号密码</li>
+<li>电子数据属性、功能等说明</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p>2016 年 9 月 9 日，最高人民法院 最高人民检察院 公安部印发的 <a href="https://www.spp.gov.cn/zdgz/201609/t20160921_167425.shtml">《关于办理刑事案件收集提取和审查判断电子数据若干问题的规定》</a></p>
+<blockquote>
+<p>第十九条 对侵入、非法控制计算机信息系统的程序、工具以及计算机病毒等无法直接展示的电子数据，应当附电子数据属性、功能等情况的说明。对数据统计量、数据同一性等问题，侦查机关应当出具说明。</p>
+</blockquote>
+</section>
+</section>
+<section>
+<section id="计算机取证案例学习" class="title-slide slide level1">
+<h1>计算机取证案例学习</h1>
+
+</section>
+<section id="计算机取证的重要前提" class="slide level2">
+<h2>计算机取证的重要前提</h2>
+<ul>
+<li>取证环境的可控性</li>
+<li>取证手段的可靠性
+<ul>
+<li>工具运行环境的可信和完整</li>
+</ul></li>
+<li>证据的完整性</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="取证环境">取证环境</h3>
+<ul>
+<li>在线取证
+<ul>
+<li>（如何确保）杜绝 <code>rootkit</code></li>
+<li>（如何检查）是否联网
+<ul>
+<li>不联网是否可以完成取证？</li>
+</ul></li>
+</ul></li>
+<li>离线取证
+<ul>
+<li>持久化存储数据获取技术
+<ul>
+<li>位对位：整盘至镜像文件</li>
+<li>位对位：整盘至整盘</li>
+<li>逻辑磁盘分区至磁盘</li>
+<li>选型性拷贝（挑选文件或文件夹）</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="取证手段">取证手段</h3>
+<ul>
+<li>运行时信息
+<ul>
+<li>工具实时采集
+<ul>
+<li>基于主机的工具</li>
+<li>基于网络的工具</li>
+</ul></li>
+</ul></li>
+<li>历史信息
+<ul>
+<li>日志</li>
+<li>数据恢复</li>
+<li>数据解密</li>
+<li>持久化存储数据获取技术</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="运行时信息-进程信息">运行时信息 —— 进程信息</h3>
+<ul>
+<li>正在运行进程
+<ul>
+<li>对应的磁盘上文件全路径</li>
+<li>打开的所有文件描述符
+<ul>
+<li><code>lsof -p &lt;pid&gt;</code></li>
+</ul></li>
+<li>CPU 占用情况</li>
+<li>内存占用情况</li>
+<li>磁盘访问情况</li>
+<li>系统调用情况
+<ul>
+<li><code>strace</code> / <code>ptrace</code></li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="netstat-1">运行时信息 —— 联网信息</h3>
+<ul>
+<li>网络连接状态
+<ul>
+<li>并发连接数</li>
+<li>socket状态</li>
+</ul></li>
+<li>路由表
+<ul>
+<li><code>nestat –r</code> / <code>ip route</code> / <code>route -n</code></li>
+</ul></li>
+<li>网卡统计数据
+<ul>
+<li><code>netstat -i</code> / <code>ip link</code></li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="netstat-2">运行时信息 —— 联网信息</h3>
+<ul>
+<li>查看当前系统的网络应用使用情况
+<ul>
+<li><code>sudo netstat -aonp --protocol inet</code></li>
+<li><code>sudo lsof -i</code></li>
+</ul></li>
+<li>查看应用程序带宽占用详情
+<ul>
+<li><code>sudo nethogs</code></li>
+</ul></li>
+<li>查找出并发连接数最高的几个IP地址
+<ul>
+<li><code>sudo netstat -anp |grep 'tcp\|udp' | awk '{print $5}' | cut -d: -f1 | sort | uniq -c | sort -nr</code></li>
+</ul></li>
+</ul>
+</section>
+<section id="challenge-1-of-the-forensic-challenge-2010---pcap-attack-trace" class="slide level2">
+<h2><a href="https://www.honeynet.org/challenges/challenge-1-of-the-forensic-challenge-2010-pcap-attack-trace/">Challenge 1 of the Forensic Challenge 2010 - pcap attack trace</a></h2>
+<p><a href="http://sec.cuc.edu.cn/ftp/archived/www.honeynet.org/challenges/challenge-1-of-the-forensic-challenge-2010-pcap-attack-trace/">Challenge 1 of the Forensic Challenge 2010 - pcap attack trace（校内镜像备份）</a></p>
+</section>
+<section class="slide level2">
+
+<h3 id="概述">概述</h3>
+<ul>
+<li>已掌握的原始证据
+<ul>
+<li>Wireshark 抓包捕获的数据（.pcap格式）</li>
+<li>为了避免侵犯隐私，其中的 IP 地址均 <strong>匿名化</strong> 处理</li>
+</ul></li>
+<li>挑战
+<ul>
+<li>此次安全事件中所涉及到的操作系统（按IP地址）有哪些?</li>
+<li>关于被攻击的主机的详细信息</li>
+<li>该数据样本包中包含的TCP并发会话数量</li>
+<li>被攻击目标主机在此次安全事件中被利用的漏洞？</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="manual-investigation-1">手工单步分析</h3>
+<p><a href="https://asciinema.org/a/hdbHr2cVTP9vqOpdool0Bv3WY"><img data-src="https://asciinema.org/a/hdbHr2cVTP9vqOpdool0Bv3WY.svg" alt="asciicast" /></a></p>
+</section>
+<section class="slide level2">
+
+<h3 id="manual-investigation-2">手工单步分析</h3>
+<pre class="bash"><code># 1. 统计主机信息
+tshark -r attack-trace.pcap -z ip_hosts,tree -qn
+
+# 2. 谁主动发起网络连接
+tshark -r attack-trace.pcap -Y &quot;tcp.flags==0x02&quot; -n
+
+# 3. 推断攻击持续时间
+# 攻击持续时间 &lt; 捕获到的数据包的起止时间
+# 攻击持续时间 &lt; 16 秒
+capinfos attack-trace.pcap
+
+# 4. 自动分析攻击详情
+# TODO 修改 /etc/suricata/suricata.yml 重新定义「内网」范围
+# HOME_NET [192.150.11.0/24]
+# 已完成第九章的 suricata 体验任务，在线更新了检测规则
+# ref: https://c4pr1c3.gitee.io/cuc-ns-ppt/chap0x09.md.html#/quick-start-of-suricata
+suricata -r attack-trace.pcap
+
+# 查看报警日志
+cat -n fast.log
+
+# 4.1. 修改检测规则
+# 找到包含 2003-0533 关键词且该行规则被注释的行，取消注释
+grep 2003-0533 /var/lib/suricata/rules/suricata.rules | grep -E &quot;^#&quot;
+
+# 4.2. 再用修改后的规则检查一次
+suricata -r attack-trace.pcap
+
+# 4.3. 再次查看报警日志，对比新产生的报警
+cat -n fast.log
+
+# 5. 查看 TCP 会话信息
+# 注意输出结果默认是按照「数据帧数量」排序的
+tshark -r attack-trace.pcap -qnz conv,tcp
+
+# 猜测
+# 五个TCP会话对应 3 个不同的攻击阶段
+# 扫描/枚举、漏洞利用、后渗透
+
+# 5.1 查看扫描阶段的数据包
+tshark -r attack-trace.pcap -Y &quot;tcp.stream eq 0&quot;
+
+# 5.2 查看漏洞利用阶段的数据包
+tshark -r attack-trace.pcap -Y &quot;tcp.stream eq 1&quot;
+
+# 查看该阶段 TCP 会话的应用层负载数据
+tshark -r attack-trace.pcap -q -z follow,tcp,hex,1
+
+# 把该阶段的通信数据另存为 pcap 文件
+tshark -r attack-trace.pcap -q -z follow,tcp,hex,1 -w exploit.pcapng
+
+# 使用 Wireshark 进行「应用层负载」另存为操作
+
+# 5.3 执行攻击指令（漏洞利用之发送攻击负载）
+tshark -r attack-trace.pcap -q -z follow,tcp,ascii,2
+
+# 5.4 后渗透阶段
+tshark -r attack-trace.pcap -q -z follow,tcp,ascii,3
+
+# 5.5 后渗透阶段（下载后门程序）
+tshark -r attack-trace.pcap -q -z follow,tcp,hex,4
+
+# 把该阶段的通信数据另存为 pcap 文件
+tshark -r attack-trace.pcap -q -z follow,tcp,hex,4 -w malware.pcapng</code></pre>
+</section>
+<section class="slide level2">
+
+<h3 id="另一种手工单步分析方法">另一种手工单步分析方法</h3>
+<p>查阅课本中本章的实验一节内容，使用 <code>Zeek</code> 来发现 <code>IoC: Indicator of Compromise</code> 。</p>
+</section>
+</section>
+<section>
+<section id="本章小结" class="title-slide slide level1">
+<h1>本章小结</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>入侵取证不等于计算机取证
+<ul>
+<li>实际的入侵取证难点在于准确全面的“攻击重放”</li>
+</ul></li>
+<li>了解计算机证据的概念
+<ul>
+<li>证据类型 / 取证目标 / 证据保管</li>
+</ul></li>
+<li>了解计算机取证理论和关键技术
+<ul>
+<li>跨学科理论</li>
+<li>综合技术</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="课后思考题" class="title-slide slide level1">
+<h1>课后思考题</h1>
+
+</section>
+<section class="slide level2">
+
+<p>试述防火墙、入侵检测、应用程序安全加固、蜜罐和蜜网技术以及计算机取证技术之间的关系？如何综合运用这些技术来进行网络与系统安全防护与加固？</p>
+</section>
+</section>
+    </div>
+  </div>
+
+  <script src="lib/reveal.js/lib/js/head.min.js"></script>
+  <script src="lib/reveal.js/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Display the page number of the current slide
+        slideNumber: true,
+        // Push each slide change to the browser history
+        history: true,
+        // Transition style
+        transition: 'fade', // none/fade/slide/convex/concave/zoom
+        math: {
+          mathjax: '',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+menu: {
+		// Specifies which side of the presentation the menu will 
+		// be shown. Use 'left' or 'right'.
+		side: 'left',
+
+		// Specifies the width of the menu.
+		// Can be one of the following:
+		// 'normal', 'wide', 'third', 'half', 'full', or
+		// any valid css length value
+		width: 'normal',
+
+		// Add slide numbers to the titles in the slide list.
+		// Use 'true' or format string (same as reveal.js slide numbers)
+		numbers: true,
+
+		// Specifies which slide elements will be used for generating
+		// the slide titles in the menu. The default selects the first
+		// heading element found in the slide, but you can specify any
+		// valid css selector and the text from the first matching
+		// element will be used.
+		// Note: that a section data-menu-title attribute or an element
+		// with a menu-title class will take precedence over this option
+		titleSelector: 'h1, h2, h3, h4, h5, h6',
+
+		// If slides do not have a matching title, attempt to use the
+		// start of the text content as the title instead
+		useTextContentForMissingTitles: false,
+
+		// Hide slides from the menu that do not have a title.
+		// Set to 'true' to only list slides with titles.
+		hideMissingTitles: false,
+
+		// Adds markers to the slide titles to indicate the 
+		// progress through the presentation. Set to 'false'
+		// to hide the markers.
+		markers: true,
+
+		// Specify custom panels to be included in the menu, by
+		// providing an array of objects with 'title', 'icon'
+		// properties, and either a 'src' or 'content' property.
+		custom: false,
+
+		// Specifies the themes that will be available in the themes
+		// menu panel. Set to 'true' to show the themes menu panel
+		// with the default themes list. Alternatively, provide an
+		// array to specify the themes to make available in the
+		// themes menu panel, for example...
+		// [
+		//     { name: 'Black', theme: 'css/theme/black.css' },
+		//     { name: 'White', theme: 'css/theme/white.css' },
+		//     { name: 'League', theme: 'css/theme/league.css' }
+		// ]
+		themes: false,
+
+		// Specifies the path to the default theme files. If your
+		// presentation uses a different path to the standard reveal
+		// layout then you need to provide this option, but only
+		// when 'themes' is set to 'true'. If you provide your own 
+		// list of themes or 'themes' is set to 'false' the 
+		// 'themesPath' option is ignored.
+		themesPath: 'css/theme/',
+
+		// Specifies if the transitions menu panel will be shown.
+		// Set to 'true' to show the transitions menu panel with
+		// the default transitions list. Alternatively, provide an
+		// array to specify the transitions to make available in
+		// the transitions panel, for example...
+		// ['None', 'Fade', 'Slide']
+		transitions: false,
+
+		// Adds a menu button to the slides to open the menu panel.
+		// Set to 'false' to hide the button.
+		openButton: true,
+
+		// If 'true' allows the slide number in the presentation to
+		// open the menu panel. The reveal.js slideNumber option must 
+		// be displayed for this to take effect
+		openSlideNumber: false,
+
+		// If true allows the user to open and navigate the menu using
+		// the keyboard. Standard keyboard interaction with reveal
+		// will be disabled while the menu is open.
+		keyboard: true,
+
+		// Normally the menu will close on user actions such as
+		// selecting a menu item, or clicking the presentation area.
+		// If 'true', the sticky option will leave the menu open
+		// until it is explicitly closed, that is, using the close
+		// button or pressing the ESC or m key (when the keyboard 
+		// interaction option is enabled).
+		sticky: false,
+
+		// If 'true' standard menu items will be automatically opened
+		// when navigating using the keyboard. Note: this only takes 
+		// effect when both the 'keyboard' and 'sticky' options are enabled.
+		autoOpen: true,
+
+		// If 'true' the menu will not be created until it is explicitly
+		// requested by calling RevealMenu.init(). Note this will delay
+		// the creation of all menu panels, including custom panels, and
+		// the menu button.
+		delayInit: false,
+
+		// If 'true' the menu will be shown when the menu is initialised.
+		openOnInit: false,
+
+		// By default the menu will load it's own font-awesome library
+		// icons. If your presentation needs to load a different
+		// font-awesome library the 'loadIcons' option can be set to false
+		// and the menu will not attempt to load the font-awesome library.
+		loadIcons: true
+	},
+
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'lib/reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'lib/reveal.js/plugin/zoom-js/zoom.js', async: true },
+          { src: 'lib/reveal.js/plugin/math/math.js', async: true },
+          { src: 'lib/reveal.js/plugin/menu/menu.js'},
+          { src: 'lib/reveal.js/plugin/markdown/marked.js'},
+          { src: 'lib/reveal.js/plugin/markdown/markdown.js'},
+          { src: 'lib/reveal.js/plugin/search/search.js'},
+          { src: 'lib/reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'lib/reveal.js/plugin/notes/notes.js', async: true },
+        ]
+      });
+    </script>
+    </body>
+</html>

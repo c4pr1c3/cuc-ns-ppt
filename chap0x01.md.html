@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="黄玮">
+  <title>网络安全</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="lib/reveal.js/css/reveal.css">
+  <style type="text/css">code{white-space: pre;}</style>
+
+
+    <!-- For syntax highlighting using highlight.js-->
+    <link rel="stylesheet" href="lib/reveal.js/lib/css/zenburn.css">
+
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="lib/reveal.js/css/theme/white.css" id="theme">
+  <!-- Printing and PDF exports -->
+<link rel="stylesheet" media="print" href="lib/reveal.js/css/print/pdf.css" />
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'lib/reveal.js/css/print/pdf.css' : 'lib/reveal.js/css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="lib/reveal.js/lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">网络安全</h1>
+  <p class="author">黄玮</p>
+</section>
+
+<section>
+<section id="第一章-网络安全基础" class="title-slide slide level1">
+<h1>第一章 网络安全基础</h1>
+
+</section>
+<section id="提纲" class="slide level2">
+<h2>提纲</h2>
+<ul>
+<li>专业术语定义（回顾）</li>
+<li>威胁模型</li>
+<li>安全策略和安全机制（回顾）</li>
+<li>计算机⽹络安全模型</li>
+<li>等级安全保护</li>
+<li>计算机安全法规</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="专业术语定义" class="title-slide slide level1">
+<h1>专业术语定义</h1>
+
+</section>
+<section id="资产asset" class="slide level2">
+<h2>资产（Asset）</h2>
+<p>任何对组织业务具有 <strong>价值</strong> 的 <strong>信息</strong> 资产，包括计算机硬件、通信设施、IT 环境、数据库、软件、文档资料、信息服务和人员等。</p>
+</section>
+<section id="网络安全cyberspace-security-cyber-security-network-security" class="slide level2">
+<h2>网络安全（Cyberspace Security / Cyber Security / Network Security）</h2>
+<ul>
+<li>Network 「狭义」的网络安全，主要指的是计算机网络中的信息安全问题</li>
+<li>Cyberspace / Cyber 「广义」的 <strong>网络空间安全</strong> ，「狭义」的网络安全问题演变成了「真实世界」的 <strong>数字孪生</strong> 安全问题，并借助于各种 <code>泛在互联</code> 技术影响到「真实世界」安全</li>
+</ul>
+</section>
+<section id="安全属性-cia" class="slide level2">
+<h2>安全属性 <strong>CIA</strong></h2>
+<ul>
+<li>机密性（Confidentiality）
+<ul>
+<li>从『信息不可见』到『状态不可知』</li>
+</ul></li>
+<li>完整性（Integrity）
+<ul>
+<li>未经授权不能进行更改</li>
+</ul></li>
+<li>可用性（Availability）
+<ul>
+<li>信息 <code>可被授权实体</code> 访问并 <strong>按需使用</strong></li>
+</ul></li>
+</ul>
+</section>
+<section id="威胁threat" class="slide level2">
+<h2>威胁（Threat）</h2>
+<ul>
+<li>一种可能破坏安全基本要素的来源或原因</li>
+<li>威胁来源
+<ul>
+<li>内部威胁</li>
+<li>外部威胁</li>
+<li>自然威胁</li>
+<li>人为威胁</li>
+</ul></li>
+</ul>
+</section>
+<section id="事件event" class="slide level2">
+<h2>事件（Event）</h2>
+<p>如果威胁主体能够产生威胁，利用资产及其安全措施的脆弱性，那么实际产生危害的情况称为事件。</p>
+</section>
+<section id="漏洞vulnerability" class="slide level2">
+<h2>漏洞（Vulnerability）</h2>
+<ul>
+<li>漏洞又被称为脆弱性或弱点（Weakness）</li>
+<li>信息资产及其安全措施在安全方面的不足和弱点</li>
+<li>漏洞存在于<code>IT基础设施</code> (计算机软硬件、通信设施等)和<code>人</code> (管理制度、操作规范和流程)</li>
+<li>漏洞一旦被利用，即会对资产造成<code>影响</code></li>
+<li>通常一个网络的漏洞/弱点可被分为：技术漏洞、配置漏洞和安全策略漏洞</li>
+</ul>
+</section>
+<section id="风险risk" class="slide level2">
+<h2>风险（Risk）</h2>
+<ul>
+<li>风险是<code>威胁</code>事件发⽣的 <strong>可能性</strong> 与<code>影响</code>综合作用的结果</li>
+<li>风险成为事实后，就会造成具体的<code>影响</code></li>
+</ul>
+</section>
+<section id="影响impact" class="slide level2">
+<h2>影响（Impact）</h2>
+<blockquote>
+<p>漏洞一旦被利用，会对资产造成影响。影响的种类不仅局限于对 CIA 的破坏，对于网络空间安全事件造成的影响可能波及：政治、经济、文化、人身安全、社会稳定等。</p>
+</blockquote>
+</section>
+<section id="风险管理risk-management" class="slide level2">
+<h2>风险管理（Risk Management）</h2>
+<ul>
+<li>风险管理是指风险管理者采取各种措施和方法，消灭或减少风险事件发生的各种可能性，或者减少风险事件发生时造成的损失</li>
+<li>常见的风险管理措施包括：风险降低、风险承受、风险规避、风险转移、分散风险、缓释风险和对冲风险</li>
+<li>残余风险（Residual Risk）：任何一种风险管理手段都很难将风险完全根除，因此，我们将安全机制实施之后仍然遗留的风险称为 <code>残余风险</code></li>
+</ul>
+</section>
+<section id="攻击attack" class="slide level2">
+<h2>攻击（Attack）</h2>
+<p>攻击是指由威胁源所实施的、导致安全事件发生的行为，它是 漏洞利用 和 实现威胁 的过程，一旦攻击得手即会造成影响。</p>
+</section>
+</section>
+<section>
+<section id="风险管理的一张神图" class="title-slide slide level1">
+<h1>风险管理的一张神图</h1>
+
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x01/risk-management.jpg" /></p>
+</section>
+</section>
+<section>
+<section id="风险管理的类比案例" class="title-slide slide level1">
+<h1>风险管理的类比案例</h1>
+
+</section>
+<section class="slide level2">
+
+<p>小明⼝袋里有100元，因为打瞌睡，被小偷偷⾛了，导致小明晚上没饭吃</p>
+<ul>
+<li>风险</li>
+<li>资产</li>
+<li>影响</li>
+<li>威胁</li>
+<li>弱点</li>
+<li>攻击</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p>小明⼝袋里有100元，因为打瞌睡，被小偷偷⾛了，导致小明晚上没饭吃</p>
+<ul>
+<li>风险 - 钱被偷走</li>
+<li>资产 - 100 元</li>
+<li>影响 - 晚上没饭吃</li>
+<li>威胁 - 小偷</li>
+<li>弱点 - 打瞌睡</li>
+<li>攻击 - 偷</li>
+</ul>
+</section>
+<section id="重要启示" class="slide level2">
+<h2>重要启示</h2>
+<ul>
+<li>如果没有 <font color='red'>漏洞</font>（弱点），攻击⽆法得⼿</li>
+<li>如果没有价值（资产），不会招来威胁</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="威胁模型" class="title-slide slide level1">
+<h1>威胁模型</h1>
+
+</section>
+<section id="微软-stride-模型" class="slide level2">
+<h2>微软 STRIDE 模型</h2>
+<table>
+<thead>
+<tr class="header">
+<th>威胁</th>
+<th>安全性属性</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>假冒 (Spoof)</td>
+<td>认证（Authentication）</td>
+</tr>
+<tr class="even">
+<td>篡改 (Tamper)</td>
+<td><strong>完整性</strong></td>
+</tr>
+<tr class="odd">
+<td>否认 (Repudiation)</td>
+<td>不可抵赖性</td>
+</tr>
+<tr class="even">
+<td>信息泄露 (Information Disclosure)</td>
+<td><strong>机密性</strong></td>
+</tr>
+<tr class="odd">
+<td>拒绝服务 (Denial of Service)</td>
+<td><strong>可用性</strong></td>
+</tr>
+<tr class="even">
+<td>提升权限 (Elevation of Privilege)</td>
+<td>授权（Authorization）</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="安全性属性的扩充" class="slide level2">
+<h2>安全性属性的扩充</h2>
+<ul>
+<li>认证 / 授权 / 不可抵赖性</li>
+<li>不可抵赖性可通过审计来保证</li>
+<li>认证(<font color='red'>A</font>uthentication)：身份验证</li>
+<li>授权(<font color='red'>A</font>uthorization)：⾏为验证</li>
+<li>审计(<font color='red'>A</font>udit)：结果验证+责任认定
+<ul>
+<li>责任认定(能⼒)：<font color='red'>A</font>ccountability</li>
+</ul></li>
+</ul>
+</section>
+<section id="概念对比" class="slide level2">
+<h2>概念对比</h2>
+<ul>
+<li>真实性 = 完整性+（身份）认证
+<ul>
+<li>复合概念</li>
+</ul></li>
+<li>完整性
+<ul>
+<li>原⼦概念</li>
+</ul></li>
+</ul>
+</section>
+<section id="dread" class="slide level2">
+<h2>DREAD</h2>
+<ul>
+<li><font color='red'>D</font>amage Potential 潜在损失</li>
+<li><font color='red'>R</font>eproducibility 可复现性</li>
+<li><font color='red'>E</font>xploitability 可利用性</li>
+<li><font color='red'>A</font>ffected users 受影响的用户</li>
+<li><font color='red'>D</font>iscoverability 可发现性</li>
+</ul>
+</section>
+<section id="dread-table" class="slide level2">
+<h2>DREAD Table</h2>
+<table>
+<thead>
+<tr class="header">
+<th>评价</th>
+<th>高</th>
+<th>中</th>
+<th>低</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>潜在损失（Damage potential）</td>
+<td>获取完整验证权限；执行管理员操作；非法上传文件；</td>
+<td>泄漏敏感信息；</td>
+<td>泄漏其他信息；</td>
+</tr>
+<tr class="even">
+<td>可复现性（Reproducibility）</td>
+<td>攻击者可以随意再次攻击；</td>
+<td>攻击者可以重复攻击，但是有时间限制；</td>
+<td>攻击者很难重复攻击过程；</td>
+</tr>
+<tr class="odd">
+<td>可利用性（Exploitability）</td>
+<td>初学者可以在短期内掌握攻击方法；</td>
+<td>熟练的攻击者才能实现完整攻击；</td>
+<td>漏洞利用条件非常苛刻；</td>
+</tr>
+<tr class="even">
+<td>受影响的用户（Affected users）</td>
+<td>所有用户，默认配置，关键用户；</td>
+<td>部分用户，非默认配置；</td>
+<td>极少数用户，匿名用户；</td>
+</tr>
+<tr class="odd">
+<td>可发现性（Discoverability）</td>
+<td>漏洞很明显，攻击条件很容易获得；</td>
+<td>私有区域且仅部分人能够看见，需要深入挖掘漏洞；</td>
+<td>发现该漏洞极其困难；</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="dread-drawbacks" class="slide level2">
+<h2>DREAD 模型不足之处</h2>
+<ol type="1">
+<li>不支持面向对象设计方法</li>
+<li>不利于捕捉控制流中存在的威胁</li>
+<li>DREAD 方法不能反应不同攻击路径的成本效益差异</li>
+</ol>
+</section>
+</section>
+<section>
+<section id="漏洞管理相关标准" class="title-slide slide level1">
+<h1>漏洞管理相关标准</h1>
+
+</section>
+<section class="slide level2">
+
+<table style="width:100%;">
+<colgroup>
+<col style="width: 23%" />
+<col style="width: 23%" />
+<col style="width: 23%" />
+<col style="width: 28%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>漏洞标准</th>
+<th>英文全称</th>
+<th>中文名称</th>
+<th>建议书编号</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>CVE</td>
+<td>Common Vulnerability and Exposure</td>
+<td>通用漏洞及曝光</td>
+<td><a href="https://www.itu.int/ITU-T/recommendations/rec.aspx?rec=11061">ITU-T X.1520</a></td>
+</tr>
+<tr class="even">
+<td>CVSS</td>
+<td>Common Vulnerability Scoring System</td>
+<td>通用漏洞评分系统</td>
+<td><a href="https://www.itu.int/rec/T-REC-X.1521/en">ITU-T X.1521</a></td>
+</tr>
+<tr class="odd">
+<td>CWE</td>
+<td>Common Weakness Enumeration</td>
+<td>通用缺陷枚举</td>
+<td><a href="https://www.itu.int/rec/T-REC-X.1524/en">ITU-T X.1524</a></td>
+</tr>
+<tr class="even">
+<td>CWSS</td>
+<td>Common Weakness Scoring System</td>
+<td>通用缺陷评分系统</td>
+<td><a href="https://www.itu.int/rec/T-REC-X.1525/en">ITU-T X.1525</a></td>
+</tr>
+<tr class="odd">
+<td>CPE</td>
+<td>Common Platform Enumeration</td>
+<td>通用平台枚举</td>
+<td><a href="https://www.itu.int/rec/T-REC-X.1528/en">ITU-T X.1528</a></td>
+</tr>
+<tr class="even">
+<td>OVAL</td>
+<td>Open Vulnerability and Assesment Language</td>
+<td>开放漏洞评估语言</td>
+<td><a href="https://www.itu.int/rec/T-REC-X.1526/en">ITU-T X.1526</a></td>
+</tr>
+<tr class="odd">
+<td>CAPEC</td>
+<td>Common Attack Pattern Enumeration and Classification</td>
+<td>常见攻击模式枚举和分类</td>
+<td><a href="https://www.itu.int/rec/T-REC-X.1544/en">ITU-T X.1544</a></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x01/Cyber_Security_Measurement_and_Management_Poster.png" alt="" /><figcaption>网络安全漏洞管理标准的安全测量和安全管理架构</figcaption>
+</figure>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x01/SCE-2011-8-26-p2.png" alt="" /><figcaption>网络安全漏洞管理标准的安全测量关系图</figcaption>
+</figure>
+</section>
+<section id="cvss" class="slide level2">
+<h2>CVSS</h2>
+<blockquote>
+<p>通用弱点评价体系（Common Vulnerability Scoring System, CVSS）是由美国国土安全部主导的 NIAC（国家资讯与分析中心）开发、FIRST（Forum of Incident Response and Security Teams，事件反应和安全小组论坛）维护的一个开放并且能够被产品厂商免费采用的标准。</p>
+</blockquote>
+<p>在 <a href="chap0x02.md.html">第二章</a> 中，我们将详细介绍CVSS的具体内容。</p>
+</section>
+<section id="cve" class="slide level2">
+<h2>CVE</h2>
+<ul>
+<li>CVE 的全称是 Common Vulnerabilities &amp; Exposures ，中文翻译对应「公共漏洞曝光」</li>
+<li>CVE 目前已经是信息安全界内有关漏洞的一个事实上的标准，安全研究人员也把自己发现的漏洞能够具备 CVE-ID 编号为荣
+<ul>
+<li><strong>并不是所有发现的安全漏洞都能获得 CVE-ID</strong> ，申请 CVE-ID 有一个严格的流程</li>
+</ul></li>
+</ul>
+</section>
+<section id="cnvd" class="slide level2">
+<h2>CNVD</h2>
+<p><a href="http://www.cnvd.org.cn/webinfo/list?type=7">国家信息安全漏洞共享平台（China National Vulnerability Database，简称CNVD）</a> 是由国家计算机网络应急技术处理协调中心（中文简称国家互联应急中心，英文简称 <strong>CNCERT</strong> ）联合国内重要信息系统单位、基础电信运营商、网络安全厂商、软件厂商和互联网企业建立的信息安全漏洞信息共享知识库。</p>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p><a href="http://www.cnvd.org.cn/webinfo/list?type=7">国家信息安全漏洞共享平台（China National Vulnerability Database，简称CNVD）</a> 由国家互联网应急中心、国家信息技术安全研究中心于2009年10月牵头发起，由国家互联网应急中心（简称 <strong>CNCERT</strong> ）具体组织运作，联合国内重要信息系统单位、基础电信运营商、网络安全厂商、软件厂商和互联网企业建立的信息安全漏洞信息共享知识库。</p>
+</blockquote>
+</section>
+<section id="nvd" class="slide level2">
+<h2>NVD</h2>
+<p>NVD（National Vulnerability Database）是美国的国家漏洞数据库，其角色和作用同我国的 CNVD。</p>
+</section>
+<section id="cnnvd" class="slide level2">
+<h2>CNNVD</h2>
+<blockquote>
+<p><a href="http://www.cnnvd.org.cn/web/xxk/gyCnnvdJs.tag">国家信息安全漏洞库，英文名称“China National Vulnerability Database of Information Security”简称“CNNVD”，于2009年10月18日正式成立，是 <strong>中国信息安全测评中心</strong> 为切实履行漏洞分析和风险评估的职能，负责建设运维的国家信息安全漏洞库，面向国家、行业和公众提供灵活多样的信息安全数据服务，为我国信息安全保障提供基础服务</a></p>
+</blockquote>
+</section>
+<section id="cwe" class="slide level2">
+<h2>CWE</h2>
+<p><a href="http://cwe.mitre.org/about/index.html">常见缺陷列表（Common Weakness Enumeration, CWE）</a>是对常见软件缺陷和漏洞进行分类整理的一套标准，该标准的制订目标是归纳和整理不同的软件缺陷机理，统一软件安全漏洞（包括架构、设计或代码实现层面）的描述语言以便于开发出自动化工具来识别、修复和预防这些缺陷。</p>
+</section>
+<section class="slide level2">
+
+<p>无论 CVSS ，还是 CVE 、CWE ，其基本目标都是围绕创建 <strong>可度量的安全</strong>（标准）。</p>
+</section>
+</section>
+<section>
+<section id="以破壳漏洞为例" class="title-slide slide level1">
+<h1>以「破壳」漏洞为例</h1>
+
+</section>
+<section id="cve-2014-6271-on-nvd" class="slide level2">
+<h2>CVE-2014-6271 on NVD</h2>
+<p><a href="https://nvd.nist.gov/vuln/detail/CVE-2014-6271"><img data-src="images/chap0x01/cve-nvd.png" /></a></p>
+</section>
+<section id="cvss-v2.0-of-cve-2014-6271" class="slide level2">
+<h2>CVSS v2.0 of CVE-2014-6271</h2>
+<p><a href="https://nvd.nist.gov/vuln-metrics/cvss/v2-calculator?name=CVE-2014-6271&amp;vector=(AV:N/AC:L/Au:N/C:C/I:C/A:C)&amp;source=NIST"><img data-src="images/chap0x01/cve-cvss.png" /></a></p>
+</section>
+<section id="cvss-v3.x-of-cve-2014-6271" class="slide level2">
+<h2>CVSS v3.x of CVE-2014-6271</h2>
+<p><a href="https://nvd.nist.gov/vuln-metrics/cvss/v3-calculator?name=CVE-2014-6271&amp;vector=AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H&amp;version=3.1&amp;source=NIST"><img data-src="images/chap0x01/cve-cvss3x.png" /></a></p>
+</section>
+<section id="cwe-of-cve-2014-6271" class="slide level2">
+<h2>CWE of CVE-2014-6271</h2>
+<p><a href="https://nvd.nist.gov/vuln/detail/CVE-2014-6271"><img data-src="images/chap0x01/cve-cwe.png" /></a></p>
+</section>
+<section id="cpe-of-cve-2014-6271" class="slide level2">
+<h2>CPE of CVE-2014-6271</h2>
+<p><a href="https://nvd.nist.gov/vuln/detail/CVE-2014-6271"><img data-src="images/chap0x01/cve-cpe.png" /></a></p>
+</section>
+<section id="capec-of-cve-2014-6271" class="slide level2">
+<h2>CAPEC of CVE-2014-6271</h2>
+<p><a href="https://cve.circl.lu/cve/CVE-2014-6271"><img data-src="images/chap0x01/cve-capec.png" /></a></p>
+</section>
+<section id="oval-of-cve-2014-6271" class="slide level2">
+<h2>OVAL of CVE-2014-6271</h2>
+<p><a href="https://cve.circl.lu/cve/CVE-2014-6271"><img data-src="images/chap0x01/cve-oval.png" /></a></p>
+</section>
+</section>
+<section>
+<section id="attck" class="title-slide slide level1">
+<h1>ATT&amp;CK</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li><code>ATT&amp;CK</code> 模型是 <code>MITRE</code> 在洛克希德-马丁公司提出的 <code>网络杀伤链（Cyber Kill Chain）</code> 模型 的基础上，构建了一套更细粒度、更易共享的知识模型和框架</li>
+<li>分支
+<ul>
+<li>PRE-ATT&amp;CK</li>
+<li>ATT&amp;CK for Enterprise</li>
+<li>ATT&amp;CK for Mobile</li>
+</ul></li>
+</ul>
+</section>
+<section id="pre-attck" class="slide level2">
+<h2>PRE-ATT&amp;CK</h2>
+<p>覆盖杀伤链模型的前两个阶段，包含了与攻击者在尝试利用特定目标网络或系统漏洞进行相关操作有关的战术和技术。</p>
+</section>
+<section id="attck-for-enterprise" class="slide level2">
+<h2>ATT&amp;CK for Enterprise</h2>
+<p>覆盖杀伤链模型的后五个阶段，ATT&amp;CK for Enterprise 由适用于 Windows 、Linux 和 macOS 系统的技术和战术部分共同组成。</p>
+</section>
+<section class="slide level2">
+
+<p><a href="https://attack.mitre.org/"><img data-src="images/chap0x01/ATTACKMatrixforEnterprise.png" /></a></p>
+</section>
+<section id="attck-for-mobile" class="slide level2">
+<h2>ATT&amp;CK for Mobile</h2>
+<p>包含适用于移动设备的战术和技术。</p>
+</section>
+<section id="attack-navigator" class="slide level2">
+<h2><a href="https://mitre-attack.github.io/attack-navigator/enterprise/">ATT&amp;CK 导航工具</a></h2>
+<ul>
+<li>一个很有用的工具，可用于映射针对 <code>ATT&amp;CK</code> 技术的控制措施</li>
+<li>可以添加不同的层，来显示特定的检测控制措施、预防控制措施甚至观察到的行为</li>
+<li>导航工具可以在线使用，快速搭建模型或场景，也可以下载下来，进行内部设置，作为一个持久化的解决方案</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p>下一页如图所示，就是使用 <code>ATT&amp;CK 导航工具</code> 制作的针对 2 次「APT 攻击事件报告」整理出的不同攻击过程的标准化定义描述。</p>
+</section>
+<section class="slide level2">
+
+<p><a href="https://mitre-attack.github.io/attack-navigator/enterprise/#layerURL=https://gist.githubusercontent.com/c4pr1c3/797ac8d50be1ce09689576dfdea1cf5b/raw/b99bd4c77ca9b6ebb78c794a0d8a8b1db1763f22/apt3-vs-apt29"><img data-src="images/chap0x01/apt3vsapt29.svg" alt="一个例子 APT3 VS. APT29" /></a></p>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>可视化不同组织在「攻击技术」选择上的差异</li>
+<li>可视化不同安全事件中所涉及到的「攻击技术」差异</li>
+<li>可量化（主观评分，配置着色方案）攻击技术</li>
+</ul>
+</section>
+<section id="attack-applications" class="slide level2">
+<h2>ATT&amp;CK 典型应用场景</h2>
+<ul>
+<li>对抗模拟和攻防演练</li>
+<li>渗透测试活动</li>
+<li>制定行为分析方案</li>
+<li>防御差距评估</li>
+<li>SOC 成熟度评估</li>
+<li>网络威胁情报收集</li>
+</ul>
+</section>
+<section id="attck-对比-cwe-capec" class="slide level2">
+<h2>ATT&amp;CK 对比 CWE / CAPEC</h2>
+<ul>
+<li>ATT&amp;CK 作为一个「知识库」，其所有「知识条目」均来自于「公开披露的真实安全事件」
+<ul>
+<li>ATT&amp;CK 强调「实战性」</li>
+</ul></li>
+<li>CWE / CAPEC 中并非所有「知识条目」都有「公开披露的真实安全事件」作为实例
+<ul>
+<li>CWE / CAPEC 强调「知识完备性」</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="安全策略和安全机制" class="title-slide slide level1">
+<h1>安全策略和安全机制</h1>
+
+</section>
+<section id="安全策略-security-policy" class="slide level2">
+<h2>安全策略 (Security Policy)</h2>
+<ul>
+<li>声明</li>
+<li>哪些能做，哪些不能做</li>
+<li>哪些⾏为允许，哪些⾏为禁⽌</li>
+</ul>
+</section>
+<section id="安全机制-security-mechanism" class="slide level2">
+<h2>安全机制 (Security Mechanism)</h2>
+<ul>
+<li>⽅法/⼯具/⼿段</li>
+<li>实现安全策略</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>安全措施 = 安全策略 + 安全机制</p>
+</blockquote>
+</section>
+<section id="安全假设和信任" class="slide level2">
+<h2>安全假设和信任</h2>
+<blockquote>
+<p>打开⼀扇门需要⼀把钥匙</p>
+</blockquote>
+<ul>
+<li>安全假设：门锁不会被开锁匠用工具打开</li>
+<li>安全需求：只有通过匹配的钥匙才能打开这扇门</li>
+<li>实际环境：技术高超的开锁匠可以在没有钥匙的情况下用自制工具打开门锁</li>
+<li>信任：如果锁匠是可信的，上述安全假设可以成立</li>
+</ul>
+</section>
+<section id="信任的内涵" class="slide level2">
+<h2>信任的内涵</h2>
+<ul>
+<li>开锁匠是可信的：在没有获得门锁主人的授权的前提条件下，开锁匠不会去“开锁”</li>
+<li>门锁的“后门”是可信的：“后门”不会被不可信的人发现，更不会被恶意利用，然而一旦信任不再，基于信任的安全机制将会失去效果</li>
+</ul>
+</section>
+<section id="信任不再安全机制崩塌" class="slide level2">
+<h2>信任不再，安全机制崩塌</h2>
+<p>开锁匠 <strong>非授权</strong> 利用门锁的“后门”，在没有得到门锁主人授权的前提条件下，不使用钥匙也打开了门。</p>
+</section>
+<section id="网络空间中的信任" class="slide level2">
+<h2>网络空间中的「信任」</h2>
+<ul>
+<li>下载软件并安装 - 信任软件作者和分发渠道</li>
+<li>编译代码并运⾏ - 信任代码作者</li>
+<li>打开Office⽂档 - 信任⽂档作者和来源</li>
+<li>打开⽹页 - 信任⽹站主</li>
+<li>查看邮件 - 信任发信⼈</li>
+<li>查看视频 - 信任视频来源</li>
+<li>加⼊局域⽹ - 信任⽹络中的其他使用者</li>
+</ul>
+</section>
+<section id="安全策略中存在的安全假设" class="slide level2">
+<h2>安全策略中存在的安全假设</h2>
+<ul>
+<li>系统的状态能被正确、 <strong>无歧义</strong> 的分为“安全”和“不安全”两种状态</li>
+<li>安全机制能够强制保证系统不会进入“不安全”状态</li>
+</ul>
+</section>
+<section id="安全机制中存在的安全假设" class="slide level2">
+<h2>安全机制中存在的安全假设</h2>
+<ul>
+<li>每一个安全机制都是被设计用来实现安全策略中的一个或多个具体策略</li>
+<li>安全策略的集合能够实现所有的安全策略</li>
+<li>安全机制的实现是正确的</li>
+<li>安全机制的部署和管理是正确的</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>如果安全假设为假，谈何“⽹络安全”？</p>
+</blockquote>
+</section>
+</section>
+<section>
+<section id="计算机网络安全模型" class="title-slide slide level1">
+<h1>计算机网络安全模型</h1>
+
+</section>
+<section id="静态模型分层模型" class="slide level2">
+<h2>静态模型（分层模型）</h2>
+<p><img data-src="images/chap0x01/security-threat-model.png" /></p>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>每一层的安全威胁是既相互独立，又相互联系、相互影响的</li>
+<li>每一层的安全威胁必须依靠当前层的安全策略和安全机制解决</li>
+<li>下一层的安全机制是上一层安全机制的基础</li>
+<li>上一层的安全机制等级不会高于下一层的安全机制等级
+<ul>
+<li>下层不安全，上层的安全无法保障</li>
+<li>下层安全，并不代表上层安全</li>
+</ul></li>
+</ul>
+</section>
+<section id="动态模型-p2dr-模型" class="slide level2">
+<h2>动态模型—— P2DR 模型</h2>
+<ul>
+<li>策略（Policy）</li>
+<li>防护（Protection）</li>
+<li>检测（Detection）</li>
+<li>响应（Response）</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x01/P2DR.png" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="防护">防护</h3>
+<ul>
+<li>主动防护。例如：数据加密、身份认证、访问控制、虚拟专用网 VPN 等；</li>
+<li>被动防护。例如：防火墙、安全扫描、入侵检测。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="检测">检测</h3>
+<ul>
+<li>主动检测。安全测试、蜜罐和安全审计。</li>
+<li>被动检测。蜜罐、入侵检测。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="响应">响应</h3>
+<ul>
+<li>产生警告（Alert / Log）：这是「检测」到异常时的「必选」行为，严格意义上来说并不能算作一种「有效响应」，只是起到了「通知」的作用。</li>
+<li>拒绝访问（Deny）：限制「入站」流量。</li>
+<li>中断（Disrupt）：限制「出站」流量。</li>
+<li>降级/限制访问（Degrade）：「过滤」流量，有选择允许和禁止访问。</li>
+<li>欺骗（Deception / Deceive）：「重定向」流量。</li>
+<li>灾难恢复（Recovery）：启用备用系统、数据恢复措施等。</li>
+</ul>
+</section>
+<section id="用p2dr模型审视stridecvsscvecwe" class="slide level2">
+<h2>用P2DR模型审视：STRIDE/CVSS/CVE/CWE</h2>
+<ul>
+<li>策略
+<ul>
+<li>基于 <code>STRIDE</code> 进⾏系统设计</li>
+</ul></li>
+<li>防护
+<ul>
+<li>基于 <code>CWE</code> 在系统开发过程中规避已知弱点</li>
+</ul></li>
+<li>检测
+<ul>
+<li>检测到新漏洞后添加到 <code>CVE</code></li>
+</ul></li>
+<li>响应
+<ul>
+<li>基于 <code>CVSS</code> 对 <code>CVE</code> 条目的评分确定响应策略：轻重缓急</li>
+</ul></li>
+</ul>
+</section>
+<section id="动态模型-p2dr2-模型" class="slide level2">
+<h2>动态模型—— P2DR2 模型</h2>
+<ul>
+<li>策略（Policy）</li>
+<li>防护（Protection）</li>
+<li>检测（Detection）</li>
+<li>响应（Response）</li>
+<li>恢复（Recovery）</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x01/P2DR2.png" /></p>
+</section>
+<section id="计算机络安全模型小结" class="slide level2">
+<h2>计算机⽹络安全模型小结</h2>
+<ul>
+<li>从静态的视角看计算机⽹络安全模型：安全威胁是可以分层的</li>
+<li>从动态的视角看计算机⽹络安全模型：安全威胁是持续变化的</li>
+<li>计算机⽹络安全模型的核⼼特点
+<ul>
+<li><strong>对抗</strong>：威胁 VS. 安全策略/机制</li>
+<li><strong>变化</strong>：威胁 / 安全策略/机制 / 环境</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="等级安全保护" class="title-slide slide level1">
+<h1>等级安全保护</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>橘皮书：TCSEC</li>
+<li>红皮书：TNI</li>
+<li>ITSEC</li>
+<li>CC</li>
+</ul>
+</section>
+<section id="我国等级保护现状" class="slide level2">
+<h2>我国等级保护现状</h2>
+<ul>
+<li><a href="http://www.cac.gov.cn/2016-11/07/c_1119867116.htm">《中华人民共和国网络安全法》（以下简称《网络安全法》</a> 于 2016 年 11 月 7 日第十二届全国人民代表大会常务委员会第二十四次会议通过，于 2017 年 6 月 1 日起施行</li>
+<li>《网络安全法》出台后，等级安全保护进入 2.0 时代。这意味着在遵照<a href="http://www.gov.cn/gzdt/2007-07/24/content_694380.htm">《信息安全等级保护管理办法》</a> 及其配套的标准<a href="http://www.djbh.net/webdev/file/webFiles/File/jsbz/2012323103010.pdf">《信息系统安全等级保护定级指南》</a> 建立的「信息安全等级保护体系」已全面升级</li>
+<li>随着 2018 年 1 月 19 日，全国信息安全标准化技术委员会发布关于 <a href="http://www.djbh.net/webdev/web/HomeWebAction.do?p=getGzjb&amp;id=8a8182565fd8b6b901612bc8a72e00e5">《信息安全技术 网络安全等级保护定级指南（征求意见稿）》</a> （以下简称《定级指南》），标准修订完成后，《信息安全技术 <strong>网络安全</strong>等级保护定级指南》 将替代原来的 GB/T22240-2008《信息安全技术<strong>信息系统安全</strong>等级保护定级指南》</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="等保定级原则">等保定级原则</h3>
+<p><img data-src="images/chap0x01/layered-protection.png" /></p>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>关于上述三类受侵害的客体分类，一般损害、严重损害和特别严重损害的定义，基本沿袭原有表达。但是在《定级指南》中，对公民、法人和其他组织的合法权益，遭受特别严重损害的，明确定级在“第三级”，彰显了对私权利维护的升级。</li>
+<li>对于基础信息网络、云计算平台、大数据平台等支撑类网络，应根据其承载或将要承载的等级保护对象的重要程度确定其安全保护等级，原则上应不低于其承载的等级保护对象的安全保护等级。</li>
+<li>《定级指南》规定，原则上，大数据安全保护等级不低于第三级。对于确定为关键信息基础设施的，原则上其安全保护等级不低于第三级。</li>
+</ul>
+</section>
+<section id="等级保护的意义" class="slide level2">
+<h2>等级保护的意义</h2>
+<ul>
+<li>明确安全需求
+<ul>
+<li>资产在哪⼉？价值多⼤？</li>
+</ul></li>
+<li>安全防护是需要成本投⼊的
+<ul>
+<li>信息安全与信息化建设要协调</li>
+</ul></li>
+<li>安全建设和管理需要兼顾系统性、针对性、可⾏性</li>
+<li>明确重点、突出重点、保护重点</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="计算机安全法规" class="title-slide slide level1">
+<h1>计算机安全法规</h1>
+
+</section>
+<section class="slide level2">
+
+<p>刑法修正案(七)在刑法第285条中增加两款(第⼆款、第三款)</p>
+<blockquote>
+<p>违反国家规定,侵⼊前款规定以外的计算机信息系统或者采用其他技术⼿段,获取该计算机信息系统中存储、处理或者传输的数据,或者对该计算机信息系统实施非法控制,情节严重的,处三年以下有期徒刑或者拘役,并处或者单处罚⾦;情节特别严重的,处三年以上七年以下有期徒刑,并处罚⾦。</p>
+</blockquote>
+<blockquote>
+<p>提供专门用于侵⼊、非法控制计算机信息系统的程序、⼯具,或者明知他⼈实施侵⼊、非法控制计算机信息系统的违法犯罪⾏为⽽为其提供程序、⼯具,情节严重的,依照前款的规定处罚。</p>
+</blockquote>
+</section>
+<section id="络安全不可戏" class="slide level2">
+<h2>⽹络安全不可⼉戏</h2>
+<p>《最⾼⼈民法院、最⾼⼈民检察院关于办理危害计算机信息系统安全刑事案件应用法律若⼲问题的解释》 * 2011年6月20日最⾼⼈民法院审判委员会第1524次会议、2011年7月11日最⾼⼈民检察院第⼗⼀届检察委员会第63次会议通过 * 自2011年9月1日起施⾏</p>
+</section>
+<section id="中华人民共和国网络安全法" class="slide level2">
+<h2>中华人民共和国网络安全法</h2>
+<p><img data-src="images/chap0x01/ChinaNetSecRules.jpg" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="第七章第七六条">第七章，第七⼗六条（⼆）</h3>
+<blockquote>
+<p>网络安全，是指通过采取必要措施，防范对网络的攻击、侵入、干扰、破坏和非法使用以及意外事故，使网络处于稳定可靠运行的状态，以及保障网络数据的 <strong>完整性</strong> 、<strong>保密性</strong> 、<strong>可用性</strong> 的能力。</p>
+</blockquote>
+</section>
+<section id="laws-1" class="slide level2">
+<h2>重要法律法规一览</h2>
+<p><a href="http://www.itsec.gov.cn/fgbz/"><img data-src="images/chap0x01/cyber-security-laws.png" /></a></p>
+</section>
+<section id="laws-2" class="slide level2">
+<h2>重要法律法规一览</h2>
+<p><a href="https://www.secrss.com/articles/12854">我国近年来数据安全法律法规最全汇编 2019-08-09</a></p>
+</section>
+<section id="知法守法" class="slide level2">
+<h2>知法守法</h2>
+<ul>
+<li>⽹络安全攻防实验必须严格限制在局域⽹范围内</li>
+<li>了解保密相关法律法规
+<ul>
+<li><font color='red'>泄密坐牢，卖密杀头</font></li>
+<li><font color='red'>涉密不联⽹，联⽹不涉密</font></li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="课后思考题" class="title-slide slide level1">
+<h1>课后思考题</h1>
+
+</section>
+<section class="slide level2">
+
+<p>以下⾏为分别破坏了CIA和AAA中哪⼀个属性或多个属性？</p>
+<ul>
+<li>小明抄小强的作业</li>
+<li>小明把小强的系统折腾死机了</li>
+<li>小明修改了小强的淘宝订单</li>
+<li>小明冒充小强的信用卡账单签名</li>
+<li>小明把自⼰电脑的IP修改为小强电脑的IP，导致小强的电脑⽆法上⽹</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p>有⼀次，小明⼝袋里有100元，因为打瞌睡，被小偷偷⾛了，搞得晚上没饭吃。又⼀天，小明⼝袋里有200元，这次小明为了防范小偷，不打瞌睡了，但却被强盗持⼑威胁抢⾛了，搞得⼀天没饭吃，小明当天就报警了。</p>
+<ul>
+<li>试分析两次失窃事件中的：风险、资产、威胁、弱点、攻击、影响</li>
+<li>试用P2DR模型分析以上案例中的“现⾦被抢”事件中的安全策略、安全防护、安全检测和安全响应</li>
+<li>“被抢”事件中，小明的安全策略存在何问题？</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p>针对下述论点，分别设计⼀场景案例（必须和课程相关），使得该论点在该场景中成立</p>
+<ul>
+<li>预防比检测和恢复更重要</li>
+<li>检测比预防和恢复更重要</li>
+<li>恢复比预防和检测更重要</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p>试分析“CAPTCHA图片验证码技术可以阻⽌恶意批量注册⾏为”这句话中的安全策略、安全机制和安全假设分别是什么？CAPTCHA图片举例</p>
+<p><img data-src="images/chap0x01/captcha-demo.jpg" /></p>
+</section>
+<section class="slide level2">
+
+<p>某⼤型软件开发公司的总裁担⼼公司的专利软件设计⽅法被内部员⼯泄露给其他公司，他打算防⽌泄密事件的发⽣。于是他设计了这样⼀个安全机制： <strong>所有员⼯必须每天向他汇报自⼰和其他竞争对⼿公司员⼯的所有联系(包括IM、电⼦邮件、电话等等)</strong> 。你认为该安全机制能达到总裁的预期安全效果吗？为什么？</p>
+</section>
+<section class="slide level2">
+
+<p>请列举你经常使用的互联⽹服务有哪些，通过公开渠道检索这些服务提供商在历史上是否经历过安全事件？据此，撰写⼀篇主题为：《某某互联⽹服务安全问题概要》的调研报告。</p>
+</section>
+</section>
+    </div>
+  </div>
+
+  <script src="lib/reveal.js/lib/js/head.min.js"></script>
+  <script src="lib/reveal.js/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Display the page number of the current slide
+        slideNumber: true,
+        // Push each slide change to the browser history
+        history: true,
+        // Transition style
+        transition: 'fade', // none/fade/slide/convex/concave/zoom
+        math: {
+          mathjax: '',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+menu: {
+		// Specifies which side of the presentation the menu will 
+		// be shown. Use 'left' or 'right'.
+		side: 'left',
+
+		// Specifies the width of the menu.
+		// Can be one of the following:
+		// 'normal', 'wide', 'third', 'half', 'full', or
+		// any valid css length value
+		width: 'normal',
+
+		// Add slide numbers to the titles in the slide list.
+		// Use 'true' or format string (same as reveal.js slide numbers)
+		numbers: true,
+
+		// Specifies which slide elements will be used for generating
+		// the slide titles in the menu. The default selects the first
+		// heading element found in the slide, but you can specify any
+		// valid css selector and the text from the first matching
+		// element will be used.
+		// Note: that a section data-menu-title attribute or an element
+		// with a menu-title class will take precedence over this option
+		titleSelector: 'h1, h2, h3, h4, h5, h6',
+
+		// If slides do not have a matching title, attempt to use the
+		// start of the text content as the title instead
+		useTextContentForMissingTitles: false,
+
+		// Hide slides from the menu that do not have a title.
+		// Set to 'true' to only list slides with titles.
+		hideMissingTitles: false,
+
+		// Adds markers to the slide titles to indicate the 
+		// progress through the presentation. Set to 'false'
+		// to hide the markers.
+		markers: true,
+
+		// Specify custom panels to be included in the menu, by
+		// providing an array of objects with 'title', 'icon'
+		// properties, and either a 'src' or 'content' property.
+		custom: false,
+
+		// Specifies the themes that will be available in the themes
+		// menu panel. Set to 'true' to show the themes menu panel
+		// with the default themes list. Alternatively, provide an
+		// array to specify the themes to make available in the
+		// themes menu panel, for example...
+		// [
+		//     { name: 'Black', theme: 'css/theme/black.css' },
+		//     { name: 'White', theme: 'css/theme/white.css' },
+		//     { name: 'League', theme: 'css/theme/league.css' }
+		// ]
+		themes: false,
+
+		// Specifies the path to the default theme files. If your
+		// presentation uses a different path to the standard reveal
+		// layout then you need to provide this option, but only
+		// when 'themes' is set to 'true'. If you provide your own 
+		// list of themes or 'themes' is set to 'false' the 
+		// 'themesPath' option is ignored.
+		themesPath: 'css/theme/',
+
+		// Specifies if the transitions menu panel will be shown.
+		// Set to 'true' to show the transitions menu panel with
+		// the default transitions list. Alternatively, provide an
+		// array to specify the transitions to make available in
+		// the transitions panel, for example...
+		// ['None', 'Fade', 'Slide']
+		transitions: false,
+
+		// Adds a menu button to the slides to open the menu panel.
+		// Set to 'false' to hide the button.
+		openButton: true,
+
+		// If 'true' allows the slide number in the presentation to
+		// open the menu panel. The reveal.js slideNumber option must 
+		// be displayed for this to take effect
+		openSlideNumber: false,
+
+		// If true allows the user to open and navigate the menu using
+		// the keyboard. Standard keyboard interaction with reveal
+		// will be disabled while the menu is open.
+		keyboard: true,
+
+		// Normally the menu will close on user actions such as
+		// selecting a menu item, or clicking the presentation area.
+		// If 'true', the sticky option will leave the menu open
+		// until it is explicitly closed, that is, using the close
+		// button or pressing the ESC or m key (when the keyboard 
+		// interaction option is enabled).
+		sticky: false,
+
+		// If 'true' standard menu items will be automatically opened
+		// when navigating using the keyboard. Note: this only takes 
+		// effect when both the 'keyboard' and 'sticky' options are enabled.
+		autoOpen: true,
+
+		// If 'true' the menu will not be created until it is explicitly
+		// requested by calling RevealMenu.init(). Note this will delay
+		// the creation of all menu panels, including custom panels, and
+		// the menu button.
+		delayInit: false,
+
+		// If 'true' the menu will be shown when the menu is initialised.
+		openOnInit: false,
+
+		// By default the menu will load it's own font-awesome library
+		// icons. If your presentation needs to load a different
+		// font-awesome library the 'loadIcons' option can be set to false
+		// and the menu will not attempt to load the font-awesome library.
+		loadIcons: true
+	},
+
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'lib/reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'lib/reveal.js/plugin/zoom-js/zoom.js', async: true },
+          { src: 'lib/reveal.js/plugin/math/math.js', async: true },
+          { src: 'lib/reveal.js/plugin/menu/menu.js'},
+          { src: 'lib/reveal.js/plugin/markdown/marked.js'},
+          { src: 'lib/reveal.js/plugin/markdown/markdown.js'},
+          { src: 'lib/reveal.js/plugin/search/search.js'},
+          { src: 'lib/reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'lib/reveal.js/plugin/notes/notes.js', async: true },
+        ]
+      });
+    </script>
+    </body>
+</html>

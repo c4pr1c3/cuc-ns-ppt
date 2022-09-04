@@ -25,8 +25,9 @@ output: revealjs::revealjs_presentation
 
 ## 硬件和软件环境
 
-* PC
+* PC / macOS
 * Linux (Kali)
+* 虚拟化（`Virtualbox` 或 `Docker`）
 
 # 关于课程的教、学方法和原则
 
@@ -93,11 +94,7 @@ output: revealjs::revealjs_presentation
 
 ---
 
-* 平时成绩 30%
-    * 上课考勤 
-    * 主观评价：随堂测试，积极参与课堂讨论
-* 实验报告 70%
-    * 5+ 次实验报告
+* 详见 `当年教学 Wiki` 。
 
 # Q&A
 

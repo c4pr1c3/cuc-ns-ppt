@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="黄玮">
+  <title>网络安全</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="lib/reveal.js/css/reveal.css">
+  <style type="text/css">code{white-space: pre;}</style>
+
+
+    <!-- For syntax highlighting using highlight.js-->
+    <link rel="stylesheet" href="lib/reveal.js/lib/css/zenburn.css">
+
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="lib/reveal.js/css/theme/white.css" id="theme">
+  <!-- Printing and PDF exports -->
+<link rel="stylesheet" media="print" href="lib/reveal.js/css/print/pdf.css" />
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'lib/reveal.js/css/print/pdf.css' : 'lib/reveal.js/css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="lib/reveal.js/lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">网络安全</h1>
+  <p class="author">黄玮</p>
+</section>
+
+<section>
+<section id="第十三章-社会化网络安全" class="title-slide slide level1">
+<h1>第十三章 社会化网络安全</h1>
+
+</section>
+<section id="review-1" class="slide level2">
+<h2>温故</h2>
+<blockquote>
+<p>网络空间（Cyberspace）是一种包含互联网、通信网、物联网、工控网等信息基础设施, 并由人-机-物相互作用而形成的动态虚拟空间</p>
+</blockquote>
+</section>
+<section id="review-2" class="slide level2">
+<h2>温故</h2>
+<blockquote>
+<p>网络空间安全既涵盖包括人、机、物等实体在内的基础设施安全, 也涉及到其中产生、处理、传输、存储的各种信息数据的安全</p>
+</blockquote>
+</section>
+<section id="review-3" class="slide level2">
+<h2>温故</h2>
+<ul>
+<li>网络（空间）安全的研究对象是：具备通信和计算能力的「机器节点」
+<ul>
+<li>人「控制」机器与机器之间的通信过程
+<ul>
+<li>交互式控制：通过鼠标、键盘、触摸屏、语音、体感等</li>
+<li>可编程控制：自动化、智能化、恶意代码等</li>
+</ul></li>
+</ul></li>
+<li>网络空间安全问题的影响力不再局限于数据篡改、系统控制和信息泄露等「狭义」网络安全问题，真实世界和社会的行为可以被来自其「数字孪生」世界的特定组织所操控</li>
+</ul>
+</section>
+<section id="agenda-1" class="slide level2">
+<h2>知新</h2>
+<ul>
+<li>社会化网络
+<ul>
+<li>远早于互联网而独立存在和发展</li>
+</ul></li>
+</ul>
+</section>
+<section id="agenda-2" class="slide level2">
+<h2>知新</h2>
+<ul>
+<li>美国早期传播学实用主义三大代表之一，也是芝加哥学派的先驱 <strong>约翰·杜威</strong> 提出的经典传播学论断</li>
+</ul>
+<blockquote>
+<p>社会不仅是由于传递、传播而得以持续存在, 而且还应该是在传递、传播之间存在着。在共同、共同体、<strong>沟通</strong> 这几个语词之间不仅存在字面上的联系，人们因享有共同的东西而生活于共同体，而 <strong>沟通</strong> 是使他们享有共同的东西的途径</p>
+</blockquote>
+</section>
+<section id="agenda-3" class="slide level2">
+<h2>知新</h2>
+<ul>
+<li><code>互联网等新兴技术</code> 赋予「社会化网络」新的 <strong>沟通</strong> 内涵和形式
+<ul>
+<li>载体类型：语音、纯文字、富文本、图像、录播视频、直播/实时视频、VR/AR 等</li>
+<li>通信手段：电信技术、即时通信、兴趣社群、电子商务等</li>
+</ul></li>
+</ul>
+</section>
+<section id="agenda-4" class="slide level2">
+<h2>知新</h2>
+<ul>
+<li>社会化网络安全的研究对象是：具备通信、思考（计算）和行动能力的「人」
+<ul>
+<li>人与人之间的传承、传播和沟通借助「机器」收发和在「网络空间」传输</li>
+</ul></li>
+</ul>
+</section>
+<section id="agenda-5" class="slide level2">
+<h2>知新</h2>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>通信网/计算机网络</th>
+<th>社会化网络</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>通信对象</td>
+<td>机器与机器（M2M）</td>
+<td>人与人（P2P）<code>over M2M</code></td>
+</tr>
+<tr class="even">
+<td>安全性需求（属性）</td>
+<td>CIA</td>
+<td>CIA + <strong>隐私</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>M2M: Machine to Machine</p>
+</blockquote>
+<blockquote>
+<p>P2P: Person to Person</p>
+</blockquote>
+</section>
+<section id="agenda-6" class="slide level2">
+<h2>知新</h2>
+<ol type="1">
+<li>社交网络安全</li>
+<li>电信诈骗与防范</li>
+<li>电子商务网络安全</li>
+<li>网络勒索</li>
+<li>大数据应用与隐私保护</li>
+</ol>
+</section>
+</section>
+<section>
+<section id="社交网络安全" class="title-slide slide level1">
+<h1>社交网络安全</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>本章所关注的「社交网络」安全特指「互联网+社交网络」安全
+<ul>
+<li>互联网构建在计算机网络之上，相应的本章所关注的社交网络也是构建在计算机网络之上的</li>
+</ul></li>
+</ul>
+</section>
+<section id="闪回第一章威胁分层模型基本理论" class="slide level2">
+<h2>闪回第一章威胁「分层模型」基本理论</h2>
+<ul>
+<li>每一层的安全威胁是既相互独立，又相互联系、相互影响的</li>
+<li>每一层的安全威胁必须依靠当前层的安全策略和安全机制解决</li>
+<li>下一层的安全机制是上一层安全机制的基础</li>
+<li>上一层的安全机制等级不会高于下一层的安全机制等级</li>
+<li>下层不安全，上层的安全无法保障；下层安全，并不代表上层安全</li>
+</ul>
+</section>
+<section id="本章关注社交网络层特有的威胁形式" class="slide level2">
+<h2>本章关注『社交网络』层特有的威胁形式</h2>
+<ul>
+<li>社会工程学与网络钓鱼</li>
+<li>谣言</li>
+<li>恶意营销</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="社会工程学与网络钓鱼" class="title-slide slide level1">
+<h1>社会工程学与网络钓鱼</h1>
+
+</section>
+<section id="什么是社会工程学" class="slide level2">
+<h2>什么是「社会工程学」</h2>
+<ul>
+<li>「社会工程学」（以下简称“社工”）在 <strong>信息安全专业</strong> 语境条件下泛指 <code>人们对执行行为或泄露机密信息的心理操纵</code>。</li>
+<li>“社工”是一种用于信息收集，欺诈或系统访问的信任技巧，它与传统的“骗局”不同，它通常是更复杂的欺诈方案中的众多步骤之一</li>
+</ul>
+<blockquote>
+<p>任何影响他人采取可能符合或不符合其最佳利益的行为的行为。</p>
+</blockquote>
+</section>
+<section id="社工手段概述" class="slide level2">
+<h2>「社工」手段概述</h2>
+<ul>
+<li>所有社会工程学攻击都建立在使人决策产生认知偏差的基础上。这种认知偏差可以被称为 <code>人类意识漏洞</code>。
+<ul>
+<li>社工不仅会利用 <code>人类意识漏洞</code> ，也会配合使用「软硬件漏洞利用」的技术手段</li>
+</ul></li>
+<li><a href="https://capec.mitre.org/data/definitions/403.html">CAPEC-403: Social Engineering (Version 3.3)</a></li>
+</ul>
+</section>
+<section id="社工手段分类" class="slide level2">
+<h2>社工手段分类</h2>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;"></th>
+<th style="text-align: center;">钓鱼</th>
+<th style="text-align: center;">窥视</th>
+<th style="text-align: center;">垃圾搜索</th>
+<th style="text-align: center;">反向社工</th>
+<th style="text-align: center;">水坑攻击</th>
+<th style="text-align: center;">诱饵</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">电邮</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">即时通信</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">电话</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">社交网络</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">云计算</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">网站</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">物理实体</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section class="slide level2">
+
+<h3 id="窥视">窥视</h3>
+<ul>
+<li><code>肩窥</code>（<code>shoulder surfing</code>）</li>
+</ul>
+<p><img data-src="images/chap0x13/shoulder-surfing.jpg" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="防御窥视">防御窥视</h3>
+<ul>
+<li>查看和输入敏感信息时注意观察周围环境风险</li>
+<li>使用 <strong>防偷窥贴膜</strong></li>
+</ul>
+<p><img data-src="images/chap0x13/anti-shoulder-surfing.jpg" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="垃圾搜索dumpster-diving">垃圾搜索（Dumpster Diving）</h3>
+<p><img data-src="images/chap0x13/dumpster-diving.jpg" /></p>
+</section>
+<section class="slide level2">
+
+<p>从海量电子数据中进行数据挖掘也可以被视为技术手段的「垃圾搜索」</p>
+</section>
+<section class="slide level2">
+
+<h3 id="防御垃圾搜索">防御垃圾搜索</h3>
+<ul>
+<li>使用碎纸机处理废弃纸质文档</li>
+<li>根据数据保护等级选择合规的数据销毁标准</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="反向社工">反向社工</h3>
+<ul>
+<li>不同于主动联系受害者的社工方法</li>
+<li>反向社工会「设计」让受害者主动联系攻击者</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="反向社工的三个阶段">反向社工的三个阶段</h3>
+<ol type="1">
+<li>蓄意攻击（制造问题）</li>
+<li>广而告之自己有办法解决（增加曝光，提供联系方式，吸引受害者）</li>
+<li>协助解决（取得信任，顺手牵羊）</li>
+</ol>
+</section>
+<section class="slide level2">
+
+<h3 id="防御反向社工">防御反向社工</h3>
+<ul>
+<li>遇到问题不要慌张</li>
+<li>多种渠道查找解决办法
+<ul>
+<li>识别搜索引擎结果里的「推广」结果</li>
+<li>主动联系官方售后</li>
+<li>拒绝「主动找上门」的解决方案</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="钓鱼">钓鱼</h3>
+<ul>
+<li>使用 IT 技术的「劝说型」社工手段</li>
+<li>常见 IT 钓鱼技术
+<ul>
+<li>钓鱼邮件
+<ul>
+<li>鱼叉式钓鱼：更有针对性、目标接收者范围更小</li>
+</ul></li>
+<li>即时通信钓鱼</li>
+<li>社交网络钓鱼</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="防范钓鱼">防范钓鱼</h3>
+<ul>
+<li>不要轻易下载和打开（邮件或聊天窗口中接收到的）链接和附件
+<ul>
+<li>使用杀毒软件扫描附件</li>
+<li>使用搜索引擎搜索链接</li>
+<li>使用 <a href="https://www.virustotal.com/gui/">在线威胁检测工具</a> 检测链接和附件</li>
+</ul></li>
+<li>不要轻信「诱惑性」或「劝说性」图文、语音等</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="水坑攻击">水坑攻击</h3>
+<p><img data-src="images/chap0x13/watering-hole.png" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="防御水坑攻击">防御水坑攻击</h3>
+<ul>
+<li>做好终端安全防护
+<ul>
+<li>安装终端安全软件</li>
+</ul></li>
+<li>依赖于其他专业人士做好网络安全加固与监测
+<ul>
+<li>“祈祷” 你经常访问的网站和应用没有被攻陷、没有被植入后门</li>
+<li>“祈祷” 你的上网环境没有被攻陷、不存在网络嗅探者</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="诱饵">诱饵</h3>
+<ul>
+<li>🌰 本课程教学 Wiki 上的 <code>期末试题样本.docx</code></li>
+<li>🌰 遗落在角落的 U 盘</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="防御诱饵">防御诱饵</h3>
+<ul>
+<li>提高安全意识</li>
+<li>控制自己的好奇心</li>
+<li>抑制自己的贪欲</li>
+</ul>
+</section>
+<section id="一次虚构的社工案例演示" class="slide level2">
+<h2>一次虚构的社工案例演示</h2>
+<p><img data-src="images/chap0x13/winrar4.20.exploit.gif" /></p>
+</section>
+<section id="钓鱼测试" class="slide level2">
+<h2>钓鱼测试</h2>
+<p><img data-src="images/chap0x13/phishing-quiz.png" /></p>
+</section>
+<section class="slide level2">
+
+<ul>
+<li><a href="https://phishingquiz.withgoogle.com/">钓鱼测试（中文版）</a></li>
+<li><a href="https://www.opendns.com/phishing-quiz/">钓鱼测试（英文版）</a></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="用钓鱼网址识别来检验一下你的反社工能力" class="title-slide slide level1">
+<h1>用「钓鱼网址识别」来检验一下你的反社工能力</h1>
+
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x13/qrcode.png" /></p>
+</section>
+<section class="slide level2">
+
+<p>3 道题，每道题 10 分，你能得多少分？😁</p>
+</section>
+</section>
+<section>
+<section id="谣言" class="title-slide slide level1">
+<h1>谣言</h1>
+
+</section>
+<section id="关键特征" class="slide level2">
+<h2>关键特征</h2>
+<ul>
+<li>内容</li>
+<li>渠道</li>
+<li>传播</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="内容特征">内容特征</h3>
+<p>没有事实依据或有真有假（为了提高内容的可信度）的信息，往往具备明显的「话题性」和「争议性」。</p>
+</section>
+<section class="slide level2">
+
+<h3 id="渠道特征">渠道特征</h3>
+<p>言论发布者、转载者均非官方权威渠道。</p>
+</section>
+<section class="slide level2">
+
+<h3 id="传播特征">传播特征</h3>
+<p>快速传播，类似网络空间中的蠕虫病毒传播。</p>
+</section>
+<section id="谣言造成的危害" class="slide level2">
+<h2>谣言造成的危害</h2>
+<ul>
+<li>恐吓营销
+<ul>
+<li>让消费者感受到对某种东西，或者是某种可能的担忧，从而促使他们购买了商家的产品</li>
+</ul></li>
+<li>操纵民意</li>
+<li>舆情、煽动民意</li>
+</ul>
+</section>
+<section id="谣言管控手段" class="slide level2">
+<h2>谣言管控手段</h2>
+<ul>
+<li>预防</li>
+<li>检测</li>
+<li>溯源</li>
+<li>辟谣</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="面向内容特征的管控">面向内容特征的管控</h3>
+<ul>
+<li><code>检测</code> 为主
+<ul>
+<li>内容识别和理解</li>
+</ul></li>
+<li><code>预防</code> 为辅
+<ul>
+<li>开通谣言举报渠道</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="面向渠道特征的管控">面向渠道特征的管控</h3>
+<ul>
+<li>建立官方信息发布渠道和 <code>辟谣</code> 平台</li>
+<li>信息发布渠道监管（ <code>检测</code> ）
+<ul>
+<li>2017 年 6 月 1 日起，<a href="http://www.xinhuanet.com/yuqing/2017-05/09/c_129596824.htm">《互联网新闻信息服务管理规定》正式实施</a> ，将各类新媒体纳入管理范畴</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="面向传播特征的管控">面向传播特征的管控</h3>
+<ul>
+<li><code>检测</code> 为主
+<ul>
+<li>舆情热点发现</li>
+</ul></li>
+<li><code>溯源</code> 为上
+<ul>
+<li>传播路径按照时间线还原和追溯</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="恶意营销" class="title-slide slide level1">
+<h1>恶意营销</h1>
+
+</section>
+<section class="slide level2">
+
+<p>利用谣言夸大威胁影响和风险发生概率进行恐吓营销则属于恶意营销范畴。</p>
+</section>
+<section id="malicious-share-1" class="slide level2">
+<h2>诱导分享+裂变+诈骗+套取个人隐私</h2>
+<p><img data-src="images/chap0x13/wx-con-1.jpg" /></p>
+</section>
+<section id="malicious-share-2" class="slide level2">
+<h2>诱导分享+裂变+诈骗+套取个人隐私</h2>
+<p><img data-src="images/chap0x13/wx-con-2.jpg" /></p>
+</section>
+<section id="其他恶意营销案例" class="slide level2">
+<h2>其他恶意营销案例</h2>
+<ul>
+<li>「货到付款」骗局</li>
+<li>集赞骗局
+<ul>
+<li>奖励“缩水”风险</li>
+<li>套取个人隐私</li>
+</ul></li>
+</ul>
+</section>
+<section id="恶意营销管控" class="slide level2">
+<h2>恶意营销管控</h2>
+<p>参考『谣言管控手段』。</p>
+</section>
+</section>
+<section>
+<section id="电信诈骗与防范" class="title-slide slide level1">
+<h1>电信诈骗与防范</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>网络听号诈骗</li>
+<li>网络改号诈骗</li>
+<li>伪基站诈骗</li>
+<li>木马远控</li>
+<li>换号诈骗</li>
+</ul>
+</section>
+<section id="网络听号诈骗" class="slide level2">
+<h2>网络听号诈骗</h2>
+<p><img data-src="images/chap0x13/wl-thzp.png" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="手机拨号音在专业音频处理软件中呈现出的波形图">手机拨号音在专业音频处理软件中呈现出的波形图</h3>
+<p><img data-src="images/chap0x13/360-number-leak.jpg" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="看似人畜无害甚至有些有趣的手机拨号音">看似人畜无害甚至有些有趣的手机拨号音</h3>
+<p><img data-src="images/chap0x13/mobile-dial-sound.png" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="防御拨号音泄漏隐私">防御拨号音泄漏隐私</h3>
+<ul>
+<li>避免在语音或视频通话过程中使用拨号功能</li>
+<li>关闭手机拨号按键的击键音</li>
+</ul>
+</section>
+<section id="网络改号诈骗" class="slide level2">
+<h2>网络改号诈骗</h2>
+<blockquote>
+<p>杨女士收到一个自称某银行的电话告知自己的信用卡欠款逾期未还，需要在当天下午4点前还清。杨女士称自己的信用卡没有欠款，对方称杨女士可能涉嫌信用卡诈骗。并轮番冒充警方、检查院的电话对杨女士进行恐吓。为了洗脱罪名，诈骗分子让杨女士去开通了网银，并将密码器上的支付密码告诉诈骗分子，结果银行卡中的资金被瞬间转走44万元。由于目前资金已经被转到境外，所以仍然无法追回。</p>
+</blockquote>
+</section>
+<section class="slide level2">
+
+<h3 id="网络改号的技术原理">网络改号的技术原理</h3>
+<p><img data-src="images/chap0x13/callerid-spoof.jpg" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="defend-against-callerid-spoof-1">防御网络改号诈骗</h3>
+<ul>
+<li>即使接收到「官方号码」发来的短信、电话，也不能掉以轻心
+<ul>
+<li>避免点击短信中的链接，不要在电话交谈中泄漏自己的隐私信息和帐号口令等</li>
+<li>使用搜索引擎检索验证「官方号码」的真实性</li>
+<li>在必要的时候，可以通过更换一个不同运营商的号码 <strong>回拨</strong> 「官方号码」的方式来验证来电内容</li>
+</ul></li>
+<li>官方账号一旦被盗用，发布虚假内容可以认为是「社交媒体时代」的「网络改号」诈骗</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="defend-against-callerid-spoof-2">防御网络改号诈骗</h3>
+<p>在社交网络时代对于「身份」的真实性鉴别并不是仅仅根据号码、昵称、头像、加V认证等就能断定的，要「听其言、观其行、多源交叉验证」其言行。</p>
+</section>
+<section id="伪基站诈骗" class="slide level2">
+<h2>伪基站诈骗</h2>
+<ul>
+<li>针对手机用户的「改号诈骗」
+<ul>
+<li>「官方号码」短信或来电不再可信</li>
+</ul></li>
+<li>可以对手机用户造成「拒绝服务」的效果</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="防范伪基站诈骗">防范伪基站诈骗</h3>
+<ul>
+<li>使用最新的、被安全验证的移动通信技术</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="仅开启最新通信技术支持防御降级攻击">仅开启最新通信技术支持，防御「降级攻击」</h3>
+<p><img data-src="images/chap0x13/volte.png" /></p>
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x13/4g-fake-base-station.png" /></p>
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x13/5g-fake-base-station.png" /></p>
+</section>
+<section id="木马远控" class="slide level2">
+<h2>木马远控</h2>
+<ul>
+<li>技术手段上类似 PC 时代的木马远控</li>
+<li>危害
+<ul>
+<li>短信监听与劫持</li>
+<li>二次攻击跳板</li>
+<li>监听与劫持应用间通信与跳转</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="防范木马远控">防范木马远控</h3>
+<ul>
+<li>做好终端系统安全防护
+<ul>
+<li>及时安装手机系统的安全更新补丁</li>
+<li>从官方应用商店安装软件</li>
+</ul></li>
+<li>提高个人使用终端的安全意识
+<ul>
+<li>避免连入公共无线网络</li>
+<li>防范前述社工攻击</li>
+</ul></li>
+</ul>
+</section>
+<section id="换号诈骗" class="slide level2">
+<h2>换号诈骗</h2>
+<blockquote>
+<p>我换号了，敬请惠存 138-xxxx-yyyy</p>
+</blockquote>
+<blockquote>
+<p>先是以朋友名义通知换号，再要你“帮忙”。</p>
+</blockquote>
+</section>
+<section class="slide level2">
+
+<h3 id="微信等即时通信软件或社交网络应用上的换号诈骗">微信等即时通信软件或社交网络应用上的换号诈骗</h3>
+<ul>
+<li>诈骗者往往会通过一些信息收集手段，在确认「原版」帐号暂时不可用状态之后
+<ul>
+<li>例如可以通过盗号改密码、恶意投诉等方式让目标帐号暂时无法使用</li>
+</ul></li>
+<li>用「山寨版」帐号去添加「原版」帐号社交关系网络中的好友，加好友的理由就是冠冕堂皇的「换号」
+<ul>
+<li>对于一些警惕性高的人，可能会试图联系「原版」帐号并发现确实无法联系了，则会相信骗子的「换号」加好友请求的真实性</li>
+</ul></li>
+<li>一旦「换号」加好友成功，后续的骗局展开就和电话换号诈骗如出一辙了</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="防范换号诈骗">防范换号诈骗</h3>
+<ul>
+<li>线下二次验证</li>
+<li>视频二次验证</li>
+<li>语音二次验证</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="电子商务网络安全" class="title-slide slide level1">
+<h1>电子商务网络安全</h1>
+
+</section>
+<section id="con-of-consumer-1" class="slide level2">
+<h2>消费端</h2>
+<ul>
+<li><a href="https://www.zhihu.com/question/28173417/answer/122551812">心愿购物单</a> 功能被滥用：钓鱼通知伪装成系统通知</li>
+<li>匿名晒单评价功能：避免爬虫过度收集用户数据、建立用户画像进而进行 <strong>精准</strong> 广告/推荐/骚扰/钓鱼/诈骗</li>
+<li>第三方收货平台和电商收货专用小号：面向商家保护消费者隐私联系方式信息</li>
+</ul>
+</section>
+<section id="con-of-consumer-2" class="slide level2">
+<h2>消费端</h2>
+<ul>
+<li>延时发货骗局
+<ul>
+<li>搜索黑优化手段：低价引流、冲高销量、自然搜索排序提升、提价正常发货、低价到期自动退款</li>
+<li>免费收集买家真实联系方式信息：低价付款抽奖，不中奖退款</li>
+</ul></li>
+<li>快递面单的隐私化处理
+<ul>
+<li>防御「垃圾搜索」</li>
+</ul></li>
+<li>货到付款骗局</li>
+</ul>
+</section>
+<section id="企业端" class="slide level2">
+<h2>企业端</h2>
+<ul>
+<li>评价管理：恶意差评管理</li>
+<li>库存管理：恶意秒杀不付款</li>
+<li>价格管理：错标低价商品被羊毛党扫荡</li>
+</ul>
+</section>
+<section id="平台端" class="slide level2">
+<h2>平台端</h2>
+<ul>
+<li>刷单</li>
+<li>反向刷单</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="网络勒索" class="title-slide slide level1">
+<h1>网络勒索</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>勒索病毒</li>
+<li>iCloud 反向劫持</li>
+</ul>
+</section>
+<section id="利用远程管理手机功能锁定受害人手机" class="slide level2">
+<h2>利用远程管理手机功能锁定受害人手机</h2>
+<p><img data-src="images/chap0x13/appleid-icloud-blackmail.jpg" /></p>
+</section>
+</section>
+<section>
+<section id="大数据应用与隐私保护" class="title-slide slide level1">
+<h1>大数据应用与隐私保护</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>数据窃取风险</li>
+<li>数据滥用风险</li>
+<li>数据误用风险</li>
+</ul>
+</section>
+<section id="数据窃取风险" class="slide level2">
+<h2>数据窃取风险</h2>
+<ul>
+<li>2013 年曝光的斯诺登事件</li>
+<li>内部威胁大于外部威胁</li>
+</ul>
+</section>
+<section id="数据滥用风险" class="slide level2">
+<h2>数据滥用风险</h2>
+<ul>
+<li>内部员工的非授权数据访问</li>
+<li>数据共享风险</li>
+</ul>
+</section>
+<section id="数据误用风险" class="slide level2">
+<h2>数据误用风险</h2>
+<ul>
+<li>用户画像与精准营销</li>
+<li>大数据杀熟</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="同商品不同用户不同价一定是大数据杀熟">同商品不同用户不同价一定是大数据杀熟？</h3>
+<ul>
+<li>不同地区的差异化定价
+<ul>
+<li>生产厂商对不同地区实施的区域价格保护机制和促销策略</li>
+</ul></li>
+<li>不同地区就近库存差异</li>
+<li>新用户叠加新人促销优惠折扣</li>
+</ul>
+</section>
+<section id="以系统为中心的安全-vs.-以数据为中心的安全" class="slide level2">
+<h2>以系统为中心的安全 vs. 以数据为中心的安全</h2>
+<ul>
+<li>类比于医院里的「心血管科」和「血液科」
+<ul>
+<li>前者解决（血液循环 vs. 软硬件系统与通信系统）系统本身的安全</li>
+<li>后者保障血液自身安全（存储在系统中和通过系统处理、传输的数据）</li>
+</ul></li>
+<li>以系统为中心的数据安全生命周期：输入、处理和输出</li>
+<li>以数据为中心的数据安全生命周期：数据共享、交换、交易、流通</li>
+</ul>
+</section>
+<section id="传统数据安全-vs.-数据能力成熟度模型" class="slide level2">
+<h2>传统数据安全 vs. 数据能力成熟度模型</h2>
+<ul>
+<li>传统数据安全：<code>CIA</code></li>
+<li>数据能力成熟度模型（<code>Data Security Maturity Model, DSMM</code>）
+<ul>
+<li>数据的权属并不总是属于数据处理者</li>
+<li>用户根据对自身所拥有数据的安全等级期望选择与之相匹配安全能力的组织机构来处理其所拥有的数据</li>
+<li>数据共享、交换、交易和流通环节中的数据流通双方需要具备与所处理数据安全等级相匹配的安全能力成熟度</li>
+</ul></li>
+</ul>
+</section>
+<section id="展望数据安全" class="slide level2">
+<h2>展望数据安全</h2>
+<ul>
+<li>法律能解决数据来源的合法性，但不能解决这些合法获得的数据是否会被安全保存或安全使用</li>
+<li>过去把安全行业当作特种行业进行管理的思路是行不通的：数据无处无时不在，数据安全治理无处无时不在</li>
+<li>很多数据安全前沿技术还有待突破：安全多方计算、同态加密、密文搜索等</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="本课程已完结" class="title-slide slide level1">
+<h1>本课程已完结</h1>
+
+</section>
+<section class="slide level2">
+
+<p>🎉🎉🎉</p>
+</section>
+</section>
+    </div>
+  </div>
+
+  <script src="lib/reveal.js/lib/js/head.min.js"></script>
+  <script src="lib/reveal.js/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Display the page number of the current slide
+        slideNumber: true,
+        // Push each slide change to the browser history
+        history: true,
+        // Transition style
+        transition: 'fade', // none/fade/slide/convex/concave/zoom
+        math: {
+          mathjax: '',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+menu: {
+		// Specifies which side of the presentation the menu will 
+		// be shown. Use 'left' or 'right'.
+		side: 'left',
+
+		// Specifies the width of the menu.
+		// Can be one of the following:
+		// 'normal', 'wide', 'third', 'half', 'full', or
+		// any valid css length value
+		width: 'normal',
+
+		// Add slide numbers to the titles in the slide list.
+		// Use 'true' or format string (same as reveal.js slide numbers)
+		numbers: true,
+
+		// Specifies which slide elements will be used for generating
+		// the slide titles in the menu. The default selects the first
+		// heading element found in the slide, but you can specify any
+		// valid css selector and the text from the first matching
+		// element will be used.
+		// Note: that a section data-menu-title attribute or an element
+		// with a menu-title class will take precedence over this option
+		titleSelector: 'h1, h2, h3, h4, h5, h6',
+
+		// If slides do not have a matching title, attempt to use the
+		// start of the text content as the title instead
+		useTextContentForMissingTitles: false,
+
+		// Hide slides from the menu that do not have a title.
+		// Set to 'true' to only list slides with titles.
+		hideMissingTitles: false,
+
+		// Adds markers to the slide titles to indicate the 
+		// progress through the presentation. Set to 'false'
+		// to hide the markers.
+		markers: true,
+
+		// Specify custom panels to be included in the menu, by
+		// providing an array of objects with 'title', 'icon'
+		// properties, and either a 'src' or 'content' property.
+		custom: false,
+
+		// Specifies the themes that will be available in the themes
+		// menu panel. Set to 'true' to show the themes menu panel
+		// with the default themes list. Alternatively, provide an
+		// array to specify the themes to make available in the
+		// themes menu panel, for example...
+		// [
+		//     { name: 'Black', theme: 'css/theme/black.css' },
+		//     { name: 'White', theme: 'css/theme/white.css' },
+		//     { name: 'League', theme: 'css/theme/league.css' }
+		// ]
+		themes: false,
+
+		// Specifies the path to the default theme files. If your
+		// presentation uses a different path to the standard reveal
+		// layout then you need to provide this option, but only
+		// when 'themes' is set to 'true'. If you provide your own 
+		// list of themes or 'themes' is set to 'false' the 
+		// 'themesPath' option is ignored.
+		themesPath: 'css/theme/',
+
+		// Specifies if the transitions menu panel will be shown.
+		// Set to 'true' to show the transitions menu panel with
+		// the default transitions list. Alternatively, provide an
+		// array to specify the transitions to make available in
+		// the transitions panel, for example...
+		// ['None', 'Fade', 'Slide']
+		transitions: false,
+
+		// Adds a menu button to the slides to open the menu panel.
+		// Set to 'false' to hide the button.
+		openButton: true,
+
+		// If 'true' allows the slide number in the presentation to
+		// open the menu panel. The reveal.js slideNumber option must 
+		// be displayed for this to take effect
+		openSlideNumber: false,
+
+		// If true allows the user to open and navigate the menu using
+		// the keyboard. Standard keyboard interaction with reveal
+		// will be disabled while the menu is open.
+		keyboard: true,
+
+		// Normally the menu will close on user actions such as
+		// selecting a menu item, or clicking the presentation area.
+		// If 'true', the sticky option will leave the menu open
+		// until it is explicitly closed, that is, using the close
+		// button or pressing the ESC or m key (when the keyboard 
+		// interaction option is enabled).
+		sticky: false,
+
+		// If 'true' standard menu items will be automatically opened
+		// when navigating using the keyboard. Note: this only takes 
+		// effect when both the 'keyboard' and 'sticky' options are enabled.
+		autoOpen: true,
+
+		// If 'true' the menu will not be created until it is explicitly
+		// requested by calling RevealMenu.init(). Note this will delay
+		// the creation of all menu panels, including custom panels, and
+		// the menu button.
+		delayInit: false,
+
+		// If 'true' the menu will be shown when the menu is initialised.
+		openOnInit: false,
+
+		// By default the menu will load it's own font-awesome library
+		// icons. If your presentation needs to load a different
+		// font-awesome library the 'loadIcons' option can be set to false
+		// and the menu will not attempt to load the font-awesome library.
+		loadIcons: true
+	},
+
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'lib/reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'lib/reveal.js/plugin/zoom-js/zoom.js', async: true },
+          { src: 'lib/reveal.js/plugin/math/math.js', async: true },
+          { src: 'lib/reveal.js/plugin/menu/menu.js'},
+          { src: 'lib/reveal.js/plugin/markdown/marked.js'},
+          { src: 'lib/reveal.js/plugin/markdown/markdown.js'},
+          { src: 'lib/reveal.js/plugin/search/search.js'},
+          { src: 'lib/reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'lib/reveal.js/plugin/notes/notes.js', async: true },
+        ]
+      });
+    </script>
+    </body>
+</html>

@@ -1,7 +1,0 @@
-[submodule "lib/reveal.js"]
-	path = lib/reveal.js
-	url = https://github.com/c4pr1c3/reveal.js
-[submodule "lib/reveal.js.v4"]
-	path = lib/reveal.js.v4
-	url = https://github.com/c4pr1c3/reveal.js
-	branch = v4

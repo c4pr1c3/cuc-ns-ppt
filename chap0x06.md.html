@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="黄玮">
+  <title>网络安全</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="lib/reveal.js/css/reveal.css">
+  <style type="text/css">code{white-space: pre;}</style>
+
+
+    <!-- For syntax highlighting using highlight.js-->
+    <link rel="stylesheet" href="lib/reveal.js/lib/css/zenburn.css">
+
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="lib/reveal.js/css/theme/white.css" id="theme">
+  <!-- Printing and PDF exports -->
+<link rel="stylesheet" media="print" href="lib/reveal.js/css/print/pdf.css" />
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'lib/reveal.js/css/print/pdf.css' : 'lib/reveal.js/css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="lib/reveal.js/lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">网络安全</h1>
+  <p class="author">黄玮</p>
+</section>
+
+<section>
+<section id="第六章-网络与系统渗透" class="title-slide slide level1">
+<h1>第六章 网络与系统渗透</h1>
+
+</section>
+<section id="温故" class="slide level2">
+<h2>温故</h2>
+<ul>
+<li>网络扫描是网络入侵的序曲</li>
+<li>网络扫描的目的是信息收集</li>
+<li>网络监听是内网安全的大敌</li>
+</ul>
+</section>
+<section id="知新" class="slide level2">
+<h2>知新</h2>
+<ul>
+<li>网络与系统渗透基本原理</li>
+<li>网络与系统渗透案例讲解</li>
+<li>渗透测试工具
+<ul>
+<li>工具只是辅助，最重要的是人</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="序曲" class="title-slide slide level1">
+<h1>序曲</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>先有网络应用，后有网络安全
+<ul>
+<li>脱离应用，谈安全是空谈</li>
+<li><strong>保护资产价值是信息安全一切问题的本原需求</strong>
+<ul>
+<li>等级安全保护</li>
+</ul></li>
+</ul></li>
+<li>信息安全是一个 <strong>持续对抗</strong> 过程
+<ul>
+<li>应用技术发展带动安全技术发展</li>
+<li>攻击技术发展带动防御技术发展
+<ul>
+<li>此消彼长，知己知彼</li>
+<li>猫鼠游戏</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p><a href="http://www.evolutionoftheweb.com/?hl=zh-cn"><img data-src="images/chap0x06/evolution-of-the-web.png" /></a></p>
+</section>
+<section class="slide level2">
+
+<p><a href="http://www.evolutionoftheweb.com/?hl=zh-cn"><img data-src="images/chap0x06/evolution-of-the-web-2.png" /></a></p>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>我们谈到「网络空间安全」的时候到底指的是哪些方面的安全问题？</p>
+</blockquote>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p><strong>网络空间安全</strong> 涉及到在网络空间中 <strong>电磁设备、信息通信系统、运行数据、系统应用</strong> 中所存在的安全问题，既要保护信息通信技术系统及其承载的数据不受损害；也要防止对这些信息通信技术系统的运用或滥用对 <strong>政治安全、经济安全、文化安全、社会安全与国防安全</strong> 的冲击。</p>
+</blockquote>
+<p>—— <a href="https://www.easyaq.com/news/137389782.shtml">方滨兴 《从“六论”视角论网络空间安全观念》2017.9</a></p>
+</section>
+<section id="new-application" class="slide level2">
+<h2><strong>新</strong> 应用场景</h2>
+<ul>
+<li>区块链</li>
+<li>容器</li>
+<li>边缘计算、雾计算</li>
+<li>工控</li>
+<li>物联网</li>
+<li>智能家居</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="专业术语与概念定义" class="title-slide slide level1">
+<h1>专业术语与概念定义</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>交换机 Switch</li>
+<li>客户端 Client</li>
+<li>服务器 Server</li>
+<li>骨干网 / 广域网 / 局域网</li>
+<li>虚拟主机 / VPS / 主机托管</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>域名解析服务器 DNS: Domain Name System
+<ul>
+<li>域名解析：将域名翻译、转换成IP地址</li>
+</ul></li>
+<li>Web服务器 Web Server：Static Page Serve</li>
+<li>应用程序服务器 App Server：Dynamic Pages Serve</li>
+<li>数据库服务器 Database Server</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>网络渗透/系统渗透 Network Penetration / System Penetration</li>
+<li>内容分发网络 CDN: Content Delivery Network</li>
+</ul>
+</section>
+<section id="内容分发网络" class="slide level2">
+<h2>内容分发网络</h2>
+<p><img data-src="images/chap0x06/cdn.png" /></p>
+</section>
+<section id="云防火墙" class="slide level2">
+<h2>云防火墙</h2>
+<p><img data-src="images/chap0x06/cdn-based-cloud-fw.png" /></p>
+</section>
+<section id="云安全" class="slide level2">
+<h2>云安全？</h2>
+<ul>
+<li>基于 CDN 的云安全
+<ul>
+<li>保护第三方 Web 站点</li>
+</ul></li>
+<li>云计算安全
+<ul>
+<li>IDC 安全</li>
+<li>VPS 安全</li>
+<li>Web 安全</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>新概念不断，但网络安全的基本原理并没有改变</p>
+</blockquote>
+</section>
+<section id="网络应用与网络安全问题示例" class="slide level2">
+<h2>网络应用与网络安全问题示例</h2>
+<table>
+<thead>
+<tr class="header">
+<th>网络应用</th>
+<th>网络安全</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>电子邮件</td>
+<td>垃圾邮件、社会工程学攻击</td>
+</tr>
+<tr class="even">
+<td>局域网</td>
+<td>ARP 投毒、网络嗅探与中间人攻击</td>
+</tr>
+<tr class="odd">
+<td>网购</td>
+<td>诈骗、钓鱼、羊毛党</td>
+</tr>
+<tr class="even">
+<td>网游</td>
+<td>盗号、虚拟货币盗窃</td>
+</tr>
+<tr class="odd">
+<td>微博</td>
+<td>盗号、垃圾@、虚假信息</td>
+</tr>
+<tr class="even">
+<td>论坛</td>
+<td>盗号、垃圾广告与反动言论</td>
+</tr>
+<tr class="odd">
+<td>视频</td>
+<td>畸形视频（恶意代码捆绑）</td>
+</tr>
+<tr class="even">
+<td>电子书</td>
+<td>恶意代码捆绑</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section>
+<section id="网络安全简史" class="title-slide slide level1">
+<h1>网络安全简史</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>1984 年 英国菲利普王子的电子邮箱被黑</li>
+<li>1988 年 莫瑞斯蠕虫，感染了 6000 台主机（全球互联网1/10的主机）</li>
+<li>1995 年 美国法院、CIA、空军的门户网站页面被篡改</li>
+<li>2003 年 冲击波蠕虫
+<ul>
+<li>针对 Windows 操作系统 RPC 服务（445端口）</li>
+<li>导致运营商们大规模运用防火墙、访问控制技术封锁互联网上的非 Web 服务端口</li>
+<li>每小时感染 2500 台主机</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>2005 年 MySpace Samy 蠕虫：史上第一个利用XSS漏洞传播的蠕虫
+<ul>
+<li>传播速度惊人：20 小时感染上百万台主机（每小时感染 50000 台主机）</li>
+</ul></li>
+<li>2008 年 全球范围内频繁出现大规模 SQL 注入攻击网站事件。</li>
+<li>2010 年 6 月，震网（Stuxnet）病毒被曝光，这是史上第一个“超级破坏性武器”，就此揭开了「高级持续威胁（Advanced Persistent Threat, APT）」这个研究主题</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>2016 年 8 月，一个名为 “Shadow Brokers” 的黑客组织号称入侵了方程式组织窃取了大量机密文件，并有选择的公开了一部分黑客工具（0day 漏洞利用工具），其中就包含一个名为 <code>Eternalblue（永恒之蓝）</code> 的针对 Windows 445 端口远程代码执行的漏洞利用工具。
+<ul>
+<li>方程式（Equation Group）据称是美国国家安全局（NSA）下属的黑客组织，有着极高的技术手段</li>
+</ul></li>
+<li>2017 年 WannaCry <strong>勒索</strong> 病毒袭击了全球 150 多个国家和地区，影响领域包括政府部门、医疗服务、公共交通、邮政、通信和汽车制造业。这次事件的罪魁祸首正是来自于 <code>永恒之蓝</code> 漏洞利用工作所针对的漏洞。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x06/2012-sqli.png" alt="" /><figcaption>2012 年 4 月 Nikjju 大规模 SQL 注入篡改了至少 18 万个网页</figcaption>
+</figure>
+</section>
+<section id="全球个人口令泄露总量惊人" class="slide level2">
+<h2>全球个人口令泄露总量惊人</h2>
+<p><a href="https://haveibeenpwned.com/Passwords"><img data-src="images/chap0x06/pwned-passwords.png" /></a></p>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x06/fail2ban-logs.png" alt="" /><figcaption>真实的互联网小破站点日常</figcaption>
+</figure>
+</section>
+<section id="网络安全的威胁态势历史" class="slide level2">
+<h2>网络安全的威胁态势历史</h2>
+<ul>
+<li>1999 年~2002 年 萌芽：摸索</li>
+<li>2003 年~2006 年 暗黑：混乱、攻击</li>
+<li>2007 年~2011 年 光明：有序、防御</li>
+<li>2012 年~ 泛在：移动、物联网</li>
+</ul>
+</section>
+<section id="网络安全的威胁分类" class="slide level2">
+<h2>网络安全的威胁分类</h2>
+<ul>
+<li>代码执行是网络安全的最严重威胁</li>
+<li>拒绝服务攻击是网络安全永恒的主题</li>
+<li>Web 安全是网络安全当前的主战场</li>
+<li>Everything is connected! Everything is Hackable!
+<ul>
+<li><strong>新应用场景</strong> 安全需求蓬勃发展</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p><a href="https://nvd.nist.gov/vuln/search/statistics?form_type=Basic&amp;results_type=statistics&amp;search_type=all"><img data-src="images/chap0x06/vulnerabilities-by-year.png" alt="CVE 漏洞历年统计数据（截止 2020 年 8 月）" /></a></p>
+</section>
+</section>
+<section>
+<section id="网络与系统渗透基本原理" class="title-slide slide level1">
+<h1>网络与系统渗透基本原理</h1>
+
+</section>
+<section id="总体差异" class="slide level2">
+<h2>总体差异</h2>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>渗透测试</th>
+<th>网络入侵</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>目的</td>
+<td>发现漏洞，提出漏洞修补建议</td>
+<td>破坏 CIA</td>
+</tr>
+<tr class="even">
+<td>手段</td>
+<td>业务连续性和数据完整性是红线</td>
+<td>无限制的漏洞利用手段</td>
+</tr>
+<tr class="odd">
+<td>结果</td>
+<td>渗透测试报告，所有已发现漏洞得到修补</td>
+<td>CIA 被破坏</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="方法论区别与联系" class="slide level2">
+<h2>方法论区别与联系</h2>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>渗透测试</th>
+<th>网络入侵</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>取得被测试目标的法律授权</strong></td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr class="even">
+<td>信息收集</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr class="odd">
+<td>目标踩点</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr class="even">
+<td>网络扫描</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr class="odd">
+<td>漏洞发现</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr class="even">
+<td>漏洞扫描（识别已知漏洞）</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr class="odd">
+<td>漏洞挖掘（发现未知漏洞）</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr class="even">
+<td>漏洞利用之提升权限</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr class="odd">
+<td><strong>漏洞利用之后门植入</strong></td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr class="even">
+<td><strong>提供测试报告</strong></td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr class="odd">
+<td><strong>擦除入侵痕迹</strong></td>
+<td>ℹ️</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>ℹ️ 正常的渗透测试由于不会对被测试目标系统及网络造成破坏、点到即止。既然不是「入侵」，当然不存在「擦除入侵痕迹」的需求。但是，有时会在测试过程中出于评估漏洞危害的目的出发做的一些轻微的系统改动或测试数据获取（例如创建用户、读取指定用户数据），会在渗透测试结束后清理掉本地保存的测试数据以及还原测试前数据和系统状态。</p>
+</blockquote>
+</section>
+<section id="渗透测试的核心关键技术" class="slide level2">
+<h2>渗透测试的核心关键技术</h2>
+<ul>
+<li>第五章 网络扫描
+<ul>
+<li>信息收集</li>
+<li>目标踩点</li>
+<li>网络扫描</li>
+</ul></li>
+<li>本章重点
+<ul>
+<li>漏洞扫描</li>
+<li>漏洞利用
+<ul>
+<li>提升权限</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="黑客入侵的一般思维方式" class="slide level2">
+<h2>黑客入侵的一般思维方式</h2>
+<ol type="1">
+<li>信息收集
+<ul>
+<li>社会工程学手段</li>
+<li>网络扫描</li>
+<li>漏洞发现</li>
+</ul></li>
+<li>目标踩点
+<ul>
+<li>确认收集到的信息</li>
+</ul></li>
+<li>漏洞利用
+<ul>
+<li>实现攻击目标</li>
+</ul></li>
+<li>维持系统控制权
+<ul>
+<li>后门植入</li>
+</ul></li>
+<li>清理访问痕迹</li>
+</ol>
+<blockquote>
+<p>ℹ️ 周而复始，按需执行 1. 和 2.</p>
+</blockquote>
+</section>
+<section id="cyber-kill-chain-1" class="slide level2">
+<h2>网络空间杀伤链（Cyber Kill Chain）模型</h2>
+<p>洛克希德-马丁公司提出的网络空间杀伤链如下图所示：</p>
+<p><a href="https://www.lockheedmartin.com/en-us/capabilities/cyber/cyber-kill-chain.html"><img data-src="images/chap0x06/THE-CYBER-KILL-CHAIN-body.png" /></a></p>
+</section>
+<section id="cyber-kill-chain-2" class="slide level2">
+<h2>网络空间杀伤链（Cyber Kill Chain）模型</h2>
+<ul>
+<li>识别 - 武器化 - 投递 - 漏洞利用 - 安装（后门） - 命令与控制 - 达成目标</li>
+<li>Reconnaissance - Weaponization - Delivery - Exploitation - Installation - Command &amp; Control - Actions on Objective</li>
+</ul>
+</section>
+<section id="军事学中的杀伤链kill-chain模型" class="slide level2">
+<h2>军事学中的杀伤链（Kill Chain）模型</h2>
+<ul>
+<li>发现 - 定位- 跟踪 - 瞄准 - 打击 - 评价</li>
+<li>Find - Fix - Track - Target - Engage - Assess
+<ul>
+<li>F2T2EA</li>
+</ul></li>
+<li>可以用于对抗上述「网络空间杀伤链」模型，所以又被称为「反杀伤链」模型</li>
+</ul>
+</section>
+<section id="网络防御的意识误区" class="slide level2">
+<h2>网络防御的意识误区</h2>
+<ul>
+<li>我购买并部署了价格昂贵的安全设备就可以高枕无忧了
+<ul>
+<li>任何安全设备都是由程序员开发的
+<ul>
+<li><a href="https://mp.weixin.qq.com/s/qJGLQaJM0FrHto3uJhh09w">无论是硬件还是软件，都是依赖于代码执行</a></li>
+</ul></li>
+</ul></li>
+<li>过滤所有监听端口的入站数据就可以高枕无忧了
+<ul>
+<li>过滤策略和机制都可能由于存在漏洞而被绕过</li>
+</ul></li>
+<li>攻击之前一定会有扫描行为
+<ul>
+<li>社会工程学手段、滥用第三方服务都可以实现信息收集而不留下任何扫描行为记录</li>
+</ul></li>
+</ul>
+<blockquote>
+<p>黑客是一群不按常理出牌的人。</p>
+</blockquote>
+</section>
+</section>
+<section>
+<section id="from-intel-to-intrusion" class="title-slide slide level1">
+<h1>案例一：从信息收集到入侵提权</h1>
+
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>案例“目标”：www.hack-test.com</p>
+</blockquote>
+<blockquote>
+<p>ℹ️ 重要的不是具体站点，而是方法。</p>
+</blockquote>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>从域名获取 IP</li>
+<li>从 IP 获取旁站</li>
+<li>收集系统与网络配置详细信息</li>
+<li>踩点</li>
+<li>发现漏洞</li>
+<li>漏洞利用</li>
+<li>维持系统控制权</li>
+<li>清理访问痕迹</li>
+</ul>
+</section>
+<section id="step1-get-ip-from-dns" class="slide level2">
+<h2>从域名获取 IP</h2>
+<p><a href="https://asciinema.org/a/XdZH8ROTEFtUKDUJVMAIyui2N"><img data-src="https://asciinema.org/a/XdZH8ROTEFtUKDUJVMAIyui2N.svg" alt="asciicast" /></a></p>
+</section>
+<section id="step2-get-sites-from-ip-1" class="slide level2">
+<h2>从 IP 获取旁站</h2>
+<figure>
+<img data-src="images/chap0x06/get-sites-from-ip-1.png" alt="" /><figcaption>ip domain reverse lookup</figcaption>
+</figure>
+</section>
+<section id="step2-get-sites-from-ip-2" class="slide level2">
+<h2>从 IP 获取旁站</h2>
+<p><img data-src="images/chap0x06/get-sites-from-ip-2.png" /></p>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>ℹ️ 主站不得入，绕道拿旁站。</p>
+</blockquote>
+</section>
+<section id="收集系统与络配置详细信息" class="slide level2">
+<h2>收集系统与⽹络配置详细信息</h2>
+<ul>
+<li>网络拓扑信息
+<ul>
+<li>域名解析记录
+<ul>
+<li>域名注册人信息、公司信息、邮箱地址等</li>
+</ul></li>
+<li>开放端口</li>
+<li>服务器数量及分布</li>
+</ul></li>
+<li>系统配置信息
+<ul>
+<li>操作系统版本</li>
+<li>Web服务器版本</li>
+<li>Web应用系统架构信息
+<ul>
+<li>脚本类型、开发框架</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x06/whois-info.png" /></p>
+</section>
+<section class="slide level2">
+
+<p><a href="https://inteltechniques.com/blog/2018/03/06/updated-osint-flowcharts/">开源情报收集思路（可选，课后自行阅读学习）</a></p>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x06/Email.png" alt="" /><figcaption>从电子邮件地址开始…</figcaption>
+</figure>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x06/Telephone.png" alt="" /><figcaption>从电话号码开始…</figcaption>
+</figure>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x06/Real%20Name.png" alt="" /><figcaption>从真实姓名开始…</figcaption>
+</figure>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x06/Username.png" alt="" /><figcaption>从用户名开始…</figcaption>
+</figure>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x06/location.png" alt="" /><figcaption>从位置信息开始…</figcaption>
+</figure>
+</section>
+<section id="踩点" class="slide level2">
+<h2>踩点</h2>
+<figure>
+<img data-src="images/chap0x06/built-with-info.png" alt="" /><figcaption>正常访问过程就是【踩点】</figcaption>
+</figure>
+</section>
+<section id="发现漏洞" class="slide level2">
+<h2>发现漏洞</h2>
+<ul>
+<li>漏洞扫描工具
+<ul>
+<li>基于「应用和版本指纹识别」</li>
+</ul></li>
+<li>手工分析
+<ul>
+<li>针对开源软件：直接基于源代码分析</li>
+<li>针对闭源软件：黑盒 Fuzz 测试</li>
+</ul></li>
+</ul>
+</section>
+<section id="漏洞利用" class="slide level2">
+<h2>漏洞利用</h2>
+<ul>
+<li>利用 <a href="http://www.exploit-db.com">开放漏洞信息库</a></li>
+<li>利用自动化工具
+<ul>
+<li><a href="https://www.metasploit.com/">metasploit</a></li>
+<li><a href="https://portswigger.net/burp">burpsuite</a></li>
+</ul></li>
+<li>针对具体漏洞的定制开发漏洞利用程序</li>
+</ul>
+</section>
+<section id="维持系统控制权" class="slide level2">
+<h2>维持系统控制权</h2>
+<ul>
+<li>上传木马
+<ul>
+<li>网页木马</li>
+<li>系统级木马</li>
+</ul></li>
+<li>创建后门账户</li>
+</ul>
+</section>
+<section id="清理访问痕迹" class="slide level2">
+<h2>清理访问痕迹</h2>
+<ul>
+<li>系统日志清理</li>
+<li>临时文件删除</li>
+<li>后门隐藏
+<ul>
+<li>后门软件隐藏</li>
+<li>后门进程隐藏</li>
+<li>后门账户隐藏</li>
+<li>后门端口隐藏</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="weibo-sqli-2012" class="title-slide slide level1">
+<h1>案例二：2012 年新浪微博用户密码泄露漏洞（旁站注入）</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>2012 年元旦 新浪微博网友 <code>evilniang</code> 发现新浪爱问频道存在 <code>SQL 注入漏洞</code>
+<ul>
+<li>利用该漏洞课读取爱问频道数据库内内容
+<ul>
+<li>包括明文密码在内的 7000 多万新浪用户信息</li>
+</ul></li>
+</ul></li>
+<li>刘谦微博被 PoC 代码测试</li>
+</ul>
+</section>
+<section id="后续应急响应" class="slide level2">
+<h2>后续应急响应</h2>
+<ul>
+<li>修复新浪爱问频道的网站代码漏洞</li>
+<li>对用户信息数据库中的敏感信息进行脱敏操作
+<ul>
+<li>使用更安全的 <a href="https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html">口令散列算法</a> 处理用户的明文口令后再持久化存储，例如 <code>Argon2</code>，<code>PBKDF2</code> 和 <code>Bcrypt</code> 等</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="google-hacking-cases" class="title-slide slide level1">
+<h1>案例三：Google Hacking</h1>
+
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x06/google-hacking-1.png" /></p>
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x06/google-hacking-2.png" /></p>
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x06/google-hacking-3.png" /></p>
+</section>
+<section id="prevent-google-hacking" class="slide level2">
+<h2>防范 Google Hacking</h2>
+<ul>
+<li>机密信息不上网</li>
+<li>小心使用 robots.txt</li>
+</ul>
+<figure>
+<img data-src="images/chap0x06/google-hacking-defense.png" alt="" /><figcaption>使用Google 的网站站长工具删除被 Google 索引的内容</figcaption>
+</figure>
+</section>
+</section>
+<section>
+<section id="beyond-google-hacking" class="title-slide slide level1">
+<h1>不仅是 Google Hacking</h1>
+
+</section>
+<section class="slide level2">
+
+<h3 id="搜索-webshell-百度">搜索 webshell —— 百度</h3>
+<p><img data-src="images/chap0x06/beyond-google-hacking-2.png" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="搜索-webshell-google">搜索 webshell —— Google</h3>
+<p><img data-src="images/chap0x06/beyond-google-hacking-3.png" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="搜索-webshell-360">搜索 webshell —— 360</h3>
+<p><img data-src="images/chap0x06/beyond-google-hacking-4.png" /></p>
+</section>
+<section id="网络空间搜索引擎之-shodan.io" class="slide level2">
+<h2>网络空间搜索引擎之 shodan.io</h2>
+<p><a href="https://www.shodan.io/"><img data-src="images/chap0x06/shodan.io.jpg" /></a></p>
+</section>
+<section id="网络空间搜索引擎之-fofa.so" class="slide level2">
+<h2>网络空间搜索引擎之 fofa.so</h2>
+<p><a href="https://fofa.so/"><img data-src="images/chap0x06/beyond-google-hacking-1.png" /></a></p>
+</section>
+<section id="网络空间搜索引擎之-zoomeye.org" class="slide level2">
+<h2>网络空间搜索引擎之 zoomeye.org</h2>
+<p><a href="https://www.zoomeye.org/"><img data-src="images/chap0x06/zoomeye.org.jpg" /></a></p>
+</section>
+</section>
+<section>
+<section id="回到课堂进入模型与方法论" class="title-slide slide level1">
+<h1>回到课堂，进入模型与方法论</h1>
+
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x06/3d-infosec-model.png" /></p>
+</section>
+<section id="网络与系统渗透的入口点选择" class="slide level2">
+<h2>网络与系统渗透的入口点选择</h2>
+<ul>
+<li>人
+<ul>
+<li>社会工程学</li>
+<li>一种通过对受害者 <strong>心理弱点、本能反应、好奇心、信任、贪婪</strong> 等 <strong>心理弱点</strong> 进行诸如欺骗、伤害等危害手段</li>
+<li>骗取秘密（如口令）/ 控制行为（如钓鱼）</li>
+</ul></li>
+<li>技术
+<ul>
+<li>应用层</li>
+<li>网络层</li>
+<li>物理层</li>
+</ul></li>
+</ul>
+</section>
+<section id="网络与系统渗透的入口点选择技术方向" class="slide level2">
+<h2>网络与系统渗透的入口点选择——技术方向</h2>
+<ul>
+<li>nmap官方对互联网上端口开放频率的统计</li>
+</ul>
+<pre class="bash"><code>sort -rk 3 /usr/share/nmap/nmap-services | grep -v -E &#39;^#&#39; | head -n20
+# http    80/tcp  0.484143        # World Wide Web HTTP
+# ipp     631/udp 0.450281        # Internet Printing Protocol
+# snmp    161/udp 0.433467        # Simple Net Mgmt Proto
+# netbios-ns      137/udp 0.365163        # NETBIOS Name Service
+# ntp     123/udp 0.330879        # Network Time Protocol
+# netbios-dgm     138/udp 0.297830        # NETBIOS Datagram Service
+# ms-sql-m        1434/udp        0.293184        # Microsoft-SQL-Monitor
+# microsoft-ds    445/udp 0.253118
+# msrpc   135/udp 0.244452        # Microsoft RPC services
+# dhcps   67/udp  0.228010        # DHCP/Bootstrap Protocol Server
+# telnet  23/tcp  0.221265
+# domain  53/udp  0.213496        # Domain Name Server
+# https   443/tcp 0.208669        # secure http (SSL)
+# ftp     21/tcp  0.197667        # File Transfer [Control]
+# netbios-ssn     139/udp 0.193726        # NETBIOS Session Service
+# ssh     22/tcp  0.182286        # Secure Shell Login
+# isakmp  500/udp 0.163742
+# dhcpc   68/udp  0.140118        # DHCP/Bootstrap Protocol Client
+# route   520/udp 0.139376        # router routed -- RIP
+# upnp    1900/udp        0.136543        # Universal PnP</code></pre>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>Web 应用是最常见的网络渗透入口点</li>
+<li>Web 软件是最普遍的云服务实现载体
+<ul>
+<li>云存储</li>
+<li>即时通信</li>
+<li>微博</li>
+<li>视频</li>
+<li>手机和物联网终端设备的云端服务</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x06/network-layer.jpg" alt="" /><figcaption>典型Web应用系统网络拓扑</figcaption>
+</figure>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>异构应用和服务多</li>
+<li>网络拓扑结构复杂</li>
+<li>业务应用模型多样</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x06/web-threat-flow.png" alt="" /><figcaption>典型Web应用系统威胁数据流图</figcaption>
+</figure>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>如何全面的理解Web应用程序漏洞原理呢？</p>
+</blockquote>
+</section>
+<section class="slide level2">
+
+<p>且待下一章分解！</p>
+</section>
+</section>
+<section>
+<section id="课后思考题" class="title-slide slide level1">
+<h1>课后思考题</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>渗透过程中最重要的是什么？各抒己见。</li>
+<li>用自己的话去阐述“网络与系统安全是一个持续对抗过程”。</li>
+<li>在了解了网络与系统渗透基本原理之后，你对如何做好网络与系统安全加固有何见解？</li>
+</ul>
+</section>
+</section>
+    </div>
+  </div>
+
+  <script src="lib/reveal.js/lib/js/head.min.js"></script>
+  <script src="lib/reveal.js/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Display the page number of the current slide
+        slideNumber: true,
+        // Push each slide change to the browser history
+        history: true,
+        // Transition style
+        transition: 'fade', // none/fade/slide/convex/concave/zoom
+        math: {
+          mathjax: '',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+menu: {
+		// Specifies which side of the presentation the menu will 
+		// be shown. Use 'left' or 'right'.
+		side: 'left',
+
+		// Specifies the width of the menu.
+		// Can be one of the following:
+		// 'normal', 'wide', 'third', 'half', 'full', or
+		// any valid css length value
+		width: 'normal',
+
+		// Add slide numbers to the titles in the slide list.
+		// Use 'true' or format string (same as reveal.js slide numbers)
+		numbers: true,
+
+		// Specifies which slide elements will be used for generating
+		// the slide titles in the menu. The default selects the first
+		// heading element found in the slide, but you can specify any
+		// valid css selector and the text from the first matching
+		// element will be used.
+		// Note: that a section data-menu-title attribute or an element
+		// with a menu-title class will take precedence over this option
+		titleSelector: 'h1, h2, h3, h4, h5, h6',
+
+		// If slides do not have a matching title, attempt to use the
+		// start of the text content as the title instead
+		useTextContentForMissingTitles: false,
+
+		// Hide slides from the menu that do not have a title.
+		// Set to 'true' to only list slides with titles.
+		hideMissingTitles: false,
+
+		// Adds markers to the slide titles to indicate the 
+		// progress through the presentation. Set to 'false'
+		// to hide the markers.
+		markers: true,
+
+		// Specify custom panels to be included in the menu, by
+		// providing an array of objects with 'title', 'icon'
+		// properties, and either a 'src' or 'content' property.
+		custom: false,
+
+		// Specifies the themes that will be available in the themes
+		// menu panel. Set to 'true' to show the themes menu panel
+		// with the default themes list. Alternatively, provide an
+		// array to specify the themes to make available in the
+		// themes menu panel, for example...
+		// [
+		//     { name: 'Black', theme: 'css/theme/black.css' },
+		//     { name: 'White', theme: 'css/theme/white.css' },
+		//     { name: 'League', theme: 'css/theme/league.css' }
+		// ]
+		themes: false,
+
+		// Specifies the path to the default theme files. If your
+		// presentation uses a different path to the standard reveal
+		// layout then you need to provide this option, but only
+		// when 'themes' is set to 'true'. If you provide your own 
+		// list of themes or 'themes' is set to 'false' the 
+		// 'themesPath' option is ignored.
+		themesPath: 'css/theme/',
+
+		// Specifies if the transitions menu panel will be shown.
+		// Set to 'true' to show the transitions menu panel with
+		// the default transitions list. Alternatively, provide an
+		// array to specify the transitions to make available in
+		// the transitions panel, for example...
+		// ['None', 'Fade', 'Slide']
+		transitions: false,
+
+		// Adds a menu button to the slides to open the menu panel.
+		// Set to 'false' to hide the button.
+		openButton: true,
+
+		// If 'true' allows the slide number in the presentation to
+		// open the menu panel. The reveal.js slideNumber option must 
+		// be displayed for this to take effect
+		openSlideNumber: false,
+
+		// If true allows the user to open and navigate the menu using
+		// the keyboard. Standard keyboard interaction with reveal
+		// will be disabled while the menu is open.
+		keyboard: true,
+
+		// Normally the menu will close on user actions such as
+		// selecting a menu item, or clicking the presentation area.
+		// If 'true', the sticky option will leave the menu open
+		// until it is explicitly closed, that is, using the close
+		// button or pressing the ESC or m key (when the keyboard 
+		// interaction option is enabled).
+		sticky: false,
+
+		// If 'true' standard menu items will be automatically opened
+		// when navigating using the keyboard. Note: this only takes 
+		// effect when both the 'keyboard' and 'sticky' options are enabled.
+		autoOpen: true,
+
+		// If 'true' the menu will not be created until it is explicitly
+		// requested by calling RevealMenu.init(). Note this will delay
+		// the creation of all menu panels, including custom panels, and
+		// the menu button.
+		delayInit: false,
+
+		// If 'true' the menu will be shown when the menu is initialised.
+		openOnInit: false,
+
+		// By default the menu will load it's own font-awesome library
+		// icons. If your presentation needs to load a different
+		// font-awesome library the 'loadIcons' option can be set to false
+		// and the menu will not attempt to load the font-awesome library.
+		loadIcons: true
+	},
+
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'lib/reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'lib/reveal.js/plugin/zoom-js/zoom.js', async: true },
+          { src: 'lib/reveal.js/plugin/math/math.js', async: true },
+          { src: 'lib/reveal.js/plugin/menu/menu.js'},
+          { src: 'lib/reveal.js/plugin/markdown/marked.js'},
+          { src: 'lib/reveal.js/plugin/markdown/markdown.js'},
+          { src: 'lib/reveal.js/plugin/search/search.js'},
+          { src: 'lib/reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'lib/reveal.js/plugin/notes/notes.js', async: true },
+        ]
+      });
+    </script>
+    </body>
+</html>

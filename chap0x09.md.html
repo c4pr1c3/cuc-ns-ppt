@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="黄玮">
+  <title>网络安全</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="lib/reveal.js/css/reveal.css">
+  <style type="text/css">code{white-space: pre;}</style>
+
+
+    <!-- For syntax highlighting using highlight.js-->
+    <link rel="stylesheet" href="lib/reveal.js/lib/css/zenburn.css">
+
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="lib/reveal.js/css/theme/white.css" id="theme">
+  <!-- Printing and PDF exports -->
+<link rel="stylesheet" media="print" href="lib/reveal.js/css/print/pdf.css" />
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'lib/reveal.js/css/print/pdf.css' : 'lib/reveal.js/css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="lib/reveal.js/lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">网络安全</h1>
+  <p class="author">黄玮</p>
+</section>
+
+<section>
+<section id="第九章-入侵检测" class="title-slide slide level1">
+<h1>第九章 入侵检测</h1>
+
+</section>
+<section id="温故" class="slide level2">
+<h2>温故</h2>
+<ul>
+<li>防火墙在网络与系统防御中的作用和地位
+<ul>
+<li>在两个信任程度不同的网络之间设置的、用于加强访问控制的软硬件保护措施</li>
+<li>防外不防内</li>
+</ul></li>
+<li>防火墙的实现技术
+<ul>
+<li>软件技术</li>
+<li>硬件架构
+<ul>
+<li>NP / ASIC / x86</li>
+</ul></li>
+</ul></li>
+<li>iptables / nftables 的配置</li>
+</ul>
+</section>
+<section id="知新" class="slide level2">
+<h2>知新</h2>
+<ul>
+<li>应用防火墙的实现原理
+<ul>
+<li>入侵检测的核心技术原理</li>
+</ul></li>
+<li>入侵检测系统和防火墙的关系</li>
+<li>入侵检测系统的应用场景</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="入侵检测概述" class="title-slide slide level1">
+<h1>入侵检测概述</h1>
+
+</section>
+<section id="入侵检测发展简史" class="slide level2">
+<h2>入侵检测发展简史</h2>
+<p><img data-src="images/chap0x09/ids-history.png" /></p>
+</section>
+<section id="ids-james-p-anderson-1" class="slide level2">
+<h2>入侵检测经典理论</h2>
+<blockquote>
+<p>将入侵尝试（Intrusion attempt）或 <strong>威胁</strong> （Threat）定义为潜在的、有预谋的且未经授权而访问信息、操作信息、致使系统不可靠或无法使用的企图</p>
+</blockquote>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>未授权使用数据/程序资源</th>
+<th>授权使用数据/程序资源</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>未授权使用计算机</td>
+<td>外部渗透</td>
+<td>N/A</td>
+</tr>
+<tr class="even">
+<td>授权使用计算机</td>
+<td>内部渗透</td>
+<td>滥用行为（misfeasance）</td>
+</tr>
+</tbody>
+</table>
+<p>—— <a href="http://ranger.uta.edu/~dliu/courses/cse6392-ids-spring2007/papers/Anderson80-IDS-TechReport.pdf">J. P. Anderson. Computer security threat monitoring and surveillance, Technical report, James P. Anderson Co., Fort Washington, PA, 1980.</a></p>
+</section>
+<section id="ids-james-p-anderson-2" class="slide level2">
+<h2>入侵检测经典理论</h2>
+<p>系统访问控制要面对三类用户</p>
+<ul>
+<li>合法用户（Legitimate User）</li>
+<li>伪装（Masquerade）—— 攻破「流程控制」
+<ul>
+<li>身份仿冒（可能是最早提出不能仅依赖于身份认证，还要加强行为监控以防范身份仿冒和滥用的学者）</li>
+</ul></li>
+<li>秘密用户（Clandestine User） —— 攻破「逻辑控制」
+<ul>
+<li>后门</li>
+</ul></li>
+</ul>
+<p>—— J. P. Anderson. <a href="attach/chap0x09/Anderson80-IDS-TechReport.pdf">Computer security threat monitoring and surveillance</a>, Technical report, James P. Anderson Co., Fort Washington, PA, 1980.</p>
+</section>
+<section id="ids-classic-model" class="slide level2">
+<h2>经典检测模型</h2>
+<p>通用的入侵检测系统抽象模型</p>
+<ul>
+<li>主体（Subjects）</li>
+<li>对象（Objects）</li>
+<li>审计记录（Audit records）</li>
+<li>活动档案（Profiles）</li>
+<li>异常记录（Anomoly records）</li>
+<li>活动规则（Activity rules）</li>
+</ul>
+<p>—— Dorothy Denning. <a href="attach/chap0x09/IEEEToSE1987-ID-Model.pdf">An Intrusion-Detection Model</a>. IEEE TRANSACTIONS ON SOFTWARE ENGINEERING, VOL. SE-13, NO. 2, FEBRUARY 1987, 222-232.</p>
+</section>
+<section id="入侵检测相关经典标准" class="slide level2">
+<h2>入侵检测相关经典标准</h2>
+<ul>
+<li>RFC 4765 入侵检测消息交换格式（The Intrusion Detection Message Exchange Format, IDMEF）</li>
+<li>RFC 4766 入侵检测消息交换要求（Intrusion Detection Message Exchange Requirements , IDMER）</li>
+<li>RFC 4767 入侵检测交换协议（The Intrusion Detection Exchange Protocol, IDXP）</li>
+</ul>
+<p><strong>可以看做是「SCAP」和「威胁情报」的先行探路者</strong></p>
+</section>
+<section class="slide level2">
+
+<p><strong>SCAP</strong>: <code>Security Content Automation Protocol</code></p>
+<blockquote>
+<p>从「人读」到「机读」</p>
+</blockquote>
+</section>
+<section id="ids-role-1" class="slide level2">
+<h2>入侵检测的作用</h2>
+<p><img data-src="images/chap0x09/ids-role.png" /></p>
+</section>
+<section id="ids-role-2" class="slide level2">
+<h2>入侵检测的作用</h2>
+<ul>
+<li>识别入侵者</li>
+<li>识别入侵行为</li>
+<li>检测和监视已成功的安全突破</li>
+<li>为对抗入侵及时提供重要信息，阻止事件的发生和事态的扩大</li>
+</ul>
+</section>
+<section id="ids-effects-1" class="slide level2">
+<h2>入侵检测的意义</h2>
+<p><img data-src="images/chap0x09/ids-fw-idr.png" /></p>
+</section>
+<section id="ids-effects-2" class="slide level2">
+<h2>入侵检测的意义</h2>
+<ul>
+<li>防火墙的有力补充</li>
+<li>不是为了预防，是为了检测和提供响应决策</li>
+<li>及时、准确、全面的 <strong>发现</strong> 入侵</li>
+</ul>
+</section>
+<section id="入侵检测技术的发展趋势" class="slide level2">
+<h2>入侵检测技术的发展趋势</h2>
+<ul>
+<li>提高处理能力: 高宽带、大流量、高频率到达报文</li>
+<li>增强协作能力
+<ul>
+<li>协作采集 / 协作分析 / 协作响应</li>
+<li>针对大规模、协同化网络攻击的趋势</li>
+</ul></li>
+<li>丰富检测范围
+<ul>
+<li>检测更高级、更隐蔽、更多样化的应用层协议和网络攻击行为</li>
+</ul></li>
+<li>标准化
+<ul>
+<li>协议 / 产品 / 测试等多个方面</li>
+</ul></li>
+</ul>
+</section>
+<section id="ids-classic-papers" class="slide level2">
+<h2>附：入侵检测领域其他经典论文</h2>
+<ol type="1">
+<li>T. L. Heberlein et al, <a href="attach/chap0x09/SP90-NetSecMonitor.pdf">A Network Security Monitor</a>, <strong>IEEE Symposium on Security and Privacy</strong>, Oakland, CA, May 1990.</li>
+<li>H.S. Javitz, A. Valdes, <a href="attach/chap0x09/SP91-IDES-StatisticalAnomalyDetectr.pdf">The SRI IDES statistical anomaly detector</a> , in Proceedings of the <strong>IEEE Symposium on Security and Privacy</strong>, Oakland, CA, May 1991. （ <strong>异常(anomaly)</strong> 检测）</li>
+<li>S. Kumar and E. H. Spafford. <a href="attach/chap0x09/kumar-spaf-overview.pdf">An Application of Pattern Matching in Intrusion Detection</a>. Purdue University Technical Report CSD-TR-94-013. 1994 （ <strong>误用(misuse)</strong> 检测理论）</li>
+</ol>
+</section>
+</section>
+<section>
+<section id="入侵检测理论" class="title-slide slide level1">
+<h1>入侵检测理论</h1>
+
+</section>
+<section id="ids-intrusion-detection-system" class="slide level2">
+<h2><strong>IDS</strong> : <code>Intrusion Detection System</code></h2>
+<ul>
+<li>对系统的运行状态进行监视，发现各种攻击企图、攻击行为或者攻击结果，以保证系统资源的机密性、完整性和可用性</li>
+<li>进行入侵检测的软件与硬件的组合便是入侵检测系统</li>
+</ul>
+</section>
+<section id="警报alert" class="slide level2">
+<h2>警报（Alert）</h2>
+<ul>
+<li>当一个入侵正在发生或者试图发生时，<code>IDS</code> 将发布一个警报信息通知系统管理员</li>
+<li>如果控制台与 <code>IDS</code> 同在一台机器，警报信息将显示在监视器上，也可能伴随着声音提示</li>
+<li>如果是远程控制台，那么警报将通过 <code>IDS</code> 内置方法（通常是加密的）、<code>SNMP</code>（简单网络管理协议，通常不加密）、<code>email</code>、<code>SMS</code>（短信息）、<code>IM（即时通信）</code>或者以上几种方法的混合方式传递给管理员</li>
+</ul>
+</section>
+<section id="异常anomoly" class="slide level2">
+<h2>异常（Anomoly）</h2>
+<ul>
+<li>当有某个事件与一个已知攻击的信号相匹配时，多数IDS都会告警</li>
+<li>一个基于异常的 IDS 会构造一个当时活动的主机或网络的大致轮廓（<code>Profile</code>），当有一个在这个轮廓以外的事件发生时，IDS 就会告警</li>
+</ul>
+</section>
+<section id="特征signature" class="slide level2">
+<h2>特征（Signature）</h2>
+<ul>
+<li>IDS 的核心是攻击特征（签名），它使 IDS 在（入侵）事件发生时触发警报</li>
+<li>特征信息过短会经常触发 IDS，导致误报或错报，过长则会减慢 IDS 的工作速度</li>
+<li>基于「特征」检测算法的 IDS 又被称为使用了「误用（<code>misuse</code>）」检测</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="does-signature-count-matter">特征库越大越好？</h3>
+<ul>
+<li>有的厂商用一个特征涵盖许多攻击</li>
+<li>有些产商则会将这些特征单独列出</li>
+<li>特征与特征之间可能存在「冲突」
+<ul>
+<li>特别是黑名单特征与白名单特征</li>
+</ul></li>
+</ul>
+<blockquote>
+<p>如何评价 IDS 好坏？</p>
+</blockquote>
+</section>
+<section class="slide level2">
+
+<h3 id="国家标准">国家标准</h3>
+<p><a href="http://std.samr.gov.cn/gb/search/gbDetailed?id=71F772D8069AD3A7E05397BE0A0AB82A">信息安全技术 网络入侵检测系统技术要求和测试评价方法 GB/T 20275-2013》</a></p>
+</section>
+<section id="入侵检测系统评价指标" class="slide level2">
+<h2>入侵检测系统评价指标</h2>
+<ul>
+<li>可靠性，指系统的容错能力和可持续运行能力</li>
+<li>可用性，指系统开销大小，对网络性能影响的大小</li>
+<li>可测试，指系统能够通过模拟攻击进行检测测试</li>
+<li>适应性，指系统易于开发和扩展</li>
+<li>实时性，指系统能够及早发现入侵企图</li>
+<li>安全性，指系统可确保自身的安全</li>
+<li>准确性，指系统正确识别入侵行为的能力</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="准确性指标">准确性指标</h3>
+<ul>
+<li>误报率（False Positive Rate ，FPR）</li>
+</ul>
+<blockquote>
+<p>FPR = FP / N</p>
+</blockquote>
+<ul>
+<li>漏报率（False Negative Rate ，FNR)</li>
+</ul>
+<blockquote>
+<p>FNR = FN / N</p>
+</blockquote>
+<ul>
+<li>N 警报总数</li>
+<li>FP 误报事件总数</li>
+<li>FN 为漏报事件总数</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p>最理想的入侵检测系统的评估结果是误报率 <code>FPR=0</code> 且漏报率 <code>FNR=0</code> ，但实际上误报率和漏报率常常是成反比的</p>
+<p><img data-src="images/chap0x09/fpr-fnr.png" /></p>
+</section>
+<section id="cmp-with-anomoly-misuse" class="slide level2">
+<h2><code>异常检测</code> 和 <code>误用检测</code> 比较</h2>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>异常检测</th>
+<th>误用检测</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>可靠性</td>
+<td>不稳定</td>
+<td>较稳定</td>
+</tr>
+<tr class="even">
+<td>可用性</td>
+<td>较低</td>
+<td>较高</td>
+</tr>
+<tr class="odd">
+<td>可测试</td>
+<td>测试结果波动较大</td>
+<td>测试结果较稳定</td>
+</tr>
+<tr class="even">
+<td>适应性</td>
+<td>较强</td>
+<td>较弱（难以检测未知攻击）</td>
+</tr>
+<tr class="odd">
+<td>实时性</td>
+<td>易造成延时</td>
+<td>延时较小</td>
+</tr>
+<tr class="even">
+<td>准确性</td>
+<td>误报率较高</td>
+<td>漏报率较高</td>
+</tr>
+<tr class="odd">
+<td>安全性</td>
+<td>-</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section>
+<section id="入侵检测关键技术" class="title-slide slide level1">
+<h1>入侵检测关键技术</h1>
+
+</section>
+<section id="入侵检测技术分类" class="slide level2">
+<h2>入侵检测技术分类</h2>
+<ul>
+<li>检测模型
+<ul>
+<li>异常检测 / 误用检测 / 融合两种模型</li>
+</ul></li>
+<li>体系架构
+<ul>
+<li>主机入侵检测 / 网络入侵检测
+<ul>
+<li>网络入侵检测：集中式 / 分布式</li>
+</ul></li>
+</ul></li>
+<li>检测时效性
+<ul>
+<li>在线（实时）检测 / 近实时检测 / 离线检测</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x09/ids-model.png" /></p>
+</section>
+<section id="检测生命周期" class="slide level2">
+<h2>检测生命周期</h2>
+<ul>
+<li>信息收集：用数据来刻画系统和网络运行历史和现状</li>
+<li>信息分析：用收集的数据去 <strong>研判</strong> 现状和 <strong>预测</strong> 未来</li>
+<li>结果处理：记录、告警和视觉呈现</li>
+</ul>
+</section>
+<section id="信息收集的目标和来源" class="slide level2">
+<h2>信息收集的目标和来源</h2>
+<ul>
+<li>系统或网络的日志文件</li>
+<li>网络流量</li>
+<li>系统目录和文件的变化</li>
+<li>程序执行行为
+<ul>
+<li>资源加载 /API调用序列 / IO规律 …</li>
+</ul></li>
+</ul>
+</section>
+<section id="信息收集的方法" class="slide level2">
+<h2>信息收集的方法</h2>
+<ul>
+<li>基于主机</li>
+<li>基于网络</li>
+<li>基于传感器
+<ul>
+<li>基于主机运行的软件</li>
+<li>基于网络的数据捕获传感器</li>
+<li>物联网中的各种传感器</li>
+</ul></li>
+</ul>
+</section>
+<section id="信息分析" class="slide level2">
+<h2>信息分析</h2>
+<ul>
+<li>异常检测
+<ul>
+<li>例如：统计分析、完整性分析</li>
+</ul></li>
+<li>误用检测
+<ul>
+<li>例如：模式匹配</li>
+</ul></li>
+<li>融合使用异常检测和误用检测
+<ul>
+<li>实际系统的普遍做法</li>
+</ul></li>
+</ul>
+</section>
+<section id="异常检测之统计分析" class="slide level2">
+<h2>异常检测之统计分析</h2>
+<ul>
+<li>统计分析对象
+<ul>
+<li>如用户、文件、目录和设备等</li>
+</ul></li>
+<li>统计分析方法
+<ul>
+<li>为统计分析对象创建一个统计描述，统计正常使用时的一些测量属性
+<ul>
+<li>如访问时间（工作时间/休息时间）、访问次数、操作失败次数和延时等</li>
+</ul></li>
+</ul></li>
+<li>统计匹配
+<ul>
+<li>测量属性的平均值将被用来与网络、系统的行为进行比较，任何观测/测量值在正常值范围之外时，就认为有入侵发生</li>
+</ul></li>
+</ul>
+</section>
+<section id="异常检测之完整性分析" class="slide level2">
+<h2>异常检测之完整性分析</h2>
+<ul>
+<li>完整性分析对象
+<ul>
+<li>文件 / 目录 / 任意数字资源
+<ul>
+<li>例如：文件和目录的内容及属性</li>
+</ul></li>
+</ul></li>
+<li>完整性分析方法
+<ul>
+<li>建立完整性分析对象在正常状态时的完整性签名</li>
+</ul></li>
+<li>完整性分析匹配
+<ul>
+<li>匹配签名值是否发生改变
+<ul>
+<li>若发生改变，则认定目标对象被入侵篡改</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="常见异常检测算法" class="slide level2">
+<h2>常见异常检测算法</h2>
+<ul>
+<li>基于特征选择异常检测</li>
+<li>基于贝叶斯推理异常检测</li>
+<li>基于贝叶斯网络异常检测</li>
+<li>基于神经网络异常检测</li>
+<li>基于贝叶斯聚类异常检测</li>
+</ul>
+</section>
+<section id="误用检测之模式匹配" class="slide level2">
+<h2>误用检测之模式匹配</h2>
+<ul>
+<li>模式匹配就是将收集到的信息与已知的网络入侵和系统误用模式规则集进行比较，从而发现违反安全策略的行为</li>
+<li>入侵模式的表示方法
+<ul>
+<li>一个过程（如执行一条指令）</li>
+<li>一个输出（如获得权限）</li>
+</ul></li>
+<li>入侵模式的匹配过程
+<ul>
+<li>字符串匹配：精确匹配、模糊匹配</li>
+<li>状态机迁移序列匹配</li>
+</ul></li>
+</ul>
+</section>
+<section id="常用误用检测算法" class="slide level2">
+<h2>常用误用检测算法</h2>
+<ul>
+<li>基于条件概率误用检测</li>
+<li>基于专家系统误用检测</li>
+<li>基于状态迁移误用检测</li>
+</ul>
+</section>
+<section id="融合使用异常检测和误用检测" class="slide level2">
+<h2>融合使用异常检测和误用检测</h2>
+<p><img data-src="images/chap0x09/integraded-ids.png" /></p>
+</section>
+<section id="结果处理" class="slide level2">
+<h2>结果处理</h2>
+<ul>
+<li>产生告警
+<ul>
+<li>记录告警日志</li>
+<li>请求其他安全设备的协作联动
+<ul>
+<li>防火墙联动</li>
+</ul></li>
+</ul></li>
+<li>视觉呈现
+<ul>
+<li>「态势感知」产品的原型</li>
+</ul></li>
+</ul>
+</section>
+<section id="入侵检测体系架构" class="slide level2">
+<h2>入侵检测体系架构</h2>
+<ul>
+<li>主机入侵检测系统
+<ul>
+<li>监视与分析主机的审计记录
+<ul>
+<li>能否及时采集到审计记录</li>
+</ul></li>
+<li>可以不运行在监控主机上
+<ul>
+<li>如何保护作为攻击目标的主机审计子系统？</li>
+</ul></li>
+</ul></li>
+<li>网络入侵检测系统
+<ul>
+<li>对通信数据进行侦听采集数据</li>
+<li>提供对网络通用的保护
+<ul>
+<li>不消耗主机额外资源</li>
+<li>如何适应高速网络环境？</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="ids-arch-centralized-1">网络入侵检测体系架构——集中式</h3>
+<p><img data-src="images/chap0x09/ids-arch-1.png" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="ids-arch-centralized-2">网络入侵检测体系架构——集中式</h3>
+<ul>
+<li>特点
+<ul>
+<li>分布式信息收集</li>
+<li>汇总上报</li>
+<li>集中关联分析</li>
+</ul></li>
+<li>缺点
+<ul>
+<li>单点故障
+<ul>
+<li>汇总关联分析节点一旦出现故障，则整个系统就会无法工作</li>
+</ul></li>
+<li>单点瓶颈
+<ul>
+<li>汇总关联分析节点的处理能力决定了整个系统的处理能力</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>应用场景
+<ul>
+<li>小型公司网络范围内的 IDS 协作</li>
+<li>不适合于互联网范围内的大规模 IDS 协作（通信延时）</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="ids-arch-tree-1">网络入侵检测体系架构——等级分布式</h3>
+<p><img data-src="images/chap0x09/ids-arch-2.png" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="ids-arch-tree-2">网络入侵检测体系架构——等级分布式</h3>
+<ul>
+<li>特点
+<ul>
+<li>分区
+<ul>
+<li>地理位置 / 管理域 / 相近软件平台 / 预期入侵种类</li>
+</ul></li>
+<li>“逐层”汇聚式关联分析</li>
+</ul></li>
+<li>缺点
+<ul>
+<li>可扩展性略高于集中式架构，但仍受困于高层次节点能力</li>
+<li>单点故障仍有可能（高层节点）</li>
+<li>检出率较低
+<ul>
+<li>信息在“汇聚”的过程中会由于“压缩”而导致“损失”和“失真”</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="ids-arch-distributed-1">网络入侵检测体系架构——完全分布式</h3>
+<p><img data-src="images/chap0x09/ids-arch-3.png" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="ids-arch-distributed-2">网络入侵检测体系架构——完全分布式</h3>
+<ul>
+<li>特点
+<ul>
+<li>无超级管理节点</li>
+<li>节点间通信
+<ul>
+<li>P2P / Gossip协议 / 组播 / 发布/订阅机制</li>
+</ul></li>
+</ul></li>
+<li>缺点
+<ul>
+<li>检测精度低</li>
+<li>可扩展性差</li>
+<li>负载均衡难度高</li>
+</ul></li>
+</ul>
+</section>
+<section id="协作式攻击与分布式检测" class="slide level2">
+<h2>协作式攻击与分布式检测</h2>
+<ul>
+<li>协作式攻击的特点
+<ul>
+<li>分布式 / 协同 / 有发起源</li>
+</ul></li>
+<li>分布式检测的优势
+<ul>
+<li>快速定位协作式攻击的真正源头</li>
+<li>避免对同源攻击的重复报警</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="入侵检测标准化" class="title-slide slide level1">
+<h1>入侵检测标准化</h1>
+
+</section>
+<section id="通用入侵检测框架cidf-概述" class="slide level2">
+<h2>通用入侵检测框架——CIDF 概述</h2>
+<ul>
+<li>美国国防高级研究项目局（DARPA）为 IDS 数据交据交换而作出的一个尝试
+<ul>
+<li>RFC 4765 The Intrusion Detection Message Exchange Format</li>
+<li>RFC 4766 Intrusion Detection Message Exchange Requirements</li>
+<li>RFC 4767 The Intrusion Detection Exchange Protocol</li>
+</ul></li>
+<li>定义了IDS表达检测信息的标准语言以及IDS组件之间的通信协议
+<ul>
+<li>符合CIDF规范的IDS和安全设备可以共享检测信息，协同工作</li>
+</ul></li>
+<li>集成各种安全设备使之协同工作
+<ul>
+<li>分布式入侵检测的基础</li>
+</ul></li>
+</ul>
+</section>
+<section id="cidf-documents" class="slide level2">
+<h2>通用入侵检测框架——CIDF文档组成</h2>
+<ul>
+<li>体系结构
+<ul>
+<li>提出了一个标准的IDS的通用模型</li>
+</ul></li>
+<li>规范语言
+<ul>
+<li><a href="http://gost.isi.edu/cidf/drafts/language.txt"><strong>CISL: A Common Intrusion Specification Language</strong></a></li>
+<li>诞生于 <strong>1999</strong> 年，定义了一个用来描述各种检测信息的标准语言</li>
+</ul></li>
+<li>内部通讯
+<ul>
+<li>定义了IDS组件之间进行通信的标准协议</li>
+</ul></li>
+<li>程序接口
+<ul>
+<li>提供了一整套标准的应用程序接口（API函数）</li>
+</ul></li>
+</ul>
+</section>
+<section id="cisl-and-its-forks" class="slide level2">
+<h2>CISL 和它的“继承者”们</h2>
+<ul>
+<li><a href="https://github.com/MISP/MISP">MISP</a>
+<ul>
+<li>最早是<code>恶意软件信息共享平台</code>（<code>Malware Information Sharing Platform</code>），后来重新定位为 <code>开源威胁情报和共享平台</code> （<code>Open Source Threat Intelligence and Sharing Platform</code>）</li>
+</ul></li>
+<li><code>IODEF</code> - <code>Incident Object Description Exchange Format</code>
+<ul>
+<li><a href="https://tools.ietf.org/html/rfc5070">RFC 5070 IODEFv1</a> | <a href="https://tools.ietf.org/html/rfc7970">RFC 7970 - IODEFv2</a></li>
+</ul></li>
+<li><a href="https://tools.ietf.org/html/rfc4765">RFC 4765 - IDMEF 入侵检测消息交换格式</a></li>
+<li><a href="https://github.com/Lookingglass/opentpx/">OpenTPX - Threat Partner eXchange</a>
+<ul>
+<li>开源的机读威胁情报和网络操作数据交换格式和工具</li>
+</ul></li>
+<li><a href="https://www.oasis-open.org/committees/tc_home.php?wg_abbrev=cti">STIX</a> Structured Threat Information eXpression</li>
+<li><a href="https://github.com/Neo23x0/sigma">Sigma</a> - Generic Signature Format for SIEM Systems</li>
+<li><a href="https://github.com/virustotal/yara">YARA</a> - 恶意软件特征匹配描述语言和工具</li>
+</ul>
+</section>
+<section id="explain-of-intrusion" class="slide level2">
+<h2>从「入侵」检测到「威胁」检测</h2>
+<blockquote>
+<p>an occasion when someone <strong>goes into</strong> a place or situation where they are not wanted or expected to be</p>
+</blockquote>
+<p><a href="https://dictionary.cambridge.org/zhs/%E8%AF%8D%E5%85%B8/%E8%8B%B1%E8%AF%AD-%E6%B1%89%E8%AF%AD-%E7%AE%80%E4%BD%93/intrusion">入侵（intrusion）</a></p>
+</section>
+<section id="explain-of-threat" class="slide level2">
+<h2>从「入侵」检测到「威胁」检测</h2>
+<blockquote>
+<p>a suggestion that something unpleasant or violent <strong>will happen</strong>, especially if a particular action or order is not followed</p>
+</blockquote>
+<p><a href="https://dictionary.cambridge.org/zhs/%E8%AF%8D%E5%85%B8/%E8%8B%B1%E8%AF%AD-%E6%B1%89%E8%AF%AD-%E7%AE%80%E4%BD%93/threat">威胁（threat)</a></p>
+</section>
+<section id="ids-vs-threat-detection-1" class="slide level2">
+<h2>从「入侵」检测到「威胁」检测</h2>
+<ul>
+<li>检测范围扩大
+<ul>
+<li><code>入侵</code> 检测强调在能区分『内外网』的场景下，重点关注『从外到内』的攻击行为</li>
+<li><code>威胁</code> 检测不区分『内外网』</li>
+</ul></li>
+<li>检测时间提前
+<ul>
+<li><code>入侵</code> 检测强调检测『已经发生』的攻击行为</li>
+<li><code>威胁</code> 检测强调预防『尚未发生』的攻击事件发生</li>
+</ul></li>
+</ul>
+</section>
+<section id="ids-vs-threat-detection-2" class="slide level2">
+<h2>从「入侵」检测到「威胁」检测</h2>
+<ul>
+<li>检测目标扩充
+<ul>
+<li><code>入侵</code> 检测虽然在最早的术语定义中是包含『滥用』行为的，但在实际研究和产品落地实现时主流 IDS 依然以『狭义』的漏洞利用行为检测为主</li>
+<li><code>威胁</code> 检测的目标不再有遗漏：攻击、滥用、恶意代码等等一网打尽</li>
+</ul></li>
+<li>自动化和协作共享防御目标没有变化</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="入侵检测系统的部署" class="title-slide slide level1">
+<h1>入侵检测系统的部署</h1>
+
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x09/ids-deploy.png" /></p>
+</section>
+</section>
+<section>
+<section id="snort" class="title-slide slide level1">
+<h1>Snort</h1>
+
+</section>
+<section id="snort-work-modes" class="slide level2">
+<h2>Snort 的产品定位</h2>
+<ul>
+<li><a href="http://manual-snort-org.s3-website-us-east-1.amazonaws.com/node3.html">多模式报文分析工具</a>
+<ul>
+<li>嗅探工具</li>
+<li>报文记录：将网络报文写入磁盘持久化存储</li>
+<li>网络入侵检测系统(NIDS)</li>
+</ul></li>
+<li>应用场景
+<ul>
+<li>在线分析</li>
+<li>离线分析</li>
+</ul></li>
+</ul>
+</section>
+<section id="snort-and-cisco" class="slide level2">
+<h2>Snort 简史</h2>
+<ul>
+<li>Snort 最早是由 <code>Martin Roesch</code> 在 1998 年用 C 语言开发</li>
+<li>2001 年应众多 Snort 商业化需求，<code>Martin Roesch</code> 创建了公司 <code>Sourcefire</code></li>
+<li>2013 年 10 月，思科收购了 <code>Sourcefire</code> 并主导 <code>Snort</code> 的开源项目
+<ul>
+<li>以 <code>Snort</code> 核心代码和订阅规则为基础，开发了商业版的防火墙、入侵检测等设备与服务并持续回馈到 <code>Snort</code> 开源项目</li>
+</ul></li>
+</ul>
+</section>
+<section id="openappid" class="slide level2">
+<h2>OpenAppID</h2>
+<blockquote>
+<p>OpenAppId is an open, application-focused detection language and processing module for Snort that enables users to create, share, and implement application and service detection.</p>
+</blockquote>
+<ul>
+<li>思科收购 <code>Sourcefire</code> 之后发布的 <code>Snort</code> 新衍生项目
+<ul>
+<li>解决网络流量的「深度识别」需求之一：识别产生流量的具体关联应用</li>
+</ul></li>
+<li>兼容 <code>Snort2</code> 和 <code>Snort3</code></li>
+</ul>
+</section>
+<section id="snort3-snort" class="slide level2">
+<h2>Snort3 / Snort++</h2>
+<ul>
+<li>思科在 2013 年收购了 <code>Snort</code> 的母公司之后，于 2014 年发布了用 <code>C++</code> 语言重写的 <code>Snort3 Alpha</code> ，又被称为 <code>Snort++</code></li>
+<li>相比于 <code>Snort2</code> ，<code>Snort3</code> 的产品定位从 <code>IDS</code> 悄然变为 <code>IPS(Intrusion Prevention System)</code></li>
+<li>相比于 <code>Snort2</code> 的 <a href="https://github.com/snort3/snort3">主要变化</a> 如下：
+<ul>
+<li>支持多线程报文处理</li>
+<li>配置简化，支持脚本编程</li>
+<li>核心组件的插件化</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="suricata" class="title-slide slide level1">
+<h1>Suricata</h1>
+
+</section>
+<section id="suricata-vs-snort" class="slide level2">
+<h2>对比 Snort</h2>
+<table>
+<thead>
+<tr class="header">
+<th>对比项</th>
+<th>Snort</th>
+<th>Suricata</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>开发者</td>
+<td>Sourcefire, Inc.</td>
+<td>Open Information Security Foundation (OISF)</td>
+</tr>
+<tr class="even">
+<td>项目历史</td>
+<td>1998 -</td>
+<td>2009 -</td>
+</tr>
+<tr class="odd">
+<td>编程语言</td>
+<td>C</td>
+<td>C</td>
+</tr>
+<tr class="even">
+<td>操作系统</td>
+<td>跨平台</td>
+<td>跨平台</td>
+</tr>
+<tr class="odd">
+<td>并行处理</td>
+<td>单线程（<a href="https://github.com/snort3/snort3">Snort3完全重写支持多线程</a>）</td>
+<td>多线程</td>
+</tr>
+<tr class="even">
+<td>IPv6支持</td>
+<td>有</td>
+<td>有</td>
+</tr>
+<tr class="odd">
+<td>Snort (VRT)规则语法兼容性</td>
+<td>兼容</td>
+<td>兼容</td>
+</tr>
+<tr class="even">
+<td>Emerging Threats Rules 兼容性</td>
+<td>兼容</td>
+<td>兼容</td>
+</tr>
+<tr class="odd">
+<td>日志格式</td>
+<td>Unified2</td>
+<td>Unified2 / JSON</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="suricata-use-snort-rules" class="slide level2">
+<h2>兼容 Snort2 的检测规则</h2>
+<ul>
+<li>不兼容 <code>OpenAppId</code></li>
+<li>兼容 <code>Snort Talos(VRT)</code></li>
+</ul>
+</section>
+<section id="suricata-rules" class="slide level2">
+<h2><a href="https://suricata.readthedocs.io/en/suricata-5.0.2/rules/intro.html">Suricata 规则</a></h2>
+<p><img data-src="images/chap0x09/suricata-rules-demo.png" /></p>
+<ul>
+<li><font color="red"><code>action</code></font> 匹配规则后执行的 <code>动作</code></li>
+<li><font color="green"><code>header</code></font> IP 五元组定义</li>
+<li><font color="blue"><code>rule options</code></font> 详细规则定义</li>
+</ul>
+</section>
+<section id="emerging-threats" class="slide level2">
+<h2><a href="https://rules.emergingthreats.net/">Emerging Threats</a></h2>
+<ul>
+<li>支持主流开源 IDS
+<ul>
+<li>Suricata 5.0.x / 4.1.x / 4.0.x</li>
+<li>Snort 2.9.x</li>
+</ul></li>
+<li><code>Emerging Threats Ruleset</code> 由 <code>开源社区</code> 维护</li>
+<li><code>Emerging Threats Pro Ruleset</code> 由 <a href="https://www.proofpoint.com/us/threat-insight/et-pro-ruleset"><code>Proofpoint/ET</code></a> 维护</li>
+</ul>
+</section>
+<section id="quick-start-of-suricata" class="slide level2">
+<h2>体验 Suricata</h2>
+<pre class="bash"><code>sudo apt update &amp;&amp; sudo apt install -y suricata
+
+# 检查当前 suricata 版本
+suricata -V
+# This is Suricata version 5.0.3 RELEASE
+
+# 查看 suricata-update 的内置命令帮助手册
+sudo suricata-update --help
+sudo suricata-update enable-source --help
+
+# 检查当前 suricata 可订阅的规则库
+sudo suricata-update list-sources
+
+# 检查 suricata 已启用订阅的规则库
+sudo suricata-update list-enabled-sources
+
+# 检查当前 suricata 可「免费」订阅的规则库
+sudo suricata-update list-sources --free
+# Name: et/open
+#   Vendor: Proofpoint
+#   Summary: Emerging Threats Open Ruleset
+#   License: MIT
+# Name: oisf/trafficid
+#   Vendor: OISF
+#   Summary: Suricata Traffic ID ruleset
+#   License: MIT
+# Name: ptresearch/attackdetection
+#   Vendor: Positive Technologies
+#   Summary: Positive Technologies Attack Detection Team ruleset
+#   License: Custom
+# Name: sslbl/ssl-fp-blacklist
+#   Vendor: Abuse.ch
+#   Summary: Abuse.ch SSL Blacklist
+#   License: Non-Commercial
+# Name: sslbl/ja3-fingerprints
+#   Vendor: Abuse.ch
+#   Summary: Abuse.ch Suricata JA3 Fingerprint Ruleset
+#   License: Non-Commercial
+# Name: etnetera/aggressive
+#   Vendor: Etnetera a.s.
+#   Summary: Etnetera aggressive IP blacklist
+#   License: MIT
+# Name: tgreen/hunting
+#   Vendor: tgreen
+#   Summary: Threat hunting rules
+#   License: GPLv3
+
+sudo suricata-update enable-source et/open
+sudo suricata-update enable-source oisf/trafficid
+sudo suricata-update enable-source ptresearch/attackdetection
+
+# 启用「越多」特征订阅「越好」？
+# 请回忆前述「特征库越大越好？」一节内容
+
+sudo suricata-update list-enabled-sources
+# Enabled sources:
+#   - et/open
+#   - oisf/trafficid
+#   - ptresearch/attackdetection
+
+# 下载所有「已启用」订阅源的规则库更新
+sudo suricata-update update
+
+# 所有订阅的规则被合并写入 /var/lib/suricata/rules/suricata.rules
+
+# 修改 /etc/suricata/suricata.yaml 里的 default-rule-path 值为
+# /var/lib/suricata/rules
+
+# 测试用 pcap https://c4pr1c3.github.io/cuc-ns/chap0x12/attack-trace.pcap
+suricata -r attack-trace.pcap
+
+# 默认生成 4 个日志文件
+# eve.json
+# fast.log
+# stats.log
+# suricata.log
+
+# 查看所有「告警」
+cat fast.log
+
+# 需要自行安装工具 jq
+cat eve.json | jq -c &#39;select(.event_type==&quot;alert&quot;)&#39;</code></pre>
+</section>
+</section>
+<section>
+<section id="zeek-bro" class="title-slide slide level1">
+<h1>Zeek / Bro</h1>
+
+</section>
+<section class="slide level2">
+
+<p><a href="https://blog.zeek.org//2018/10/renaming-bro-project_11.html">2018 年 10 月 11 日</a> 原 <code>Bro</code> 开发者团队宣布将拥有 20 年历史的开源项目 <code>Bro</code> 更名为 <code>Zeek</code> ，原有 <code>Bro</code> 相关文档和工具包内包含的程序命名将经历一段 <code>Bro</code> 和 <code>Zeek</code> 共存的时期，最终会将所有名称中包含 <code>bro</code> 的工具和术语统一迁移到 <code>zeek</code> 相关命名规范。</p>
+<blockquote>
+<p>Zeek is the new name for the long-established Bro system. Note that parts of the system retain the “Bro” name, and it also often appears in the documentation and distributions.</p>
+</blockquote>
+</section>
+<section id="install-zeek" class="slide level2">
+<h2>安装 Zeek</h2>
+<p>推荐优先阅读 <a href="https://docs.zeek.org/en/lts/install/install.html">Zeek 官方文档</a> 。</p>
+</section>
+<section class="slide level2">
+
+<h3 id="test-of-zeek-install">测试验证 Zeek 的安装</h3>
+<pre class="bash"><code>lsb_release -a
+# No LSB modules are available.
+# Distributor ID:   Kali
+# Description:  Kali GNU/Linux Rolling
+# Release:  2020.3
+# Codename: kali-rolling
+
+cat /etc/os-release
+# PRETTY_NAME=&quot;Kali GNU/Linux Rolling&quot;
+# NAME=&quot;Kali GNU/Linux&quot;
+# ID=kali
+# VERSION=&quot;2020.3&quot;
+# VERSION_ID=&quot;2020.3&quot;
+# VERSION_CODENAME=&quot;kali-rolling&quot;
+# ID_LIKE=debian
+# ANSI_COLOR=&quot;1;31&quot;
+# HOME_URL=&quot;https://www.kali.org/&quot;
+# SUPPORT_URL=&quot;https://forums.kali.org/&quot;
+# BUG_REPORT_URL=&quot;https://bugs.kali.org/&quot;
+
+# ref: https://software.opensuse.org//download.html?project=security%3Azeek&amp;package=zeek
+echo &#39;deb http://download.opensuse.org/repositories/security:/zeek/Debian_Testing/ /&#39; | sudo tee /etc/apt/sources.list.d/security:zeek.list
+curl -fsSL https://download.opensuse.org/repositories/security:zeek/Debian_Testing/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/security:zeek.gpg &gt; /dev/null
+sudo apt update
+sudo apt install zeek-lts
+
+sudo /opt/zeek/bin/zeek --version
+# /opt/zeek/bin/zeek version 3.0.8
+
+apt show zeek-lts
+# Package: zeek-lts
+# Version: 3.0.8-0
+# Priority: optional
+# Section: Network
+# Maintainer: Johanna Amann &lt;johanna@icir.org&gt;
+# Installed-Size: 246 kB
+# Depends: zeek-lts-core (= 3.0.8-0), zeekctl-lts (= 3.0.8-0), zeek-lts-core-dev (= 3.0.8-0)
+# Conflicts: libbroker-dev, zeek, zeek-core, zeek-core-dev, zeek-libcaf-dev, zeekctl
+# Download-Size: 240 kB
+# APT-Manual-Installed: yes
+# APT-Sources: http://download.opensuse.org/repositories/security:/zeek/Debian_Testing  Packages
+# Description: Zeek is a powerful framework for network analysis and security monitoring.</code></pre>
+</section>
+</section>
+<section>
+<section id="opnsense" class="title-slide slide level1">
+<h1>OPNsense®</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>开源易用的基于安全加固 BSD 的防火墙和路由平台（入侵防护系统）
+<ul>
+<li>基于 <code>pfSense®</code> 和 <code>m0n0wall</code> 自 2014 年起独立分支开发</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="入侵检测规则的绕过" class="title-slide slide level1">
+<h1>入侵检测规则的绕过</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li><a href="https://www.secjuice.com/abusing-php-query-string-parser-bypass-ids-ips-waf/">滥用 PHP 的查询字符串解析规则绕过 IDS/WAF</a></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="课后思考题" class="title-slide slide level1">
+<h1>课后思考题</h1>
+
+</section>
+<section class="slide level2">
+
+<ol type="1">
+<li>如何理解“入侵检测系统的误报率越高，漏报率低的概率就越高”这句话？</li>
+<li>描述入侵检测系统的误用检测算法和异常检测算法，并各举一实际算法说明</li>
+</ol>
+</section>
+</section>
+    </div>
+  </div>
+
+  <script src="lib/reveal.js/lib/js/head.min.js"></script>
+  <script src="lib/reveal.js/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Display the page number of the current slide
+        slideNumber: true,
+        // Push each slide change to the browser history
+        history: true,
+        // Transition style
+        transition: 'fade', // none/fade/slide/convex/concave/zoom
+        math: {
+          mathjax: '',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+menu: {
+		// Specifies which side of the presentation the menu will 
+		// be shown. Use 'left' or 'right'.
+		side: 'left',
+
+		// Specifies the width of the menu.
+		// Can be one of the following:
+		// 'normal', 'wide', 'third', 'half', 'full', or
+		// any valid css length value
+		width: 'normal',
+
+		// Add slide numbers to the titles in the slide list.
+		// Use 'true' or format string (same as reveal.js slide numbers)
+		numbers: true,
+
+		// Specifies which slide elements will be used for generating
+		// the slide titles in the menu. The default selects the first
+		// heading element found in the slide, but you can specify any
+		// valid css selector and the text from the first matching
+		// element will be used.
+		// Note: that a section data-menu-title attribute or an element
+		// with a menu-title class will take precedence over this option
+		titleSelector: 'h1, h2, h3, h4, h5, h6',
+
+		// If slides do not have a matching title, attempt to use the
+		// start of the text content as the title instead
+		useTextContentForMissingTitles: false,
+
+		// Hide slides from the menu that do not have a title.
+		// Set to 'true' to only list slides with titles.
+		hideMissingTitles: false,
+
+		// Adds markers to the slide titles to indicate the 
+		// progress through the presentation. Set to 'false'
+		// to hide the markers.
+		markers: true,
+
+		// Specify custom panels to be included in the menu, by
+		// providing an array of objects with 'title', 'icon'
+		// properties, and either a 'src' or 'content' property.
+		custom: false,
+
+		// Specifies the themes that will be available in the themes
+		// menu panel. Set to 'true' to show the themes menu panel
+		// with the default themes list. Alternatively, provide an
+		// array to specify the themes to make available in the
+		// themes menu panel, for example...
+		// [
+		//     { name: 'Black', theme: 'css/theme/black.css' },
+		//     { name: 'White', theme: 'css/theme/white.css' },
+		//     { name: 'League', theme: 'css/theme/league.css' }
+		// ]
+		themes: false,
+
+		// Specifies the path to the default theme files. If your
+		// presentation uses a different path to the standard reveal
+		// layout then you need to provide this option, but only
+		// when 'themes' is set to 'true'. If you provide your own 
+		// list of themes or 'themes' is set to 'false' the 
+		// 'themesPath' option is ignored.
+		themesPath: 'css/theme/',
+
+		// Specifies if the transitions menu panel will be shown.
+		// Set to 'true' to show the transitions menu panel with
+		// the default transitions list. Alternatively, provide an
+		// array to specify the transitions to make available in
+		// the transitions panel, for example...
+		// ['None', 'Fade', 'Slide']
+		transitions: false,
+
+		// Adds a menu button to the slides to open the menu panel.
+		// Set to 'false' to hide the button.
+		openButton: true,
+
+		// If 'true' allows the slide number in the presentation to
+		// open the menu panel. The reveal.js slideNumber option must 
+		// be displayed for this to take effect
+		openSlideNumber: false,
+
+		// If true allows the user to open and navigate the menu using
+		// the keyboard. Standard keyboard interaction with reveal
+		// will be disabled while the menu is open.
+		keyboard: true,
+
+		// Normally the menu will close on user actions such as
+		// selecting a menu item, or clicking the presentation area.
+		// If 'true', the sticky option will leave the menu open
+		// until it is explicitly closed, that is, using the close
+		// button or pressing the ESC or m key (when the keyboard 
+		// interaction option is enabled).
+		sticky: false,
+
+		// If 'true' standard menu items will be automatically opened
+		// when navigating using the keyboard. Note: this only takes 
+		// effect when both the 'keyboard' and 'sticky' options are enabled.
+		autoOpen: true,
+
+		// If 'true' the menu will not be created until it is explicitly
+		// requested by calling RevealMenu.init(). Note this will delay
+		// the creation of all menu panels, including custom panels, and
+		// the menu button.
+		delayInit: false,
+
+		// If 'true' the menu will be shown when the menu is initialised.
+		openOnInit: false,
+
+		// By default the menu will load it's own font-awesome library
+		// icons. If your presentation needs to load a different
+		// font-awesome library the 'loadIcons' option can be set to false
+		// and the menu will not attempt to load the font-awesome library.
+		loadIcons: true
+	},
+
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'lib/reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'lib/reveal.js/plugin/zoom-js/zoom.js', async: true },
+          { src: 'lib/reveal.js/plugin/math/math.js', async: true },
+          { src: 'lib/reveal.js/plugin/menu/menu.js'},
+          { src: 'lib/reveal.js/plugin/markdown/marked.js'},
+          { src: 'lib/reveal.js/plugin/markdown/markdown.js'},
+          { src: 'lib/reveal.js/plugin/search/search.js'},
+          { src: 'lib/reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'lib/reveal.js/plugin/notes/notes.js', async: true },
+        ]
+      });
+    </script>
+    </body>
+</html>

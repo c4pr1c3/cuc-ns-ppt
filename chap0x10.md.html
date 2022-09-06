@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="黄玮">
+  <title>网络安全</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="lib/reveal.js/css/reveal.css">
+  <style type="text/css">code{white-space: pre;}</style>
+
+
+    <!-- For syntax highlighting using highlight.js-->
+    <link rel="stylesheet" href="lib/reveal.js/lib/css/zenburn.css">
+
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="lib/reveal.js/css/theme/white.css" id="theme">
+  <!-- Printing and PDF exports -->
+<link rel="stylesheet" media="print" href="lib/reveal.js/css/print/pdf.css" />
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'lib/reveal.js/css/print/pdf.css' : 'lib/reveal.js/css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="lib/reveal.js/lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">网络安全</h1>
+  <p class="author">黄玮</p>
+</section>
+
+<section>
+<section id="第十章-应用程序安全加固" class="title-slide slide level1">
+<h1>第十章 应用程序安全加固</h1>
+
+</section>
+<section id="温故" class="slide level2">
+<h2>温故</h2>
+<ul>
+<li>防火墙
+<ul>
+<li>防外不防内</li>
+</ul></li>
+<li>入侵检测
+<ul>
+<li>防火墙的有力补充</li>
+</ul></li>
+</ul>
+</section>
+<section id="知新" class="slide level2">
+<h2>知新</h2>
+<ul>
+<li>防火墙和入侵检测并不能解决所有的安全加固需求</li>
+<li>应用程序的安全加固是一个系统工程</li>
+<li>信息安全是一个持续对抗过程</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="信息安全技术三维技术体系" class="title-slide slide level1">
+<h1>信息安全技术三维技术体系</h1>
+
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x10/cyber-security-3d-model.png" /></p>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>3 种视角，3 条加固路线</p>
+</blockquote>
+</section>
+</section>
+<section>
+<section id="功能维度看安全加固" class="title-slide slide level1">
+<h1>功能维度看安全加固</h1>
+
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x10/func-model-1.png" /></p>
+<ul>
+<li>了解安全原则/常识/意义
+<ul>
+<li>最小化授权</li>
+<li>有条件安全（ <strong>没有绝对安全</strong> ）</li>
+<li>木桶原理</li>
+<li>等级安全</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x10/func-model-2.png" /></p>
+<ul>
+<li>安全管理规范/安全法律/法规
+<ul>
+<li>理解和掌握</li>
+<li>遵照执行</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x10/func-model-3.png" /></p>
+<ul>
+<li>漏洞挖掘、分析与利用
+<ul>
+<li>侧重于实现</li>
+</ul></li>
+<li>数据/内容安全</li>
+<li>运维安全</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x10/func-model-4.png" /></p>
+<ul>
+<li>漏洞挖掘、分析与利用</li>
+<li>侧重于协议</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x10/func-model-5.png" /></p>
+<ul>
+<li>IT 基础设施环境安全
+<ul>
+<li>电力供应</li>
+<li>物理环境
+<ul>
+<li>温度、湿度、电磁辐射等</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="目标维度看安全加固" class="title-slide slide level1">
+<h1>目标维度看安全加固</h1>
+
+</section>
+<section id="举例说明" class="slide level2">
+<h2>举例说明</h2>
+<p><img data-src="images/chap0x10/object-oriented-harden.png" /></p>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>机密性：认证凭据的加密存储和传输，防⽌嗅探和复制仿冒</li>
+<li>完整性：主体/客体/消息/信号的存储和传输不被篡改</li>
+<li>可用性：主体随时可以访问客体</li>
+<li>认证：验明主体真实身份</li>
+<li>授权：验证主体有访问客体的权限</li>
+<li>审计：防⽌主体抵赖对客体的历史访问</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="时间维度看安全加固" class="title-slide slide level1">
+<h1>时间维度看安全加固</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>安全是
+<ul>
+<li>持续循环过程</li>
+</ul></li>
+<li>动态变化
+<ul>
+<li>策略 (Policy)</li>
+<li>防护 (Protection)</li>
+<li>检测 (Detection)</li>
+<li>响应 (Response)</li>
+</ul></li>
+</ul>
+</section>
+<section id="what-is-0day" class="slide level2">
+<h2>认识一下零日漏洞（0day）</h2>
+<p><img data-src="images/chap0x10/0day.png" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="重要里程碑点">重要里程碑点</h3>
+<ul>
+<li>漏洞发现（<code>Discovery</code>）</li>
+<li>漏洞利用（<code>Exploit</code>）</li>
+<li>漏洞曝光/披露（<code>Disclosure</code>）</li>
+<li>补丁可用（<code>Patch avaliable</code>）</li>
+<li>已安装补丁（<code>Patch installed</code>）</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="漏洞应急响应时间窗口">漏洞应急响应时间窗口</h3>
+<ul>
+<li>黑色风险：未知漏洞存在性，一旦被攻击几乎无法察觉。</li>
+<li>灰色风险：已知漏洞存在性，但没有获得正式安全补丁。可能有临时修复或缓解措施公布，但依然面临不确定性风险。</li>
+<li>白色风险：已有正式安全补丁。但如果不打补丁，则依然还是会中招。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>一个新漏洞在被检测到利用行为之后到厂商正式发布补丁之前的这一段时间就被定义为零日漏洞（0day）
+<ul>
+<li>在没有被曝光之前，零日漏洞是「黑色风险」</li>
+<li>一旦被曝光，零日漏洞就成为了「灰色风险」</li>
+</ul></li>
+<li>攻防双方都在抢 <code>0day</code> 的首发（发现）</li>
+<li>对信息系统管理员和运维人员来说：保持自动更新是持续对抗的可行且必然的选择</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="安全加固的基本原则" class="title-slide slide level1">
+<h1>安全加固的基本原则</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>需求驱动</li>
+<li>木桶原理</li>
+</ul>
+</section>
+<section id="需求驱动" class="slide level2">
+<h2>需求驱动</h2>
+<ul>
+<li>参考等级保护的意义
+<ul>
+<li>明确安全需求</li>
+<li><strong>安全防护是需要成本投入的</strong></li>
+<li>安全建设和管理需要兼顾系统性、针对性、可行性</li>
+<li>明确重点、突出重点、保护重点</li>
+</ul></li>
+</ul>
+</section>
+<section id="木桶原理" class="slide level2">
+<h2>木桶原理</h2>
+<ul>
+<li>安全防御中的任何一个短板都会导致整个安全防御体系的崩溃</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>本章《应用程序安全加固》将要介绍和分析的方法重点集中在前述安全加固二维矩阵的应用层，更具体来说包括了操作系统安全加固和运行于操作系统之上的应用程序和信息系统本身的安全加固。</p>
+</blockquote>
+</section>
+</section>
+<section>
+<section id="围绕机密性目标的需求场景分析" class="title-slide slide level1">
+<h1>围绕「机密性」目标的需求场景分析</h1>
+
+</section>
+<section id="机密性需求场景举例" class="slide level2">
+<h2>「机密性」需求场景举例</h2>
+<ul>
+<li>认证凭据信息的存储
+<ul>
+<li><code>/etc/passwd</code> 和 <code>/etc/shadow</code></li>
+</ul></li>
+<li>配置文件中的口令信息
+<ul>
+<li>利用 <code>crypt(3)</code> API 接口加密敏感信息
+<ul>
+<li>apache 的 <code>htpasswd</code> / proftpd 的 <code>ftpasswd</code></li>
+</ul></li>
+</ul></li>
+<li>明文存储
+<ul>
+<li>大量 Web 应用的配置文件</li>
+</ul></li>
+<li>加密通信</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<pre class="bash"><code># 查看常见口令安全散列函数的存储格式
+man 5 crypt
+
+# yescrypt
+# \$y\$[./A-Za-z0-9]+\$[./A-Za-z0-9]{,86}\$[./A-Za-z0-9]{43}
+
+# gost-yescrypt
+# \$gy\$[./A-Za-z0-9]+\$[./A-Za-z0-9]{,86}\$[./A-Za-z0-9]{43}
+
+# scrypt
+# \$7\$[./A-Za-z0-9]{11,97}\$[./A-Za-z0-9]{43}
+
+# bcrypt
+# \$2[abxy]\$[0-9]{2}\$[./A-Za-z0-9]{53}
+
+# sha512crypt
+# \$6\$(rounds=[1-9][0-9]+\$)?[./0-9A-Za-z]{1,16}\$[./0-9A-Za-z]{86}
+
+# sha256crypt
+# \$5\$(rounds=[1-9][0-9]+\$)?[./0-9A-Za-z]{1,16}\$[./0-9A-Za-z]{43}
+
+# sha1crypt
+# \$sha1\$[1-9][0-9]+\$[./0-9A-Za-z]{1,64}\$[./0-9A-Za-z]{8,64}[./0-9A-Za-z]{32}
+
+# SunMD5
+# \$md5(,rounds=[1-9][0-9]+)?\$[./0-9A-Za-z]{8}\${1,2}[./0-9A-Za-z]{22}
+
+# md5crypt
+# \$1\$[^$]{1,8}\$[./0-9A-Za-z]{22}</code></pre>
+</section>
+<section id="举例说明机密性目标的实现风险" class="slide level2">
+<h2>举例说明「机密性」目标的实现风险</h2>
+<ul>
+<li>常规哈希算法及其变种均不可直接应用于口令存储</li>
+<li>注意对称加密算法的秘钥妥善存储和规范使用</li>
+<li>加密程序库本身的实现漏洞
+<ul>
+<li>例如 <code>CVE-2007-2844</code>（PHP Crypt Function Not Re-entrant）</li>
+<li>New Tricks For Defeating SSL in Practice blackhat-dc-2009</li>
+<li>OpenSSL cipher downgrade attack (CVE-2010-4180)</li>
+<li>Padding Oracle Crypto Attack 2010.09</li>
+<li>BEAST attack on TLS 1.0 (SSL 3.1) 2011.09</li>
+<li>Heartbleed attack on OpenSSL CVE-2014-0160 2014.4</li>
+<li>Poodle: SSLv3 vulnerability CVE-2014-3566 2014.11</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="心脏滴血漏洞原理科普">心脏滴血漏洞原理科普</h3>
+<p><a href="https://xkcd.com/1354/"><img data-src="images/chap0x10/heartbleed.png" /></a></p>
+<blockquote>
+<p>攻击者可以读取启用了SSL/TLS加密的服务器内存里的任意数据，包括但不限于：SSL加密私钥、用户cookie等</p>
+</blockquote>
+</section>
+<section id="ways-to-confidential-1" class="slide level2">
+<h2>「机密性」安全加固建议</h2>
+<ul>
+<li>勤打安全补丁，以减少程序实现漏洞</li>
+<li>基于『慢速』 Hash 算法去处理明文口令为密文口令形式存储，使得相同明⽂密码可以存储为不同 hash 结果
+<ul>
+<li>例如 <code>password_hash()</code> (PHP 5.5+) 就是一个 PHP 代码可以使用的口令安全存储的函数</li>
+</ul></li>
+<li>使用更安全的加密算法
+<ul>
+<li>例如使用 <code>AES/3DES</code> 代替脆弱的 <code>DES</code></li>
+<li>一定要避免自⼰设计加密算法，从而避免算法设计上的缺陷</li>
+</ul></li>
+</ul>
+</section>
+<section id="ways-to-confidential-2" class="slide level2">
+<h2>「机密性」安全加固建议</h2>
+<ul>
+<li>避免在配置文件中直接使用明文存储口令
+<ul>
+<li>使用操作系统加密 API，同时妥善保管对称加密的密钥</li>
+</ul></li>
+<li>设置合理的文件访问权限是对数据机密性建立的一层独立额外保护
+<ul>
+<li>我们可以限制非 Web 用户读取网站配置文件，配置 Web 服务器的 ACL 防止用户越权访问到重要本地配置文件</li>
+</ul></li>
+<li>使用成熟、经过安全评估的通信加密解决方案
+<ul>
+<li>OpenSSH、VPN</li>
+<li>SVN over ssh、git over ssh 等</li>
+</ul></li>
+<li>做好网络通信基础设施安全加固，具体可以参考《第四章 网络监听》</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="围绕完整性目标的需求场景分析" class="title-slide slide level1">
+<h1>围绕「完整性」目标的需求场景分析</h1>
+
+</section>
+<section id="integrity-protection-1" class="slide level2">
+<h2>「完整性」需求场景举例</h2>
+<ul>
+<li>文件完整性签名
+<ul>
+<li>确保文件来源的可信</li>
+<li>确保文件未被非法篡改</li>
+</ul></li>
+<li>防篡改解决方案
+<ul>
+<li>网页防篡改</li>
+<li>数据库防篡改</li>
+</ul></li>
+</ul>
+</section>
+<section id="integrity-protection-2" class="slide level2">
+<h2>「完整性」需求场景举例</h2>
+<ul>
+<li>运行时完整性检查
+<ul>
+<li>资源载入
+<ul>
+<li>第三方库加载（例如dll加载污染漏洞）</li>
+</ul></li>
+<li>内存变量
+<ul>
+<li>慎用全局变量存储敏感数据</li>
+</ul></li>
+<li>API调用
+<ul>
+<li>API hook检查</li>
+</ul></li>
+</ul></li>
+<li>通信过程完整性
+<ul>
+<li>SSL / VPN / IPSec等</li>
+<li>应用层完整性校验</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="网页防篡改技术举例">网页防篡改技术举例</h3>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>外挂轮询技术</th>
+<th>事件触发技术</th>
+<th>核心内嵌技术</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>访问篡改网页</td>
+<td>可能</td>
+<td>可能</td>
+<td>不可能</td>
+</tr>
+<tr class="even">
+<td>保护动态内容</td>
+<td>不能</td>
+<td>不能</td>
+<td>能</td>
+</tr>
+<tr class="odd">
+<td>服务器负载</td>
+<td>中</td>
+<td>低</td>
+<td>低</td>
+</tr>
+<tr class="even">
+<td>带宽占用</td>
+<td>中</td>
+<td>无</td>
+<td>无</td>
+</tr>
+<tr class="odd">
+<td>检测时间</td>
+<td>分钟级</td>
+<td>秒级</td>
+<td>实时</td>
+</tr>
+<tr class="even">
+<td>绕过检测机制</td>
+<td>不可能</td>
+<td>可能</td>
+<td>不可能</td>
+</tr>
+<tr class="odd">
+<td>防范连续篡改攻击</td>
+<td>不能</td>
+<td>不能</td>
+<td>能</td>
+</tr>
+<tr class="even">
+<td>保护所有网页</td>
+<td>不能</td>
+<td>能</td>
+<td>能</td>
+</tr>
+<tr class="odd">
+<td>动态网页脚本</td>
+<td>不支持</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+<tr class="even">
+<td>适用操作系统</td>
+<td>所有</td>
+<td>受限</td>
+<td>所有</td>
+</tr>
+<tr class="odd">
+<td>上传时检测</td>
+<td>不能</td>
+<td>受限</td>
+<td>能</td>
+</tr>
+<tr class="even">
+<td>断线时保护</td>
+<td>不能</td>
+<td>不能</td>
+<td>能</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section>
+<section id="围绕可用性目标的需求场景分析" class="title-slide slide level1">
+<h1>围绕「可用性」目标的需求场景分析</h1>
+
+</section>
+<section id="availability-protection-1" class="slide level2">
+<h2>「可用性」需求场景举例</h2>
+<ul>
+<li>数据备份</li>
+<li>业务备份</li>
+<li>备份还原测试</li>
+<li>负载均衡
+<ul>
+<li>基于域名</li>
+<li>基于应用层协议</li>
+<li>基于后端计算/存储/带宽资源</li>
+</ul></li>
+<li>防 DoS/DDoS</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="数据备份">数据备份</h3>
+<ul>
+<li>数据备份是容灾的基础
+<ul>
+<li>防止系统出现操作失误或系统故障导致数据丢失</li>
+</ul></li>
+<li>典型的备份方式
+<ul>
+<li>定期磁带机的冷备份</li>
+<li>数据库的备份</li>
+<li>网络数据备份</li>
+<li>远程镜像等</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="业务备份">业务备份</h3>
+<ul>
+<li>业务连续性要求在计划内停机时间和计划外故障期间提供公司数据，且要求业务工作负载处于运行状态</li>
+<li>典型的业务备份方式
+<ul>
+<li>镜像服务</li>
+<li>主从服务</li>
+</ul></li>
+<li><a href="https://www.doit.com.cn/article/0805205272.html">以史为鉴 宁夏银行7月系统瘫痪最新解析 2014-07-01</a>
+<ul>
+<li>业务系统中断长达37小时40分钟，其间完全依靠 <strong>手工办理业务</strong> （IT 业务备份的非典型案例）</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="备份还原测试">备份还原测试</h3>
+<ul>
+<li>对于数据及业务的备份，在灾害发生后的还原过程中需要充分对整个业务的状态进行可用性测试，确保可以恢复到原先的正常状态</li>
+<li><a href="https://about.gitlab.com/2017/02/01/gitlab-dot-com-database-incident/">Gitlab 从删库到恢复：丢失 6 小时生产数据 2017-02-01</a>
+<ul>
+<li><a href="https://coolshell.cn/articles/17680.html">“工作时间过长” + “在多数终端窗口中切换中迷失掉了”</a></li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="围绕可认证目标的需求场景分析" class="title-slide slide level1">
+<h1>围绕「可认证」目标的需求场景分析</h1>
+
+</section>
+<section id="auth-check-1" class="slide level2">
+<h2>「可认证」需求场景举例</h2>
+<ul>
+<li>身份识别
+<ul>
+<li>身份集合
+<ul>
+<li>普通用户 / bot / 管理员 / API</li>
+</ul></li>
+<li>精确度（唯一性标识的粒度）</li>
+</ul></li>
+<li>身份验证
+<ul>
+<li>验证强度
+<ul>
+<li>易用性和安全性的平衡</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="auth-check-2" class="slide level2">
+<h2>「可认证」需求场景举例</h2>
+<ul>
+<li>单因素认证加固
+<ul>
+<li>强制口令安全策略
+<ul>
+<li><a href="https://haveibeenpwned.com/API/v3">泄露口令检测</a> 与拒绝</li>
+</ul></li>
+<li>口令强度限制
+<ul>
+<li>口令长度/口令复杂度</li>
+</ul></li>
+<li>口令生命周期
+<ul>
+<li>定期更换口令</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="auth-check-3" class="slide level2">
+<h2>「可认证」需求场景举例</h2>
+<ul>
+<li>双因素/多因素认证
+<ul>
+<li>know / has / is /where</li>
+</ul></li>
+<li>CAPTCHA 机制防止自动化暴力破解认证
+<ul>
+<li>图片验证码</li>
+<li>音频验证</li>
+<li>客户端图灵测试
+<ul>
+<li>Web 浏览器的客户端 js 代码执行</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="围绕授权目标的需求场景分析" class="title-slide slide level1">
+<h1>围绕「授权」目标的需求场景分析</h1>
+
+</section>
+<section id="authorization-check" class="slide level2">
+<h2>「授权」需求场景举例</h2>
+<ul>
+<li>已认证用户的滥用/误用行为</li>
+<li>代码漏洞导致的任意指令执行/任意资源访问</li>
+<li>可靠的授权变更机制
+<ul>
+<li>取消授权</li>
+<li>新授权</li>
+<li>变更授权</li>
+</ul></li>
+</ul>
+</section>
+<section id="minimize-authorization" class="slide level2">
+<h2>最小化授权</h2>
+<ul>
+<li>最小化授权
+<ul>
+<li>认证用户的权限分配</li>
+<li>代码执行的权限分配
+<ul>
+<li>沙盒 / jailed / chroot 机制</li>
+</ul></li>
+<li>最小化安装和配置
+<ul>
+<li>删除/禁用所有非必需服务/应用</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="robust-authorization-change" class="slide level2">
+<h2>可靠的授权变更机制举例</h2>
+<ul>
+<li>取消授权
+<ul>
+<li>取消已认证的身份数字标识
+<ul>
+<li>取消绑定的资源/权限</li>
+</ul></li>
+</ul></li>
+<li>新授权
+<ul>
+<li>新建主体和客体</li>
+<li>新建主体对客体的访问授权（关联）</li>
+</ul></li>
+<li>变更授权
+<ul>
+<li>变更主体对客体的访问授权（关联）</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="围绕可审计目标的需求场景分析" class="title-slide slide level1">
+<h1>围绕「可审计」目标的需求场景分析</h1>
+
+</section>
+<section id="auditable-check-1" class="slide level2">
+<h2>「可审计」需求场景举例</h2>
+<ul>
+<li>入侵取证</li>
+<li>历史行为审计
+<ul>
+<li>面向用户</li>
+<li>面向资源</li>
+</ul></li>
+</ul>
+</section>
+<section id="auditable-check-2" class="slide level2">
+<h2>「可审计」需求场景举例</h2>
+<ul>
+<li>日志系统的 <code>CIA</code> 加固
+<ul>
+<li>机密性：避免记录敏感信息，如认证凭据</li>
+<li>完整性：日志系统防篡改</li>
+<li>可用性：日志系统的持续可用
+<ul>
+<li>避免海量日志耗尽磁盘存储
+<ul>
+<li>正确配置应用程序日志的轮转策略</li>
+<li><code>iptables</code> 的 <code>conntrack</code> 资源耗尽问题</li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li>自动化审计
+<ul>
+<li>自动分析日志</li>
+<li>主机入侵检测</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="操作系统安全加固小结" class="title-slide slide level1">
+<h1>操作系统安全加固小结</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li><code>CIA</code> + <code>AAA</code> 是安全加固的基本目标</li>
+<li>操作系统安全加固是所有安全加固的基础
+<ul>
+<li>应用程序</li>
+<li>网络通信</li>
+<li>人的安全意识/安全（执行）能力</li>
+</ul></li>
+<li>操作系统安全加固的原则和经验是
+<ul>
+<li>可借鉴</li>
+<li>可推广</li>
+<li>可移植</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="运行环境安全加固" class="title-slide slide level1">
+<h1>运行环境安全加固</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>Web 服务器安全加固</li>
+<li>SSH 服务器安全加固</li>
+<li>DNS 服务器安全加固</li>
+<li>容器环境安全加固</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="web-server-harden" class="title-slide slide level1">
+<h1>Web 服务器安全加固</h1>
+
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x10/web-threat-model.png" /></p>
+</section>
+<section id="web-安全加固目标概述" class="slide level2">
+<h2>Web 安全加固目标概述</h2>
+<ul>
+<li>基于操作系统安全加固策略</li>
+<li>针对 Web 应用程序漏洞分类进行代码级别加固
+<ul>
+<li>参考《第七章 Web 应用漏洞攻防》</li>
+</ul></li>
+<li>服务器软件配置加固（借鉴操作系统安全加固之 <code>道</code> ）
+<ul>
+<li>代理服务器</li>
+<li>Web 服务器</li>
+<li>应用服务器</li>
+<li>数据库服务器</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="服务器软件配置加固之代理服务器">服务器软件配置加固之代理服务器</h3>
+<ul>
+<li>反向代理的敏感信息泄漏
+<ul>
+<li>正确配置URL匹配规则并自定义错误信息页面
+<ul>
+<li>避免通过枚举方式发现反向代理服务器
+<ul>
+<li><a href="https://www.onebug.org/wooyundata/15003.html">创新工厂安全宝信息泄漏漏洞 wooyun-2012-09951</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li>正向代理的身份认证
+<ul>
+<li>限制或禁用匿名代理服务
+<ul>
+<li>避免被滥用于非法入侵的跳板
+<ul>
+<li><a href="https://www.onebug.org/wooyundata/18598.html">iku爱酷后台开放匿名代理服务 wooyun-2011-02909</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="harden-of-web-server-1">服务器软件配置加固之 Web 服务器</h3>
+<ul>
+<li>敏感信息泄漏
+<ul>
+<li>自定义错误信息页面</li>
+<li>生产环境服务器屏蔽显示调试详细信息</li>
+<li><a href="https://github.com/OJ/gobuster">禁止特定扩展名文件的直接访问</a>
+<ul>
+<li>黑名单：.bak/.exe/.config/.txt/.htaccess/ <a href="https://github.com/wangyihang/githacker">.git</a> 等</li>
+</ul></li>
+</ul></li>
+<li>通信完整性保护
+<ul>
+<li>正确配置https
+<ul>
+<li>使用权威CA颁发的SSL证书
+<ul>
+<li>避免自签发</li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="harden-of-web-server-2">服务器软件配置加固之 Web 服务器</h3>
+<ul>
+<li>软件完整性保护
+<ul>
+<li>网页防篡改</li>
+</ul></li>
+<li>AAA 加固
+<ul>
+<li>避免使用Basic认证保护重要系统入口
+<ul>
+<li>防止暴力破解</li>
+</ul></li>
+</ul></li>
+<li>日志系统加固
+<ul>
+<li>参考操作系统日志加固策略</li>
+</ul></li>
+<li>纵深防御
+<ul>
+<li>部署于DMZ
+<ul>
+<li>强化内网安全，避免 <code>DMZ &lt;--&gt; 内网</code> 的访问</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="harden-of-app-server">服务器软件配置加固之应用服务器</h3>
+<ul>
+<li>最小化授权
+<ul>
+<li>代码可执行目录限制
+<ul>
+<li>取消上传目录和临时目录等的代码执行权限</li>
+</ul></li>
+<li>可写目录限制
+<ul>
+<li>取消非上传目录的写入权限</li>
+</ul></li>
+<li>其他沙盒机制</li>
+</ul></li>
+<li>敏感信息泄漏
+<ul>
+<li>同 Web 服务器加固策略</li>
+</ul></li>
+<li>部署 WAF</li>
+</ul>
+</section>
+<section id="waf-mod-security-1" class="slide level2">
+<h2>WAF 之 mod_security</h2>
+<ul>
+<li>功能特性
+<ul>
+<li>HTTP流量记录</li>
+<li>实时监控和攻击检测</li>
+<li>攻击防护和虚拟补丁
+<ul>
+<li>黑名单/白名单/已知弱点和漏洞（规则）</li>
+</ul></li>
+<li>灵活的（检测和响应）规则引擎</li>
+<li>支持嵌入式部署</li>
+<li>支持网络部署</li>
+<li>跨平台支持</li>
+</ul></li>
+</ul>
+</section>
+<section id="waf-mod-security-2" class="slide level2">
+<h2>WAF 之 mod_security</h2>
+<ul>
+<li><a href="https://github.com/coreruleset/coreruleset">OWASP ModSecurity CRS Project</a>
+<ul>
+<li>Core Rule Set
+<ul>
+<li>HTTP防护</li>
+<li>常见Web攻击防护</li>
+<li>自动化检测</li>
+<li>木马防护</li>
+<li>错误消息隐藏</li>
+</ul></li>
+</ul></li>
+<li><a href="https://www.netnea.com/apache-tutorials/">配置方法</a></li>
+</ul>
+</section>
+<section id="waf-mod-security-3" class="slide level2">
+<h2>WAF 之 mod_security</h2>
+<ul>
+<li>Apache请求处理生命周期
+<ul>
+<li>请求头部</li>
+<li>请求消息体</li>
+<li>响应头部</li>
+<li>响应消息体</li>
+<li>日志</li>
+</ul></li>
+<li>完整覆盖生命周期</li>
+</ul>
+</section>
+<section id="waf-mod-security-4" class="slide level2">
+<h2>WAF 之 mod_security</h2>
+<p><img data-src="images/chap0x10/mod-security.png" /></p>
+</section>
+<section id="mod_security-rules-demo" class="slide level2">
+<h2>mod_security 规则示例</h2>
+<pre class="ini"><code># 拒绝SQL注入
+SecFilter &quot;delete[[:space:]]+from&quot; 
+SecFilter &quot;insert[[:space:]]+into&quot; 
+SecFilter &quot;select.+from&quot; 
+
+# 拒绝 Googlebot 访问
+SecFilter HTTP_USER_AGENT &quot;Google&quot; nolog,redirect:http://www.google.com
+
+# 拒绝特定命令执行 
+SecFilter /etc/password
+SecFilter /bin/ls
+
+# 拒绝目录遍历
+SecFilter &quot;\.\./&quot; </code></pre>
+</section>
+<section id="其他-apache-安全加固相关" class="slide level2">
+<h2>其他 Apache 安全加固相关</h2>
+<ul>
+<li>mod_evasive
+<ul>
+<li><a href="https://www.linode.com/docs/web-servers/apache-tips-and-tricks/modevasive-on-apache/">防 DoS/DDoS</a></li>
+</ul></li>
+<li><a href="https://httpd.apache.org/docs/2.4/misc/security_tips.html">Apache 2.4 官方的安全加固技巧与建议</a></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="账号破解类通用安全解决方案" class="title-slide slide level1">
+<h1>账号破解类通用安全解决方案</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li><a href="https://www.linode.com/docs/security/using-fail2ban-to-secure-your-server-a-tutorial/">fail2ban</a></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="ssh-hardening" class="title-slide slide level1">
+<h1>SSH 安全加固</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>更换默认的SSH监听端口</li>
+<li>sshd配置安全加固</li>
+<li>使用第三方安全加固工具
+<ul>
+<li>防止口令暴力破解
+<ul>
+<li>fail2ban</li>
+<li>denyhosts</li>
+<li>pam_abl</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="dns-hardening" class="title-slide slide level1">
+<h1>DNS 安全加固</h1>
+
+</section>
+<section id="dns-security-tips-1" class="slide level2">
+<h2>DNS 安全加固小技巧</h2>
+<ul>
+<li>使用 DNSSEC
+<ul>
+<li>基于 PKI 体系对抗
+<ul>
+<li>DNS 缓存污染</li>
+<li>DNS 域名劫持</li>
+<li>DNS 解析重定向</li>
+</ul></li>
+</ul></li>
+<li>敏感信息泄漏
+<ul>
+<li>正确配置以杜绝 <code>Zone Transfer</code>
+<ul>
+<li>泄露内网信息</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="dns-security-tips-2" class="slide level2">
+<h2>DNS 安全加固小技巧</h2>
+<ul>
+<li>AAA 加固
+<ul>
+<li>域名注册服务提供商的管理帐号安全
+<ul>
+<li>口令安全</li>
+<li>防止社会工程学攻击
+<ul>
+<li>恶意篡改域名解析配置</li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="容器环境安全加固" class="title-slide slide level1">
+<h1>容器环境安全加固</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li><a href="https://docs.docker.com/engine/security/security/">Docker 官方的最佳安全实践</a></li>
+<li><a href="https://www.secjuice.com/how-to-harden-docker-containers/">How To Harden Your Docker Containers - 2019-03-03</a></li>
+<li><a href="https://www.stackrox.com/post/2019/09/docker-security-101/">Docker Container Security 101: Risks and 33 Best Practices - 2019-09-13</a></li>
+</ul>
+</section>
+<section id="hardening-of-container-1" class="slide level2">
+<h2>容器环境安全加固建议示例</h2>
+<ul>
+<li>总是尽可能使用最新版容器基础设施</li>
+<li>只允许受信任用户在 <code>Docker</code> 管理员用户组</li>
+<li>如有可能（部分功能会受限制），使用 <a href="https://docs.docker.com/engine/security/rootless/">rootless 模式启动 Docker 引擎</a></li>
+<li>使用加密隧道保护远程 API 端点
+<ul>
+<li><code>DOCKER_HOST=ssh://USER@HOST</code></li>
+</ul></li>
+</ul>
+</section>
+<section id="hardening-of-container-2" class="slide level2">
+<h2>容器环境安全加固建议示例</h2>
+<ul>
+<li><code>Docker</code> 宿主机环境尽可能最小化进程列表：只保留一个 <code>Docker</code> 守护进程</li>
+<li>使用 Linux 内核原生的 <code>Capabilities</code> 精细化访问控制能力来代替粗粒度的 <code>root/non-root</code> 授权模式
+<ul>
+<li>优化宿主机的原生进程授权</li>
+<li>优化容器内进程授权</li>
+</ul></li>
+<li>在容器中优先使用非 root 权限进程（<code>Dockerfile</code> 编写阶段）
+<ul>
+<li>对于 Web 应用容器来说通常这一点都是可以满足的</li>
+</ul></li>
+</ul>
+</section>
+<section id="hardening-of-container-3" class="slide level2">
+<h2>容器环境安全加固建议示例</h2>
+<ul>
+<li>限制或禁用容器中的「高风险」操作，例如
+<ul>
+<li>禁止所有「挂载」操作</li>
+<li>禁止访问原始套接字</li>
+<li>禁止高风险文件系统操作，例如创建新设备节点、修改文件属主、修改文件属性等</li>
+<li>禁止加载（内核）模块</li>
+</ul></li>
+<li>使用 <code>Docker Content Trust</code> Signature Verification 来确保只运行「受信任」镜像</li>
+</ul>
+</section>
+<section id="hardening-of-container-4" class="slide level2">
+<h2>容器环境安全加固建议示例</h2>
+<ul>
+<li>扫描镜像内的已知漏洞并按需修复
+<ul>
+<li><a href="https://github.com/anchore/anchore-engine">anchore/anchore-engine</a></li>
+<li><a href="https://github.com/quay/clair">quay/clair</a></li>
+</ul></li>
+<li>使用 <a href="https://github.com/docker/docker-bench-security">Docker Bench for Security</a> 进行自查自纠</li>
+<li>容器内应用本身的安全加固（参考本章其他节内容）</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="运行时应用自我保护" class="title-slide slide level1">
+<h1>运行时应用自我保护</h1>
+
+</section>
+<section id="rasp" class="slide level2">
+<h2>RASP</h2>
+<ul>
+<li>runtime application self-protection
+<ul>
+<li>最早是世界知名信息安全咨询公司 Gartner 在 2014 年提出的概念</li>
+</ul></li>
+<li>不同于 <code>防火墙</code> 、<code>入侵检测</code> 和 <code>WAF</code> 类「外围安全产品」，<code>RASP</code> 是「内置到应用程序代码」里的
+<ul>
+<li>设计理念：对应用服务的保护不应该依赖于外部系统，应用应该具备自我保护的能力</li>
+</ul></li>
+<li>早在 2006 年，<code>Suhosin</code> 项目作为一个面向 <code>PHP</code> 引擎的安全加固补丁项目应该算最早的 RASP 解决方案了
+<ul>
+<li>在发展过程中，大部分安全加固特性已经被上游官方 PHP 开发者内置集成到新版 PHP 引擎中</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="openrasp"><a href="https://rasp.baidu.com/">OpenRASP</a></h3>
+<blockquote>
+<p>OpenRASP 抛弃了传统防火墙依赖请求特征检测攻击的模式，创造性的使用RASP技术（应用运行时自我保护），直接注入到被保护应用的服务中提供函数级别的实时防护，可以在不更新策略以及不升级被保护应用代码的情况下检测/防护未知漏洞，尤其适合大量使用开源组件的互联网应用以及使用第三方集成商开发的金融类应用</p>
+</blockquote>
+</section>
+<section class="slide level2">
+
+<h3 id="openrasp-vs.-waf"><a href="https://rasp.baidu.com/#section-books">OpenRASP vs. WAF</a></h3>
+<ul>
+<li>只有成功的攻击才会触发 RASP 的报警，而 WAF 是只要匹配特征就会报警</li>
+<li>WAF 很难完全兼容后端应用的特性，导致防护引擎绕过；而 RASP 不受影响</li>
+<li>可以实现应用热补丁，比如永久免疫 Struts OGNL 系列漏洞，WAF只能不断加规则</li>
+<li>可定制安全编码规范、服务器安全基线，WAF做不了</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="安全加固基准检查清单" class="title-slide slide level1">
+<h1>安全加固基准检查清单</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>Google <code>security checklist</code></li>
+<li><a href="https://csrc.nist.gov/projects/security-content-automation-protocol/specifications/xccdf">XCCDF</a>
+<ul>
+<li>The <code>Extensible Configuration Checklist Description Format</code> by NIST</li>
+</ul></li>
+<li><strong>切忌教条式照搬已有的安全加固基准清单</strong>
+<ul>
+<li>因地制宜
+<ul>
+<li>业务需求</li>
+<li>运行环境</li>
+<li>管理制度</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="课后思考题" class="title-slide slide level1">
+<h1>课后思考题</h1>
+
+</section>
+<section class="slide level2">
+
+<p>试举⼀例说明“⼈的安全意识和安全能⼒在应用程序安全加固中是不可忽视的重要环节”。</p>
+</section>
+</section>
+    </div>
+  </div>
+
+  <script src="lib/reveal.js/lib/js/head.min.js"></script>
+  <script src="lib/reveal.js/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Display the page number of the current slide
+        slideNumber: true,
+        // Push each slide change to the browser history
+        history: true,
+        // Transition style
+        transition: 'fade', // none/fade/slide/convex/concave/zoom
+        math: {
+          mathjax: '',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+menu: {
+		// Specifies which side of the presentation the menu will 
+		// be shown. Use 'left' or 'right'.
+		side: 'left',
+
+		// Specifies the width of the menu.
+		// Can be one of the following:
+		// 'normal', 'wide', 'third', 'half', 'full', or
+		// any valid css length value
+		width: 'normal',
+
+		// Add slide numbers to the titles in the slide list.
+		// Use 'true' or format string (same as reveal.js slide numbers)
+		numbers: true,
+
+		// Specifies which slide elements will be used for generating
+		// the slide titles in the menu. The default selects the first
+		// heading element found in the slide, but you can specify any
+		// valid css selector and the text from the first matching
+		// element will be used.
+		// Note: that a section data-menu-title attribute or an element
+		// with a menu-title class will take precedence over this option
+		titleSelector: 'h1, h2, h3, h4, h5, h6',
+
+		// If slides do not have a matching title, attempt to use the
+		// start of the text content as the title instead
+		useTextContentForMissingTitles: false,
+
+		// Hide slides from the menu that do not have a title.
+		// Set to 'true' to only list slides with titles.
+		hideMissingTitles: false,
+
+		// Adds markers to the slide titles to indicate the 
+		// progress through the presentation. Set to 'false'
+		// to hide the markers.
+		markers: true,
+
+		// Specify custom panels to be included in the menu, by
+		// providing an array of objects with 'title', 'icon'
+		// properties, and either a 'src' or 'content' property.
+		custom: false,
+
+		// Specifies the themes that will be available in the themes
+		// menu panel. Set to 'true' to show the themes menu panel
+		// with the default themes list. Alternatively, provide an
+		// array to specify the themes to make available in the
+		// themes menu panel, for example...
+		// [
+		//     { name: 'Black', theme: 'css/theme/black.css' },
+		//     { name: 'White', theme: 'css/theme/white.css' },
+		//     { name: 'League', theme: 'css/theme/league.css' }
+		// ]
+		themes: false,
+
+		// Specifies the path to the default theme files. If your
+		// presentation uses a different path to the standard reveal
+		// layout then you need to provide this option, but only
+		// when 'themes' is set to 'true'. If you provide your own 
+		// list of themes or 'themes' is set to 'false' the 
+		// 'themesPath' option is ignored.
+		themesPath: 'css/theme/',
+
+		// Specifies if the transitions menu panel will be shown.
+		// Set to 'true' to show the transitions menu panel with
+		// the default transitions list. Alternatively, provide an
+		// array to specify the transitions to make available in
+		// the transitions panel, for example...
+		// ['None', 'Fade', 'Slide']
+		transitions: false,
+
+		// Adds a menu button to the slides to open the menu panel.
+		// Set to 'false' to hide the button.
+		openButton: true,
+
+		// If 'true' allows the slide number in the presentation to
+		// open the menu panel. The reveal.js slideNumber option must 
+		// be displayed for this to take effect
+		openSlideNumber: false,
+
+		// If true allows the user to open and navigate the menu using
+		// the keyboard. Standard keyboard interaction with reveal
+		// will be disabled while the menu is open.
+		keyboard: true,
+
+		// Normally the menu will close on user actions such as
+		// selecting a menu item, or clicking the presentation area.
+		// If 'true', the sticky option will leave the menu open
+		// until it is explicitly closed, that is, using the close
+		// button or pressing the ESC or m key (when the keyboard 
+		// interaction option is enabled).
+		sticky: false,
+
+		// If 'true' standard menu items will be automatically opened
+		// when navigating using the keyboard. Note: this only takes 
+		// effect when both the 'keyboard' and 'sticky' options are enabled.
+		autoOpen: true,
+
+		// If 'true' the menu will not be created until it is explicitly
+		// requested by calling RevealMenu.init(). Note this will delay
+		// the creation of all menu panels, including custom panels, and
+		// the menu button.
+		delayInit: false,
+
+		// If 'true' the menu will be shown when the menu is initialised.
+		openOnInit: false,
+
+		// By default the menu will load it's own font-awesome library
+		// icons. If your presentation needs to load a different
+		// font-awesome library the 'loadIcons' option can be set to false
+		// and the menu will not attempt to load the font-awesome library.
+		loadIcons: true
+	},
+
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'lib/reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'lib/reveal.js/plugin/zoom-js/zoom.js', async: true },
+          { src: 'lib/reveal.js/plugin/math/math.js', async: true },
+          { src: 'lib/reveal.js/plugin/menu/menu.js'},
+          { src: 'lib/reveal.js/plugin/markdown/marked.js'},
+          { src: 'lib/reveal.js/plugin/markdown/markdown.js'},
+          { src: 'lib/reveal.js/plugin/search/search.js'},
+          { src: 'lib/reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'lib/reveal.js/plugin/notes/notes.js', async: true },
+        ]
+      });
+    </script>
+    </body>
+</html>

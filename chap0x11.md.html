@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="黄玮">
+  <title>网络安全</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="lib/reveal.js/css/reveal.css">
+  <style type="text/css">code{white-space: pre;}</style>
+
+
+    <!-- For syntax highlighting using highlight.js-->
+    <link rel="stylesheet" href="lib/reveal.js/lib/css/zenburn.css">
+
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="lib/reveal.js/css/theme/white.css" id="theme">
+  <!-- Printing and PDF exports -->
+<link rel="stylesheet" media="print" href="lib/reveal.js/css/print/pdf.css" />
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'lib/reveal.js/css/print/pdf.css' : 'lib/reveal.js/css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="lib/reveal.js/lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">网络安全</h1>
+  <p class="author">黄玮</p>
+</section>
+
+<section>
+<section id="第十一章-蜜罐和蜜网" class="title-slide slide level1">
+<h1>第十一章 蜜罐和蜜网</h1>
+
+</section>
+<section id="review-1" class="slide level2">
+<h2>温故</h2>
+<ul>
+<li>信息安全的本质——持续对抗
+<ul>
+<li>网络渗透与系统入侵 VS. 防火墙 / 入侵检测 / 应用程序安全加固</li>
+</ul></li>
+<li>持续对抗的双方是 <strong>非对称</strong> 的对抗</li>
+</ul>
+</section>
+<section id="review-2" class="slide level2">
+<h2>温故</h2>
+<ul>
+<li>工作量不对称
+<ul>
+<li>攻击方：夜深人静, 节假日，攻其不备</li>
+<li>防守方：24*7, 全面防护，木桶原理</li>
+</ul></li>
+<li>信息不对称
+<ul>
+<li>攻击方：通过信息收集、网络扫描、探测、踩点对攻击目标全面了解</li>
+<li>防守方：对攻击方一无所知</li>
+</ul></li>
+<li>后果不对称
+<ul>
+<li>攻击方：任务失败，极少受到损失</li>
+<li>防守方：安全机制被突破，资产损失，其他影响</li>
+</ul></li>
+</ul>
+</section>
+<section id="知新" class="slide level2">
+<h2>知新</h2>
+<ul>
+<li>使用蜜罐和蜜网来扭转对抗不对称局面
+<ul>
+<li>扭转工作量不对称
+<ul>
+<li>增加攻击成本－假目标</li>
+</ul></li>
+<li>扭转信息不对称－了解你的敌人！
+<ul>
+<li>他们是谁？</li>
+<li>他们使用什么工具？如何操作？</li>
+<li>为什么攻击你？</li>
+</ul></li>
+<li>扭转后果不对称
+<ul>
+<li>防守方避免资产损失和其他影响</li>
+<li>计算机取证－对攻击方的威慑</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="本章内容概要" class="slide level2">
+<h2>本章内容概要</h2>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>蜜罐发展史</li>
+<li>欺骗防御</li>
+<li>动态防御</li>
+<li>动态攻击</li>
+<li>蜜罐关键技术</li>
+<li>蜜网技术</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="蜜罐发展史" class="title-slide slide level1">
+<h1>蜜罐发展史</h1>
+
+</section>
+<section id="基本概念" class="slide level2">
+<h2>基本概念</h2>
+<ul>
+<li>Honeypot
+<ul>
+<li>首次出现在Cliff Stoll的小说 <code>The Cuckoo's Egg</code> (1990)</li>
+</ul></li>
+<li>蜜网项目组给出如下定义（价值/意义）：
+<ul>
+<li><code>A security resource who's value lies in being probed, attacked or compromised</code></li>
+<li>没有业务上的用途
+<ul>
+<li>所有流入/流出蜜罐的流量都预示着扫描、攻击及攻陷</li>
+</ul></li>
+</ul></li>
+<li>用以监视、检测和分析攻击</li>
+</ul>
+</section>
+<section id="history-of-honeypot" class="slide level2">
+<h2>蜜罐发展的里程碑</h2>
+<p><img data-src="images/chap0x11/honeypot-1.png" /></p>
+<ul>
+<li>1990: <code>The Cuckoo's Egg</code></li>
+<li>1997: Fred Cohen: DTK
+<ul>
+<li>模拟网络服务，虚拟系统</li>
+</ul></li>
+<li>2000: 蜜网项目组: Gen II 蜜网</li>
+</ul>
+</section>
+<section id="classification-of-honeypot-1" class="slide level2">
+<h2>蜜罐的分类</h2>
+<ul>
+<li>部署目标
+<ul>
+<li>产品型</li>
+<li>研究型</li>
+</ul></li>
+<li>交互性：攻击者在蜜罐中活动的交互性级别
+<ul>
+<li>低交互型</li>
+<li>高交互型</li>
+<li>混合型</li>
+</ul></li>
+</ul>
+</section>
+<section id="classification-of-honeypot-2" class="slide level2">
+<h2>蜜罐的分类</h2>
+<ul>
+<li>新型蜜罐
+<ul>
+<li>主动式蜜罐</li>
+<li>蜜场（honeyfarm）</li>
+<li>蜜信（honeytoken）</li>
+<li>应用层蜜罐（honeyapp）</li>
+<li>客户端蜜罐（honeyclient）</li>
+</ul></li>
+</ul>
+</section>
+<section id="产品型蜜罐" class="slide level2">
+<h2>产品型蜜罐</h2>
+<ul>
+<li>部署目标: 保护单位网络
+<ul>
+<li>防御</li>
+<li>检测</li>
+<li>帮助对攻击的响应</li>
+</ul></li>
+<li>需要网管尽可能少的工作</li>
+<li>商业产品
+<ul>
+<li><a href="http://www.keyfocus.net/kfsensor/index.php">KFSensor</a></li>
+</ul></li>
+</ul>
+</section>
+<section id="研究型蜜罐" class="slide level2">
+<h2>研究型蜜罐</h2>
+<ul>
+<li>部署目标：对黑客攻击进行捕获和分析
+<ul>
+<li>这些“坏家伙”在干什么</li>
+<li>了解攻击方法</li>
+<li>捕获他们的击键记录</li>
+<li>捕获他们的攻击工具</li>
+<li>监控他们的会话</li>
+</ul></li>
+<li>需要大量时间和精力投入！！</li>
+<li>实例
+<ul>
+<li><a href="http://honeynet.onofri.org/papers/gen2/">GenII 蜜网</a></li>
+<li><a href="https://github.com/DataSoft/Honeyd">Honeyd</a></li>
+</ul></li>
+</ul>
+</section>
+<section id="低交互蜜罐" class="slide level2">
+<h2>低交互蜜罐</h2>
+<ul>
+<li>模拟服务和操作系统</li>
+<li>只能捕获少量信息</li>
+<li>容易部署，减少风险</li>
+<li>实例
+<ul>
+<li><a href="https://github.com/DinoTools/dionaea">Dionaea</a></li>
+<li><a href="https://github.com/DataSoft/Honeyd">Honeyd</a></li>
+<li><a href="http://www.keyfocus.net/kfsensor/index.php">KFSensor</a></li>
+</ul></li>
+</ul>
+</section>
+<section id="高交互蜜罐" class="slide level2">
+<h2>高交互蜜罐</h2>
+<ul>
+<li>提供真实的操作系统和服务，而不是模拟</li>
+<li>可以捕获更丰富的信息</li>
+<li>部署复杂，高安全风险</li>
+<li>实例
+<ul>
+<li><a href="https://shadowd.zecure.org/overview/introduction/">Shadow Daemon</a></li>
+<li><a href="https://hub.docker.com/r/lyrebird/honeypot-base/">Lyrebird</a></li>
+</ul></li>
+</ul>
+</section>
+<section id="主动式蜜罐技术" class="slide level2">
+<h2>主动式蜜罐技术</h2>
+<ul>
+<li>动态蜜罐
+<ul>
+<li>即插即用的解决方案</li>
+<li>自动调整</li>
+</ul></li>
+<li>被动指纹识别技术
+<ul>
+<li>了解所处的网络环境</li>
+</ul></li>
+<li>动态配置
+<ul>
+<li>虚拟蜜罐</li>
+</ul></li>
+</ul>
+</section>
+<section id="蜜场基本思想" class="slide level2">
+<h2>蜜场基本思想</h2>
+<p><img data-src="images/chap0x11/honeyfarm.png" /></p>
+</section>
+<section id="重定向机制" class="slide level2">
+<h2>重定向机制</h2>
+<ul>
+<li>对高价值目标映射蜜罐系统
+<ul>
+<li>动态蜜罐技术</li>
+</ul></li>
+<li>不需创建新的目标，而使用已存在的目标</li>
+<li>将恶意的、未经授权的活动重定向到蜜罐</li>
+<li>监视和捕获攻击者在蜜罐中的活动</li>
+<li>计算机取证技术</li>
+</ul>
+</section>
+<section id="什么时候重定向" class="slide level2">
+<h2>什么时候重定向</h2>
+<ul>
+<li>非预期的流量 – Hot Zoning
+<ul>
+<li>非业务(Non-production)目标端口</li>
+<li>非业务源端口</li>
+<li>Time of day</li>
+</ul></li>
+<li>已知攻击 – Bait-n-Switch
+<ul>
+<li>Snort 的修改版本，内联网关</li>
+<li>将检测到的活动重定向到蜜罐中</li>
+</ul></li>
+<li>基于主机的监控
+<ul>
+<li>监控主机上的未授权活动、或恶意活动, 然后重定向: PaX, Systrace</li>
+</ul></li>
+</ul>
+</section>
+<section id="重定向示例" class="slide level2">
+<h2>重定向示例</h2>
+<p><img data-src="images/chap0x11/redirect-in-honeyfarm.png" /></p>
+</section>
+<section id="蜜罐的欺骗性" class="slide level2">
+<h2>蜜罐的欺骗性</h2>
+<ul>
+<li>真实的系统环境
+<ul>
+<li>系统标识
+<ul>
+<li>IP、traceroute 路径</li>
+<li>主机名、操作系统内核版本…</li>
+</ul></li>
+</ul></li>
+<li>系统配置和应用程序
+<ul>
+<li>开放的网络服务…</li>
+<li>安装的应用程序</li>
+</ul></li>
+<li>数据内容
+<ul>
+<li>Proxy and cache?</li>
+</ul></li>
+<li>优势：在一个高度可控的环境中愚弄/观察攻击者的所有行动</li>
+</ul>
+</section>
+<section id="蜜信honeytoken" class="slide level2">
+<h2>蜜信（HoneyToken）</h2>
+<ul>
+<li>概念出发点：威胁不仅仅是针对信息系统，也针对 <strong>信息</strong> 本身</li>
+<li>HoneyToken: 正常情况不会使用的一些诱饵信息
+<ul>
+<li>数据库诱饵记录</li>
+<li>伪造的弱用户名/口令对</li>
+</ul></li>
+<li>如果 HoneyToken 一旦被访问, 预示着攻击发生, 对它进行监视跟踪</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="canarytokens">CanaryTokens</h3>
+<p>免费且开源的蜜信制作工具</p>
+<p><a href="https://canarytokens.org/generate"><img data-src="images/chap0x11/CanaryTokens-1.png" /></a></p>
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x11/CanaryTokens-2.png" /></p>
+</section>
+<section id="应用层蜜罐honeyapp" class="slide level2">
+<h2>应用层蜜罐（Honeyapp）</h2>
+<ul>
+<li>模拟应用层的服务对非自动化的攻击更具吸引力</li>
+<li>在应用层能够更有效地对攻击进行分析</li>
+<li>实例
+<ul>
+<li>Web application honeypot</li>
+</ul></li>
+</ul>
+</section>
+<section id="客户端蜜罐honeyclient" class="slide level2">
+<h2>客户端蜜罐（Honeyclient）</h2>
+<ul>
+<li>越来越多的攻击针对客户端软件
+<ul>
+<li>Web 浏览器</li>
+<li>Email 客户端</li>
+</ul></li>
+<li>Honeyclient 的设计要考虑
+<ul>
+<li>应用协议本身</li>
+<li>需要捕获的攻击</li>
+</ul></li>
+<li>基于完整性测试判断是否遭受攻击
+<ul>
+<li>程序本身</li>
+<li>配置文件、注册表等</li>
+</ul></li>
+<li>分类
+<ul>
+<li>Active honeyclient: 同步交互，如 web-based honeyclient</li>
+<li>Passive honeyclient: 异步交互，如 email honeyclient</li>
+</ul></li>
+</ul>
+</section>
+<section id="蜜罐实例" class="slide level2">
+<h2>蜜罐实例</h2>
+<p><a href="https://github.com/paralax/awesome-honeypots">Awesome Honeypots</a></p>
+</section>
+<section id="蜜罐技术优势" class="slide level2">
+<h2>蜜罐技术优势</h2>
+<ul>
+<li>高保真－高质量的小数据集
+<ul>
+<li>低误报率和低漏报率</li>
+</ul></li>
+<li>捕获新的攻击及战术</li>
+<li>并不是资源密集型</li>
+<li>简单</li>
+</ul>
+</section>
+<section id="蜜罐技术弱势" class="slide level2">
+<h2>蜜罐技术弱势</h2>
+<ul>
+<li>劳力/技术密集型</li>
+<li>局限的视图</li>
+<li>不能直接防护信息系统</li>
+<li>引入新的安全风险
+<ul>
+<li>蜜罐被攻陷</li>
+</ul></li>
+</ul>
+</section>
+<section id="安全风险" class="slide level2">
+<h2>安全风险</h2>
+<ul>
+<li>发现蜜罐
+<ul>
+<li>蜜罐指纹识别 VS. 消除蜜罐的指纹
+<ul>
+<li>一旦识破蜜罐：攻击者会向蜜罐反馈虚假、伪造的信息</li>
+</ul></li>
+</ul></li>
+<li>利用蜜罐攻击第三方
+<ul>
+<li>期望黑客获得蜜罐的 <code>root</code> 权限 VS. 获得 <code>root</code> 权限之后是否真的可以为所欲为？
+<ul>
+<li>系统仿真程度越高、开放服务越多会引入更多攻击暴露面</li>
+</ul></li>
+<li>完全隔离网络？ or 伴随仿真蜜网？</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="欺骗防御" class="title-slide slide level1">
+<h1>欺骗防御</h1>
+
+</section>
+<section id="军事学渊源" class="slide level2">
+<h2>军事学渊源</h2>
+<ul>
+<li>孙子兵法有云：<code>兵者诡道也</code> 、<code>实者虚之，虚者实之</code>
+<ul>
+<li><code>诡道</code> 是一切战略的核心与基础
+<ul>
+<li>运用「千变万化的方法」去迷惑敌人，使得敌人进退维谷，从而使得防御方在对抗中获得主动权和争取到行动时间</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="孙子兵法虚实篇" class="slide level2">
+<h2><a href="https://baike.baidu.com/item/%E5%AD%99%E5%AD%90%E5%85%B5%E6%B3%95%C2%B7%E8%99%9A%E5%AE%9E%E7%AF%87/19831524">孙子兵法·虚实篇</a></h2>
+<ul>
+<li>通过「分散集结」、「包围迂回」，造成 <strong>预定会战地点</strong> 上的我强敌劣，以少胜多</li>
+<li>蜜罐和蜜网就是防御者为攻击者精心准备的「会战之地」
+<ul>
+<li><code>凡先处战地而待敌者佚，后处战地而趋战者劳，故善战者，致人而不致于人</code></li>
+<li><code>故知战之地，知战之日，则可千里而会战</code></li>
+</ul></li>
+</ul>
+</section>
+<section id="经典欺骗防御理论模型" class="slide level2">
+<h2>经典欺骗防御理论模型</h2>
+<p><a href="http://all.net/journal/deception/deception.html">A Note on the Role of Deception in Information Protection (c) 1998 Fred Cohen</a></p>
+<ul>
+<li>欺骗增加了攻击者工作量，因为他们无法轻易预测哪些攻击行为会成功哪些会失败</li>
+<li>欺骗允许防御者追踪攻击者的种种入侵尝试并在攻击者找到防御者的真实漏洞之前进行响应</li>
+<li>欺骗消耗攻击者资源</li>
+<li>欺骗增加了对攻击者的更高技能要求</li>
+<li>欺骗增加了攻击者的不确定性</li>
+</ul>
+</section>
+<section id="cohen-设计的欺骗防御模型" class="slide level2">
+<h2>Cohen 设计的欺骗防御模型</h2>
+<ul>
+<li>影响攻击者的策略选择，使其按照防御者设计的攻击路径执行</li>
+<li>尽快检测到攻击者，联动切断其他攻击路径</li>
+<li>消耗攻击者资源</li>
+</ul>
+</section>
+<section id="蜜罐与欺骗防御的关系" class="slide level2">
+<h2>蜜罐与欺骗防御的关系</h2>
+<ul>
+<li>蜜罐是「欺骗防御」策略在网络安全领域最早落地的产品级实现</li>
+<li>网络安全的核心特征： <strong>持续</strong> 对抗</li>
+<li>蜜罐的天然弱点促使其演进方向必然是「动态」和「自适应」
+<ul>
+<li>无论是低交互还是高交互蜜罐，蜜罐的核心组成是「代码」</li>
+<li>随着代码规模的增长，代码漏洞将无法避免</li>
+<li>蜜罐作为一个软硬件混合产品，全生命周期都不是一劳永逸的</li>
+</ul></li>
+</ul>
+</section>
+<section id="回顾第六章的杀伤链和反杀伤链模型" class="slide level2">
+<h2>回顾第六章的「杀伤链」和「反杀伤链」模型</h2>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>杀伤链模型</th>
+<th>反杀伤链模型</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td>识别</td>
+<td>发现</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>武器化</td>
+<td>N/A</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td>投递</td>
+<td>定位</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>漏洞利用</td>
+<td>跟踪</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td>安装（后门）</td>
+<td>瞄准</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>命令与控制</td>
+<td>打击</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td>达成目标</td>
+<td>评价</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="让对手误判" class="slide level2">
+<h2>让对手误判</h2>
+<ul>
+<li>网络安全的核心特征：「持续对抗」
+<ul>
+<li>攻防双方都希望在对抗中「击败对手」</li>
+</ul></li>
+<li>防御方的欺骗之道
+<ul>
+<li>蜜罐：让攻击者对「陷阱」目标「信以为真」，从一开始就误导对手「白费力气」并「越陷越深」</li>
+<li>动态防御：让攻击者「投递」的攻击载荷到达「真实目标」成为「随机或低概率」事件</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="动态防御" class="title-slide slide level1">
+<h1>动态防御</h1>
+
+</section>
+<section id="攻击面attack-surface" class="slide level2">
+<h2>攻击面（Attack Surface）</h2>
+<ul>
+<li>系统中可被利用、遭受攻击的系统资源集合
+<ul>
+<li>攻击目标（网络和主机）</li>
+<li>通道和协议（<code>CVSS 3.x</code> 中定义的 <code>Attack Vector</code>）</li>
+<li>访问控制（权限约束条件）</li>
+</ul></li>
+</ul>
+</section>
+<section id="moving-target-defense-mtd" class="slide level2">
+<h2>Moving Target Defense, MTD</h2>
+<ul>
+<li><a href="https://www.nitrd.gov/nitrdgroups/index.php?title=National_Cyber_Leap_Year">2009 年</a> 在美国的《National Cyber Leap Year》活动中征集到的「改变游戏规则」研究方向：移动目标防御</li>
+<li>这是一个基于 <code>动态化</code>、<code>随机化</code>、<code>多样化</code> 思想改造现有信息系统防御缺陷的理论和方法，其核心思想致力于构建一种 「动态、异构、不确定」 的网络空间目标环境来增加攻击者的攻击难度，以系统的 <strong>随机性</strong> 和 <strong>不可预测性</strong> 来对抗网络攻击
+<ul>
+<li>让 <code>攻击面</code> 持续移动起来</li>
+</ul></li>
+</ul>
+</section>
+<section id="mtd-implementation" class="slide level2">
+<h2>MTD 的常见维度</h2>
+<ul>
+<li>网络</li>
+<li>主机</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="mtd-in-networks-1">网络层面的 MTD</h3>
+<ul>
+<li>动态网络架构：通过实施 <code>网络攻击面</code> 资源的转移，动态变换网络资源及配置，同时保持架构内各部分组件的信息交换和协同转移，以此提高应对网络攻击的动态防御能力
+<ul>
+<li>可变网络(mutable networks, MUTE)</li>
+<li>自屏蔽动态网络架构(self-shielding dynamic network architecture, 简称SDNA)</li>
+<li>MOTAG架构</li>
+<li>移动自组网络(mobile ad hoc networks, MANETs)</li>
+<li>基于 SDN 的动态网络架构</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="mtd-in-networks-2">网络层面的 MTD</h3>
+<ul>
+<li>网络地址随机化：为网络地址引入动态变换更新机制, 通过对网络数据包进行特殊的处理或通过一定机制协同变换网络地址, 使得攻击者始终无法确定通信双方的真实地址, 从而破坏了攻击者的嗅探攻击, 实现了对主机的隐私保护, 以此提升通信双方的安全性</li>
+<li>端信息随机跳变：在端到端的数据传输中, 通信双方或一方按照协定伪随机地改变端口、地址、时隙、加密算法甚至协议等信息, 从而实现网络的主动防御.
+<ul>
+<li>基于 SDN 的端信息跳变技术</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="mtd-in-host-1">主机层面的 MTD</h3>
+<ul>
+<li>硬件
+<ul>
+<li>指令集随机化(ISR)</li>
+</ul></li>
+<li>操作系统及基础软件
+<ul>
+<li>多操作系统轮换</li>
+<li>基础软件轮换</li>
+<li>基于虚拟化的动态迁移</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="mtd-in-host-2">主机层面的 MTD</h3>
+<ul>
+<li>应用软件
+<ul>
+<li>目标代码生成阶段：「异构同效」代码（软件的 <code>多态化</code>）
+<ul>
+<li>地址空间布局随机化(ASLR)</li>
+<li>代码生成随机化
+<ul>
+<li>对抗 ROP（返回导向编程）、JOP（跳转导向编程）</li>
+</ul></li>
+</ul></li>
+<li>运行时阶段：（拟态防御）动态异构冗余（Dynamic Heterogeneous Redundancy, DHR）
+<ul>
+<li>地址空间布局随机化(ASLR)</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="拟态防御" class="slide level2">
+<h2>拟态防御</h2>
+<ul>
+<li><code>Cyber Mimic Defense</code>, <code>CMD</code></li>
+<li>中国工程院院士、国家数字交换系统工程技术研究中心主任邬江兴主导创立的理论
+<ul>
+<li><a href="http://jcs.iie.ac.cn/xxaqxb/ch/reader/create_pdf.aspx?file_no=20160401&amp;year_id=2016&amp;quarter_id=4&amp;falg=1">拟态防御理论</a></li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="section">8122</h3>
+<ol type="1">
+<li>针对一个前提：防范未知漏洞后门等不确定威胁</li>
+<li>基于一个公理：相对正确公理</li>
+<li>依据一个发现：熵不减系统能稳定抵抗未知攻击</li>
+<li>借鉴二种理论：可靠性理论与自动控制理论</li>
+<li>发明一种构造：动态异构冗余构造（IT领域创新使能技术）</li>
+<li>导入一类机制：拟态伪装机制</li>
+<li>形成一个效应：测不准效应</li>
+<li>获得一类功能：内生安全功能</li>
+<li>达到一种效果：融合现有安全技术可指数量级提升防御增益</li>
+<li>实现二个目标：归一化处理传统/非传统安全问题—- 获得广义鲁棒控制属性</li>
+</ol>
+</section>
+<section id="mtd-与-cmd" class="slide level2">
+<h2>MTD 与 CMD</h2>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>MTD</th>
+<th>CMD</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>理论定位</td>
+<td>“道”</td>
+<td>“术”</td>
+</tr>
+<tr class="even">
+<td>设计目标</td>
+<td>以动态变化增加对抗成本、让对手测不准、提升安全性</td>
+<td>同 MTD</td>
+</tr>
+<tr class="odd">
+<td>技术路线</td>
+<td>异构同效</td>
+<td>异构同效</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="举一反三从移动防御到移动对抗" class="slide level2">
+<h2>举一反三：从「移动」防御到「移动」对抗</h2>
+<p><strong>多维度</strong> 移动以降低 <strong>对手</strong> 优势从而增加对抗胜算。</p>
+</section>
+</section>
+<section>
+<section id="动态攻击" class="title-slide slide level1">
+<h1>动态攻击</h1>
+
+</section>
+<section id="mta-1" class="slide level2">
+<h2>Moving Target Attacks, MTA</h2>
+<ul>
+<li>多态（Polymorphism）：改变恶意代码的签名，躲避杀软检测</li>
+<li>变形（Metamorphism / self-modification）：恶意代码运行时自我修改，躲避杀软检测</li>
+<li>混淆（Obfuscation）：降低代码可读性，隐藏关键代码逻辑，对抗逆向工程</li>
+<li>自加密（Self-encryption）：用加密手段达到多态、变形和混淆等价效果</li>
+</ul>
+</section>
+<section id="mta-2" class="slide level2">
+<h2>Moving Target Attacks, MTA</h2>
+<ul>
+<li>反沙箱/沙盒（Anti-VM/sandboxes）：识别动态取证环境并在运行时改变关键代码逻辑</li>
+<li>反调试（Anti-Debugging）：识别调试环境并在运行时改变关键代码逻辑</li>
+<li>加密漏洞利用载荷（Encrypted exploits）：用加密手段达到对抗检测与取证分析目的</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="蜜罐关键技术" class="title-slide slide level1">
+<h1>蜜罐关键技术</h1>
+
+</section>
+<section id="设计目标" class="slide level2">
+<h2>设计目标</h2>
+<ul>
+<li>捕获数据</li>
+<li>避免被识别</li>
+<li>防止被攻陷</li>
+<li>提供有价值的分析报告
+<ul>
+<li>攻击来源</li>
+<li>攻击意图</li>
+<li>攻击过程</li>
+<li>攻击结果</li>
+</ul></li>
+</ul>
+</section>
+<section id="蜜罐的基本功能" class="slide level2">
+<h2>蜜罐的基本功能</h2>
+<ul>
+<li>伪装和模拟
+<ul>
+<li>服务/应用/系统/网络/主机</li>
+</ul></li>
+<li>数据捕获
+<ul>
+<li>网络流量</li>
+<li>系统操作记录</li>
+<li>日志</li>
+</ul></li>
+<li>数据控制</li>
+<li>数据分析</li>
+</ul>
+</section>
+<section id="honeypot-arch-1" class="slide level2">
+<h2>蜜罐的基本体系架构</h2>
+<p><img data-src="images/chap0x11/honeypot-arch.png" /></p>
+</section>
+<section id="honeypot-arch-2" class="slide level2">
+<h2>蜜罐的基本体系架构</h2>
+<ul>
+<li>决策
+<ul>
+<li>监听收集事件，根据策略与欺骗、诱导信息库中的记录进行比较后决定诱导或欺骗</li>
+</ul></li>
+<li>诱导
+<ul>
+<li>将攻击者的连接转向蜜罐系统</li>
+</ul></li>
+<li>欺骗（误导）</li>
+<li>分析
+<ul>
+<li>系统所作的欺骗和诱导事件都记录到日志中，由分析模块进行分析，调整欺骗诱导策略</li>
+</ul></li>
+</ul>
+</section>
+<section id="蜜罐和入侵检测的关系" class="slide level2">
+<h2>蜜罐和入侵检测的关系</h2>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>蜜罐</th>
+<th>入侵检测</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>目的</td>
+<td>还原入侵</td>
+<td>发现入侵</td>
+</tr>
+<tr class="even">
+<td>手段</td>
+<td>异常检测</td>
+<td>误用检测、异常检测</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section class="slide level2">
+
+<h3 id="还原入侵-vs.-发现入侵">还原入侵 VS. 发现入侵</h3>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>还原入侵</th>
+<th>发现入侵</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>where （来源）</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr class="even">
+<td>what （类型）</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr class="odd">
+<td>how （攻击图）</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr class="even">
+<td>why （攻击意图）</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr class="odd">
+<td>who （幕后推手）</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr class="even">
+<td>影响评估</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section>
+<section id="蜜网技术" class="title-slide slide level1">
+<h1>蜜网技术</h1>
+
+</section>
+<section id="gen-ii-蜜网技术的数据捕获的数据流" class="slide level2">
+<h2>Gen II 蜜网技术的数据捕获的数据流</h2>
+<p><img data-src="images/chap0x11/honeynet-1.png" /></p>
+</section>
+<section id="gen-ii-蜜网技术的数据控制架构的数据流" class="slide level2">
+<h2>Gen II 蜜网技术的数据控制架构的数据流</h2>
+<p><img data-src="images/chap0x11/honeynet-2.png" /></p>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>欺骗防御一节的「网络层面 MTD」</p>
+</blockquote>
+</section>
+<section id="蜜罐与蜜网技术的典型应用场景" class="slide level2">
+<h2>蜜罐与蜜网技术的典型应用场景</h2>
+<ul>
+<li>恶意代码捕获</li>
+<li>恶意代码分析</li>
+<li>入侵取证</li>
+<li>分流攻击流量</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="课后思考题" class="title-slide slide level1">
+<h1>课后思考题</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>举几个生活中的类比蜜罐实例</li>
+<li>用自己的话去描述蜜罐的核心思想关键字：诱、骗、捕</li>
+</ul>
+</section>
+</section>
+    </div>
+  </div>
+
+  <script src="lib/reveal.js/lib/js/head.min.js"></script>
+  <script src="lib/reveal.js/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Display the page number of the current slide
+        slideNumber: true,
+        // Push each slide change to the browser history
+        history: true,
+        // Transition style
+        transition: 'fade', // none/fade/slide/convex/concave/zoom
+        math: {
+          mathjax: '',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+menu: {
+		// Specifies which side of the presentation the menu will 
+		// be shown. Use 'left' or 'right'.
+		side: 'left',
+
+		// Specifies the width of the menu.
+		// Can be one of the following:
+		// 'normal', 'wide', 'third', 'half', 'full', or
+		// any valid css length value
+		width: 'normal',
+
+		// Add slide numbers to the titles in the slide list.
+		// Use 'true' or format string (same as reveal.js slide numbers)
+		numbers: true,
+
+		// Specifies which slide elements will be used for generating
+		// the slide titles in the menu. The default selects the first
+		// heading element found in the slide, but you can specify any
+		// valid css selector and the text from the first matching
+		// element will be used.
+		// Note: that a section data-menu-title attribute or an element
+		// with a menu-title class will take precedence over this option
+		titleSelector: 'h1, h2, h3, h4, h5, h6',
+
+		// If slides do not have a matching title, attempt to use the
+		// start of the text content as the title instead
+		useTextContentForMissingTitles: false,
+
+		// Hide slides from the menu that do not have a title.
+		// Set to 'true' to only list slides with titles.
+		hideMissingTitles: false,
+
+		// Adds markers to the slide titles to indicate the 
+		// progress through the presentation. Set to 'false'
+		// to hide the markers.
+		markers: true,
+
+		// Specify custom panels to be included in the menu, by
+		// providing an array of objects with 'title', 'icon'
+		// properties, and either a 'src' or 'content' property.
+		custom: false,
+
+		// Specifies the themes that will be available in the themes
+		// menu panel. Set to 'true' to show the themes menu panel
+		// with the default themes list. Alternatively, provide an
+		// array to specify the themes to make available in the
+		// themes menu panel, for example...
+		// [
+		//     { name: 'Black', theme: 'css/theme/black.css' },
+		//     { name: 'White', theme: 'css/theme/white.css' },
+		//     { name: 'League', theme: 'css/theme/league.css' }
+		// ]
+		themes: false,
+
+		// Specifies the path to the default theme files. If your
+		// presentation uses a different path to the standard reveal
+		// layout then you need to provide this option, but only
+		// when 'themes' is set to 'true'. If you provide your own 
+		// list of themes or 'themes' is set to 'false' the 
+		// 'themesPath' option is ignored.
+		themesPath: 'css/theme/',
+
+		// Specifies if the transitions menu panel will be shown.
+		// Set to 'true' to show the transitions menu panel with
+		// the default transitions list. Alternatively, provide an
+		// array to specify the transitions to make available in
+		// the transitions panel, for example...
+		// ['None', 'Fade', 'Slide']
+		transitions: false,
+
+		// Adds a menu button to the slides to open the menu panel.
+		// Set to 'false' to hide the button.
+		openButton: true,
+
+		// If 'true' allows the slide number in the presentation to
+		// open the menu panel. The reveal.js slideNumber option must 
+		// be displayed for this to take effect
+		openSlideNumber: false,
+
+		// If true allows the user to open and navigate the menu using
+		// the keyboard. Standard keyboard interaction with reveal
+		// will be disabled while the menu is open.
+		keyboard: true,
+
+		// Normally the menu will close on user actions such as
+		// selecting a menu item, or clicking the presentation area.
+		// If 'true', the sticky option will leave the menu open
+		// until it is explicitly closed, that is, using the close
+		// button or pressing the ESC or m key (when the keyboard 
+		// interaction option is enabled).
+		sticky: false,
+
+		// If 'true' standard menu items will be automatically opened
+		// when navigating using the keyboard. Note: this only takes 
+		// effect when both the 'keyboard' and 'sticky' options are enabled.
+		autoOpen: true,
+
+		// If 'true' the menu will not be created until it is explicitly
+		// requested by calling RevealMenu.init(). Note this will delay
+		// the creation of all menu panels, including custom panels, and
+		// the menu button.
+		delayInit: false,
+
+		// If 'true' the menu will be shown when the menu is initialised.
+		openOnInit: false,
+
+		// By default the menu will load it's own font-awesome library
+		// icons. If your presentation needs to load a different
+		// font-awesome library the 'loadIcons' option can be set to false
+		// and the menu will not attempt to load the font-awesome library.
+		loadIcons: true
+	},
+
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'lib/reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'lib/reveal.js/plugin/zoom-js/zoom.js', async: true },
+          { src: 'lib/reveal.js/plugin/math/math.js', async: true },
+          { src: 'lib/reveal.js/plugin/menu/menu.js'},
+          { src: 'lib/reveal.js/plugin/markdown/marked.js'},
+          { src: 'lib/reveal.js/plugin/markdown/markdown.js'},
+          { src: 'lib/reveal.js/plugin/search/search.js'},
+          { src: 'lib/reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'lib/reveal.js/plugin/notes/notes.js', async: true },
+        ]
+      });
+    </script>
+    </body>
+</html>

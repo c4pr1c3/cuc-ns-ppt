@@ -1,0 +1,3 @@
+[submodule "plugin/reveal.js-plugins"]
+	path = plugin/reveal.js-plugins
+	url = https://github.com/rajgoel/reveal.js-plugins

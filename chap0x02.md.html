@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="黄玮">
+  <title>网络安全</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="lib/reveal.js/css/reveal.css">
+  <style type="text/css">code{white-space: pre;}</style>
+
+
+    <!-- For syntax highlighting using highlight.js-->
+    <link rel="stylesheet" href="lib/reveal.js/lib/css/zenburn.css">
+
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="lib/reveal.js/css/theme/white.css" id="theme">
+  <!-- Printing and PDF exports -->
+<link rel="stylesheet" media="print" href="lib/reveal.js/css/print/pdf.css" />
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'lib/reveal.js/css/print/pdf.css' : 'lib/reveal.js/css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="lib/reveal.js/lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">网络安全</h1>
+  <p class="author">黄玮</p>
+</section>
+
+<section>
+<section id="第二章-系统安全风险评估理论与应用" class="title-slide slide level1">
+<h1>第二章 系统安全、风险评估理论与应用</h1>
+
+</section>
+<section id="温故" class="slide level2">
+<h2>温故</h2>
+<ul>
+<li>基本术语
+<ul>
+<li>网络空间安全是什么？CIA的内涵？</li>
+<li>资产、威胁、风险、漏洞、影响、攻击</li>
+</ul></li>
+<li>可度量安全
+<ul>
+<li>CVE / CVSS / CWE / CPE / CAPEC / ATT&amp;CK</li>
+</ul></li>
+<li>安全策略和安全机制
+<ul>
+<li>声明和实现</li>
+</ul></li>
+<li>P2DR模型
+<ul>
+<li>安全是持续循环、动态变化过程</li>
+</ul></li>
+<li>等级安全保护</li>
+</ul>
+</section>
+<section id="知新" class="slide level2">
+<h2>知新</h2>
+<ul>
+<li>操作系统中的
+<ul>
+<li>安全策略：访问控制策略</li>
+<li>安全机制：访问控制机制</li>
+</ul></li>
+<li>通用弱点评价系统 —— CVSS
+<ul>
+<li><strong>C</strong>ommon <strong>V</strong>ulnerability <strong>S</strong>coring <strong>S</strong>ystem</li>
+</ul></li>
+<li>风险评估的基本原理与案例分析</li>
+</ul>
+</section>
+<section id="本章内容提要" class="slide level2">
+<h2>本章内容提要</h2>
+<ul>
+<li>操作系统简史</li>
+<li>数字标识理论</li>
+<li>访问控制理论</li>
+<li>风险评估理论与实践</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="操作系统简史" class="title-slide slide level1">
+<h1>操作系统简史</h1>
+
+</section>
+<section id="windows" class="slide level2">
+<h2>Windows</h2>
+<p><img data-src="images/chap0x02/windows_operating_systems_history.png" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="windows-xp-稳定易用且快速">Windows XP – 稳定、易用且快速</h3>
+<ul>
+<li>⚠️ 自动播放：U盘病毒肆虐的推手</li>
+<li>⚠️ 默认管理员账户</li>
+<li>✅ 用户权限模型改进：普通用户、管理员用户、受限管理员用户</li>
+<li>✅ 细粒度系统级安全策略用户自定义</li>
+<li>✅ 2005 年发布了免费公测版 <code>Windows Defender</code> ，专杀间谍软件和广告软件</li>
+<li>✅ 系统级自动更新：微软全家桶自动更新</li>
+<li>✅ 系统级防火墙</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="windows-vista-安全智能">Windows Vista – 安全智能</h3>
+<ul>
+<li>✅ 用户账户控制（UAC）</li>
+<li>✅ 内置 <code>Windows Defender</code> ，专杀间谍软件和广告软件</li>
+<li>✅ BitLocker：系统级文件系统加密</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="windows-7">Windows 7</h3>
+<ul>
+<li>✅ 数据执行保护（DEP）</li>
+<li>✅ 系统级「地址随机化（ALSR）」对抗内存破坏类攻击</li>
+<li>✅ BitLocker 增强</li>
+<li>✅ 密码学算法更新（废弃掉大量已过期密码学算法）</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="windows-8-移动化">Windows 8 – 移动化</h3>
+<ul>
+<li>✅ 充分利用「硬件级别」安全机制</li>
+<li>✅ 系统级「应用容器」
+<ul>
+<li>允许「低完整性等级」应用访问「中」、「高」级别系统对象</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="windows-10">Windows 10</h3>
+<ul>
+<li>✅ 新增 <code>Windows Defender Credential Guard</code> 只允许「特权系统进程」访问账户相关敏感信息</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="windows-summary">Windows 小结</h3>
+<ul>
+<li>安全性成为越来越重要的「系统级」、「原生」特性</li>
+<li>拥抱云计算</li>
+<li>从参与开源到主导开源</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="数字标识理论" class="title-slide slide level1">
+<h1>数字标识理论</h1>
+
+</section>
+<section id="定义" class="slide level2">
+<h2>定义</h2>
+<ul>
+<li>实体
+<ul>
+<li>Entity</li>
+<li>业务操作的发起者（主体）或对象（客体）</li>
+</ul></li>
+<li>标识
+<ul>
+<li>Identity</li>
+<li>对实体的数字化指代</li>
+<li>又可称为“数字标识”</li>
+</ul></li>
+</ul>
+</section>
+<section id="数字标识的意义" class="slide level2">
+<h2>数字标识的意义</h2>
+<ul>
+<li>对信息安全相关实体建立标识体系是构建信息安全系统的基础⼯作之⼀
+<ul>
+<li>身份认证</li>
+<li>访问控制</li>
+<li>安全审计</li>
+<li>⽹络协议</li>
+</ul></li>
+</ul>
+</section>
+<section id="常见的数字标识技术" class="slide level2">
+<h2>常见的数字标识技术</h2>
+<ul>
+<li>系统实体标识
+<ul>
+<li>系统资源标识</li>
+<li>用户、组和角⾊标识</li>
+<li>与数字证书相关的标识</li>
+</ul></li>
+<li>⽹络实体标识
+<ul>
+<li>主机、⽹络和连接标识</li>
+<li>⽹络资源标识</li>
+<li>连接及其状态标识</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="系统实体标识">系统实体标识</h3>
+<ul>
+<li>操作系统
+<ul>
+<li>⽂件标识
+<ul>
+<li>⽂件名和存储路径</li>
+</ul></li>
+<li>进程标识
+<ul>
+<li>进程号：PID</li>
+</ul></li>
+</ul></li>
+<li>数据库系统
+<ul>
+<li>数据表标识
+<ul>
+<li>数据库名和表名</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="用户组和角色标识">用户、组和角色标识</h3>
+<ul>
+<li>用户
+<ul>
+<li>用户号：UID</li>
+</ul></li>
+<li>用户组
+<ul>
+<li>用户组号：GID</li>
+</ul></li>
+<li>角⾊标识
+<ul>
+<li>特殊用户分组</li>
+</ul></li>
+</ul>
+</section>
+<section id="与数字证书相关的标识" class="slide level2">
+<h2>与数字证书相关的标识</h2>
+<ul>
+<li>数字证书用于绑定证书所有者情况及其公钥
+<ul>
+<li>在数字签名和认证中用于向签名验证者或身份认证者提供这些信息</li>
+</ul></li>
+<li>X.509证书
+<ul>
+<li>基本信息</li>
+<li>辅助（扩展）信息</li>
+</ul></li>
+<li>数字证书通常由证书签发者对证书签名
+<ul>
+<li>基于数字证书的标识具有抗篡改的特性</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="x.509-证书基本信息">X.509 证书基本信息</h3>
+<p><a href="https://c4pr1c3.github.io/cuc-ns/chap0x02/main.html"><img data-src="images/chap0x02/x509-github-1.png" /></a></p>
+</section>
+<section class="slide level2">
+
+<h3 id="x.509-证书扩展信息">X.509 证书扩展信息</h3>
+<p><img data-src="images/chap0x02/x509-github-2.png" /></p>
+</section>
+<section id="主机网络和连接标识" class="slide level2">
+<h2>主机、网络和连接标识</h2>
+<ul>
+<li>主机标识
+<ul>
+<li>数据链路层：MAC地址
+<ul>
+<li>例如：08-00-27-07-DD-0A</li>
+</ul></li>
+<li>⽹络层：⽹络地址
+<ul>
+<li>对于TCP/IP⽹络，即 <code>IP地址</code></li>
+</ul></li>
+<li>应用层：域名地址</li>
+</ul></li>
+</ul>
+</section>
+<section id="网络资源标识" class="slide level2">
+<h2>网络资源标识</h2>
+<ul>
+<li>统⼀资源定位符（URL：Uniform Resources Locator）</li>
+</ul>
+<p><img data-src="images/chap0x02/URL.png" /></p>
+</section>
+<section id="con-state-id-1" class="slide level2">
+<h2>连接及其状态标识</h2>
+<ul>
+<li>唯⼀标识⼀个⽹络(会话)连接：<code>IP 五元组</code>
+<ul>
+<li>源 IP 地址</li>
+<li>目的 IP 地址</li>
+<li>源端⼝</li>
+<li>目的端⼝</li>
+<li>传输层协议类型</li>
+</ul></li>
+</ul>
+</section>
+<section id="con-state-id-2" class="slide level2">
+<h2>连接及其状态标识</h2>
+<ul>
+<li>（会话）连接状态标识</li>
+</ul>
+<p><img data-src="images/chap0x02/tcp-state-machine.png" /></p>
+</section>
+</section>
+<section>
+<section id="访问控制理论" class="title-slide slide level1">
+<h1>访问控制理论</h1>
+
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x02/acl-bypass.jpg" /></p>
+<blockquote>
+<p>安全专家： “报告老板，通往停车场的道路已经被我们 <font color='red'>封锁</font> 了！绝对安全！</p>
+</blockquote>
+</section>
+<section id="访问控制的基本概念" class="slide level2">
+<h2>访问控制的基本概念</h2>
+</section>
+<section class="slide level2">
+
+<h3 id="主体">主体</h3>
+<blockquote>
+<p>主动的实体，是访问的发起者，它造成了信息的流动和系统状态的改变，主体通常包括⼈、进程和设备等。</p>
+</blockquote>
+</section>
+<section class="slide level2">
+
+<h3 id="客体">客体</h3>
+<blockquote>
+<p>包含或接受信息的被动实体，客体在信息流动中的地位是被动的，客体通常包括⽂件、设备、信号量和⽹络节点等。</p>
+</blockquote>
+</section>
+<section class="slide level2">
+
+<h3 id="访问">访问</h3>
+<blockquote>
+<p>使信息在主体和客体之间流动的⼀种交互⽅式。</p>
+</blockquote>
+</section>
+<section class="slide level2">
+
+<h3 id="授权访问">授权访问</h3>
+<blockquote>
+<p>主体访问客体的允许，授权访问对每⼀对主体和客体来说是给定的</p>
+</blockquote>
+</section>
+<section class="slide level2">
+
+<h3 id="安全访问策略">安全访问策略</h3>
+<blockquote>
+<p>⼀套规则，可用于确定⼀个主体是否对客体拥有访问能⼒</p>
+</blockquote>
+<blockquote>
+<p>主体对客体的操作⾏为集和约束条件集</p>
+</blockquote>
+</section>
+<section class="slide level2">
+
+<h3 id="访问控制三要素">访问控制三要素</h3>
+<blockquote>
+<p>主体、客体、安全访问策略</p>
+</blockquote>
+</section>
+<section id="访问控制的三个基本面" class="slide level2">
+<h2>访问控制的三个基本面</h2>
+<ul>
+<li>认证
+<ul>
+<li>身份认证：客体对主体的识别认证</li>
+<li>客体和主体的身份可以随着时间、应用场景⽽改变</li>
+</ul></li>
+<li>授权
+<ul>
+<li>访问控制 <strong>策略实现</strong></li>
+<li>授权主体对客体可以正常访问</li>
+<li>非授权主体对客体⽆法访问</li>
+</ul></li>
+<li>审计
+<ul>
+<li>记录访问历史，实现 <code>不可抵赖性</code></li>
+</ul></li>
+</ul>
+</section>
+<section id="访问控制过程" class="slide level2">
+<h2>访问控制过程</h2>
+<p><img data-src="images/chap0x02/AccessControlFlow.png" /></p>
+</section>
+<section id="访问控制策略" class="slide level2">
+<h2>访问控制策略</h2>
+<ul>
+<li>自主访问控制
+<ul>
+<li>DAC: Discretionary Access Control</li>
+</ul></li>
+<li>强制访问控制
+<ul>
+<li>MAC: Mandatory Access Control</li>
+</ul></li>
+<li>基于角⾊的访问控制
+<ul>
+<li>RAC: Role-Based Access Control</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="自主访问控制">自主访问控制</h3>
+<ul>
+<li>已授权主体可以访问客体</li>
+<li>非授权主体⽆法访问客体</li>
+<li>访问授权可以自主分配（ <strong>授权</strong> 和 <strong>取消授权</strong>）
+<ul>
+<li>用户A可以访问⽂件a，则用户A可以授权用户B也能访问⽂件a</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="自主访问控制实现式举例">自主访问控制实现⽅式举例</h3>
+<ul>
+<li>访问控制列表(ACL：Access Control List)</li>
+<li>访问控制矩阵</li>
+<li>面向过程的访问控制</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>访问控制矩阵实例</li>
+</ul>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;">文件A</th>
+<th style="text-align: left;">文件B</th>
+<th style="text-align: left;">进程A</th>
+<th style="text-align: left;">进程B</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">进程A</td>
+<td style="text-align: left;">读、写、属主</td>
+<td style="text-align: left;">读</td>
+<td style="text-align: left;">读、写、执行、属主</td>
+<td style="text-align: left;">写</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">进程B</td>
+<td style="text-align: left;">追加</td>
+<td style="text-align: left;">写、属主</td>
+<td style="text-align: left;">读</td>
+<td style="text-align: left;">读、写、执行、属主</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>属主：绝⼤多数现代操作系统，属主权限的拥有主体可以对所拥有的权限自⾏分配。</p>
+</blockquote>
+</section>
+<section class="slide level2">
+
+<h3 id="强制访问控制">强制访问控制</h3>
+<ul>
+<li>(操作)系统对访问主体和受控对象(客体)实⾏强制访问控制</li>
+<li>多级访问控制策略</li>
+<li>(操作)系统预先分配好主客体安全级别：安全标签</li>
+<li>主体访问客体时先进⾏安全级别属性比较，再决定访问主体能否访问该受控对象(客体)</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x02/MAC-1.png" alt="" /><figcaption>🌰 保密性：允许 <strong>上写下读</strong></figcaption>
+</figure>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>手机锁屏状态下的所有操作
+<ul>
+<li>✅ 不解锁直接使用「照相机 📷 」功能： <strong>上写</strong> 行为被允许</li>
+<li>✅ 可以查看「此次解锁期间」拍的所有照片： <strong>下读</strong> 行为被允许</li>
+<li>🚫 非「此次解锁期间」的照片均被禁止查看： <strong>上读</strong> 行为被禁止</li>
+</ul></li>
+<li>生活中的 <strong>上写下读</strong>
+<ul>
+<li>『校长信箱』允许所有人向其中投递（写）邮件，但仅限校长及其授权人才能查看（读）</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="小测试">小测试 🤔</h3>
+<blockquote>
+<p>你的手机在锁屏状态下可以查看到「系统通知信息内容」吗？符合 <strong>上写下读</strong> 原则吗？</p>
+</blockquote>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x02/MAC-2.png" alt="" /><figcaption>🌰 完整性：允许 <strong>上读下写</strong></figcaption>
+</figure>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>✅ 操作系统安装「安全更新」只允许『特权进程』更改系统文件： <strong>下写</strong> 行为被允许</li>
+<li>✅ <code>/etc/passwd</code> 允许『所有用户』用户权限读取： <strong>上读</strong> 行为被允许</li>
+<li>🚫 <code>/etc/passwd</code> 只允许『管理员』用户权限修改： <strong>上写</strong> 行为被禁止</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="基于角色的访问控制">基于角色的访问控制</h3>
+<ul>
+<li><code>强制访问控制</code> 模型的⼀种实现形式
+<ul>
+<li>但不是基于多级访问控制策略的实现</li>
+</ul></li>
+<li>用户和访问权限的逻辑分离
+<ul>
+<li>访问权限首先是与角⾊相关联</li>
+<li>然后角⾊再与用户关联</li>
+<li>从⽽完成基于角⾊的访问授权</li>
+</ul></li>
+<li>用户不能任意的将访问权限传递给其他用户
+<ul>
+<li>和 <code>DAC</code> 的最基本区别</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x02/RBAC.jpg" alt="" /><figcaption>基于角色的访问控制模型</figcaption>
+</figure>
+</section>
+<section id="访问控制机制" class="slide level2">
+<h2>访问控制机制</h2>
+</section>
+<section class="slide level2">
+
+<h3 id="身份认证">身份认证</h3>
+<ul>
+<li>将身份标识唯一的绑定到主体</li>
+<li>外部实体能够向系统证明其身份标识唯一性的因素
+<ul>
+<li>知道的（例如：口令或秘密信息） knows</li>
+<li>拥有的（例如：令牌或磁卡） has</li>
+<li>生物特征（例如：指纹、虹膜） is</li>
+<li>实体位置（例如：在特定终端上） where</li>
+</ul></li>
+<li>以上因素可以单一使用，也可以多个同时使用</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="访问授权">访问授权</h3>
+<ul>
+<li>授权类型
+<ul>
+<li>授予(grant)权限
+<ul>
+<li>拥有该权限的主体可以将所拥有的客体访问权限分配给其他主体</li>
+</ul></li>
+<li>属主(own)权限
+<ul>
+<li>客体的创建者通常都会拥有属主权限，该权限可以由创建者自己授予他人</li>
+</ul></li>
+</ul></li>
+<li>权限的弱化原则
+<ul>
+<li>主体无法将自己不具备的权限授予他人</li>
+<li>主体如果具有属主权限则不受上述原则约束</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="撤销访问授权">撤销访问授权</h3>
+<ul>
+<li>为何需要撤销访问授权？
+<ul>
+<li>认证凭据丢失/被盗</li>
+<li>人员变动（离职/岗位变动等）</li>
+</ul></li>
+<li>如何取消访问授权？
+<ul>
+<li>身份认证环节：禁用/取消/删除认证凭据</li>
+<li>访问授权环节：禁用/取消/删除/修改访问控制列表中的授权项</li>
+</ul></li>
+</ul>
+</section>
+<section id="访问审计" class="slide level2">
+<h2>访问审计</h2>
+<ul>
+<li>内涵
+<ul>
+<li>主体对客体的访问行为会被记录，用于安全责任追查和认定</li>
+</ul></li>
+<li>意义
+<ul>
+<li>检测是否存在违反安全(访问控制)策略的行为</li>
+</ul></li>
+<li>重建安全事件
+<ul>
+<li>手段</li>
+<li>日志</li>
+</ul></li>
+</ul>
+</section>
+<section id="认证授权和审计的关系" class="slide level2">
+<h2>认证、授权和审计的关系</h2>
+<p><img data-src="images/chap0x02/AccessControlFlow.png" /></p>
+</section>
+</section>
+<section>
+<section id="通用安全漏洞评估系统cvss" class="title-slide slide level1">
+<h1>通用安全漏洞评估系统（CVSS）</h1>
+
+</section>
+<section id="简介" class="slide level2">
+<h2>简介</h2>
+<ul>
+<li>由 NIAC 开发、FIRST 维护的一个开放并且能够被各产品厂商免费采用的行业标准</li>
+<li>量化评价，总分取值范围：[0, 10]</li>
+<li>三组指标
+<ul>
+<li>基本评估</li>
+<li>时效性评估</li>
+<li>环境评估</li>
+</ul></li>
+</ul>
+</section>
+<section id="cvss-versions" class="slide level2">
+<h2>演进中的 CVSS</h2>
+<ul>
+<li>2019.6 <a href="https://www.first.org/cvss/v3.1/specification-document">CVSS 3.1</a></li>
+<li>2015.6 <a href="https://www.first.org/cvss/v3.0/specification-document">CVSS 3.0</a></li>
+<li>2007.6 <a href="https://www.first.org/cvss/v2/guide">CVSS 2.0</a></li>
+</ul>
+</section>
+<section id="评估主体框架" class="slide level2">
+<h2>评估主体框架</h2>
+<ul>
+<li><code>基础评估</code> 指标描述安全漏洞 <strong>固有的</strong>、根本性的属性，这些属性不随时间或用户具体环境的变化而改变</li>
+<li><code>时效性评估</code> 指标是指安全漏洞与 <strong>时间相关</strong> 的属性，这些属性可能随着时间的变化而变化</li>
+<li><code>环境评估</code> 指标在不同的用户的 <strong>具体使用环境</strong> 中，产品安全漏洞所造成危害程度也不同</li>
+</ul>
+</section>
+<section id="基础评估" class="slide level2">
+<h2>基础评估</h2>
+<ul>
+<li>入侵途径 2.0+</li>
+<li>入侵复杂性 2.0+</li>
+<li>身份认证要素 2.0</li>
+<li><strong>是否需要（被攻击）用户交互</strong> 3.0+</li>
+<li><strong>影响波及范围</strong> 3.0+</li>
+<li>信息机密性影响 2.0+</li>
+<li>信息完整性影响 2.0+</li>
+<li>服务持续性影响 2.0+</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="基础评估指标的完善">基础评估指标的完善</h3>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;">2.0</th>
+<th style="text-align: left;">3.0</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">AV</td>
+<td style="text-align: left;">L,A,N</td>
+<td style="text-align: left;">新增 <strong>P</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">AC</td>
+<td style="text-align: left;">H,M,L</td>
+<td style="text-align: left;">移除 <strong>M</strong></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CIA</td>
+<td style="text-align: left;">N,P,C</td>
+<td style="text-align: left;"><strong>P</strong>artial 变更为 <strong>L</strong>ow</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="exploitability" class="slide level2">
+<h2>时效性评估 - 可利用性</h2>
+<ul>
+<li>跳过评估 <code>Not Defined</code> / <code>E:X</code></li>
+<li>不确定是否存在漏洞利用工具 <code>Unproven that exploit exists</code> / <code>E:U</code></li>
+<li>存在漏洞存在性验证工具 <code>Proof of concept code</code> / <code>E:P</code></li>
+<li>存在漏洞利用工具 <code>Functional exploit exists</code> / <code>E:F</code></li>
+<li>存在自动化利用工具或无需特别利用工具且资料成熟 <code>High</code> / <code>E:H</code></li>
+</ul>
+</section>
+<section id="remediation-level" class="slide level2">
+<h2>时效性评估 - 缓解措施级别</h2>
+<ul>
+<li>跳过评估 <code>Not Defined</code> / <code>E:X</code></li>
+<li>存在官方补丁 <code>Official fix</code> / <code>RL:O</code></li>
+<li>存在临时补丁 <code>Temporary fix</code> / <code>RL:T</code></li>
+<li>存在缓解措施 <code>Workaround</code> / <code>RL:W</code></li>
+<li>无补丁 <code>Unavailable</code> / <code>RL:U</code></li>
+</ul>
+</section>
+<section id="report-confidence" class="slide level2">
+<h2>时效性评估 - 报告可信度</h2>
+<ul>
+<li>跳过评估 <code>Not Defined</code> / <code>E:X</code></li>
+<li>未知 / 未确认
+<ul>
+<li><code>Unknown</code> / <code>RC:U</code> 3.0+ 倾向于「半信半疑」</li>
+<li><code>Unconfirmed</code> / <code>RC:UC</code> 2.0 强调报告来源单一或不同来源报告可能存在「自相矛盾」，倾向于「不相信」</li>
+</ul></li>
+<li>部分确认 / 未经证实
+<ul>
+<li><code>Reasonable</code> / <code>RC:R</code> 3.0+ 强调已经存在「部分可验证」，倾向于「相信」</li>
+<li><code>Uncorroborated</code> / <code>RC:UR</code> 2.0 强调漏洞报告来源是「小道消息」、可能不同来源的信息会「自相矛盾」，倾向于「不相信」</li>
+</ul></li>
+<li>已确认 <code>Confirmed</code> / <code>RC:C</code></li>
+</ul>
+</section>
+<section id="environmental-score-metrics-3" class="slide level2">
+<h2>环境评估 3.0+</h2>
+<ul>
+<li>「基础评估指标」修正</li>
+<li>「影响力指标」修正</li>
+<li>「影响力子分数」修正：资产对特定影响力的风险承受能力匹配</li>
+</ul>
+</section>
+<section id="environmental-score-metrics-2" class="slide level2">
+<h2>环境评估 2.0</h2>
+<ul>
+<li>「通用」修正
+<ul>
+<li>综合损失估计：跳过评估、无影响、</li>
+<li>（受影响）目标分布</li>
+</ul></li>
+<li>「影响力子分数」修正</li>
+</ul>
+</section>
+<section id="总体评估原则" class="slide level2">
+<h2>总体评估原则</h2>
+<ol type="1">
+<li>每个安全漏洞都必须单独评估 ，不得考虑与其他安全漏洞的交叉影响</li>
+<li>只考虑每个安全漏洞的直接影响 ，不考虑其他间接影响</li>
+<li>应该按照通常使用的权限 来评估安全漏洞的影响
+<ul>
+<li>假设客户端应用使用的是根用户权限，而 Web 应用则假设使用的是普通用户权限</li>
+</ul></li>
+<li>当安全漏洞有很多种入侵途径时，应该能造成最大伤害的入侵途径为依据</li>
+</ol>
+</section>
+<section id="从定量到定性" class="slide level2">
+<h2>从「定量」到「定性」</h2>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">2.0</th>
+<th style="text-align: center;">基础分范围</th>
+<th style="text-align: center;">3.0</th>
+<th style="text-align: center;">基础分范围</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">None</td>
+<td style="text-align: center;">0.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Low</td>
+<td style="text-align: center;">0.0-3.9</td>
+<td style="text-align: center;">Low</td>
+<td style="text-align: center;">0.1-3.9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Medium</td>
+<td style="text-align: center;">4.0-6.9</td>
+<td style="text-align: center;">Medium</td>
+<td style="text-align: center;">4.0-6.9</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">High</td>
+<td style="text-align: center;">7.0-10.0</td>
+<td style="text-align: center;">High</td>
+<td style="text-align: center;"><strong>7.0-8.9</strong></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">Critical</td>
+<td style="text-align: center;">9.0-10.0</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="cve-2014-6271-demo-1" class="slide level2">
+<h2>CVSS 2.0 VS. CVSS 3.0+ 🌰</h2>
+<p><img data-src="images/chap0x02/cve-2014-6271-2vs3.png" /></p>
+</section>
+<section id="cve-2014-6271-demo-2" class="slide level2">
+<h2>CVSS 2.0 VS. CVSS 3.0+ 🌰</h2>
+<ul>
+<li><a href="https://nvd.nist.gov/vuln-metrics/cvss/v3-calculator?name=CVE-2014-6271&amp;vector=AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H&amp;version=3.1">CVE-2014-6271 的 CVSS 3.0/3.1 评分详情</a></li>
+<li><a href="https://nvd.nist.gov/vuln-metrics/cvss/v2-calculator?name=CVE-2014-6271&amp;vector=(AV:N/AC:L/Au:N/C:C/I:C/A:C)&amp;version=2.0">CVE-2014-6271 的 CVSS 2.0 评分详情</a></li>
+</ul>
+</section>
+<section id="cvss-flaws" class="slide level2">
+<h2>CVSS 的局限性和不足</h2>
+<ol type="1">
+<li>每个安全漏洞都必须 <strong>单独评估</strong> ，不得考虑与其他安全漏洞的交叉影响</li>
+<li>只考虑每个安全漏洞的 <strong>直接影响</strong> ，不考虑其他间接影响</li>
+<li>当安全漏洞有很多种入侵途径时，应该能造成 <strong>最大伤害的入侵途径</strong> 为依据</li>
+<li>时效性指标，由于攻防信息的天然不对称性，守方通常倾向于低估漏洞危害
+<ul>
+<li>基于客观事实的主观评价打分</li>
+</ul></li>
+<li>环境指标依赖于安全团队水平：对本方网络与系统的认知水平偏差</li>
+<li>高危漏洞的修复方式难度和低危漏洞修复方式难度并没有直接的可比性</li>
+</ol>
+</section>
+<section id="cvss-howto" class="slide level2">
+<h2>CVSS 的应用</h2>
+<ul>
+<li>管理层重视漏洞管理
+<ul>
+<li>漏洞管理工作流程化、制度化、日常化，并有专门的部门和人员负责实施与检查</li>
+</ul></li>
+<li>建立高效、准确、更新及时的资产清单管理系统</li>
+<li>推进标准化和自动化配置 IT 资产</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="课后思考题" class="title-slide slide level1">
+<h1>课后思考题</h1>
+
+</section>
+<section class="slide level2">
+
+<ol type="1">
+<li>生物特征身份认证方式有哪些？优缺点分析？应用场景举例。</li>
+<li>“找回口令功能”和“忘记密码”在访问授权机制中的意义？请尝试设计几种安全的“找回口令功能”，详细描述找回口令的用户具体操作过程。</li>
+<li>绘制用户使用用户名/口令+图片验证码方式录系统的流程图。考虑认证成功和失败两种场景，考虑授权成功和失败两种场景。</li>
+<li>Windows XP / 7 中的访问控制策略有哪些？访问控制机制有哪些？</li>
+<li>用权限三角形模型来理解并描述下 2 种威胁模型：提权、仿冒。</li>
+</ol>
+</section>
+<section class="slide level2">
+
+<ol start="6" type="1">
+<li>试通过操作系统的访问控制机制来达到预防一种真实病毒的运行目的。</li>
+<li>什么是 OAuth？</li>
+<li>什么是 OpenID？</li>
+<li>试用本章所学理论分析 0Auth 和 OpenID 的区别与联系。</li>
+<li>如何使用 OAuth 和 OpenID 相关技术实现单点登录（Single Sign On）？</li>
+</ol>
+</section>
+</section>
+    </div>
+  </div>
+
+  <script src="lib/reveal.js/lib/js/head.min.js"></script>
+  <script src="lib/reveal.js/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Display the page number of the current slide
+        slideNumber: true,
+        // Push each slide change to the browser history
+        history: true,
+        // Transition style
+        transition: 'fade', // none/fade/slide/convex/concave/zoom
+        math: {
+          mathjax: '',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+menu: {
+		// Specifies which side of the presentation the menu will 
+		// be shown. Use 'left' or 'right'.
+		side: 'left',
+
+		// Specifies the width of the menu.
+		// Can be one of the following:
+		// 'normal', 'wide', 'third', 'half', 'full', or
+		// any valid css length value
+		width: 'normal',
+
+		// Add slide numbers to the titles in the slide list.
+		// Use 'true' or format string (same as reveal.js slide numbers)
+		numbers: true,
+
+		// Specifies which slide elements will be used for generating
+		// the slide titles in the menu. The default selects the first
+		// heading element found in the slide, but you can specify any
+		// valid css selector and the text from the first matching
+		// element will be used.
+		// Note: that a section data-menu-title attribute or an element
+		// with a menu-title class will take precedence over this option
+		titleSelector: 'h1, h2, h3, h4, h5, h6',
+
+		// If slides do not have a matching title, attempt to use the
+		// start of the text content as the title instead
+		useTextContentForMissingTitles: false,
+
+		// Hide slides from the menu that do not have a title.
+		// Set to 'true' to only list slides with titles.
+		hideMissingTitles: false,
+
+		// Adds markers to the slide titles to indicate the 
+		// progress through the presentation. Set to 'false'
+		// to hide the markers.
+		markers: true,
+
+		// Specify custom panels to be included in the menu, by
+		// providing an array of objects with 'title', 'icon'
+		// properties, and either a 'src' or 'content' property.
+		custom: false,
+
+		// Specifies the themes that will be available in the themes
+		// menu panel. Set to 'true' to show the themes menu panel
+		// with the default themes list. Alternatively, provide an
+		// array to specify the themes to make available in the
+		// themes menu panel, for example...
+		// [
+		//     { name: 'Black', theme: 'css/theme/black.css' },
+		//     { name: 'White', theme: 'css/theme/white.css' },
+		//     { name: 'League', theme: 'css/theme/league.css' }
+		// ]
+		themes: false,
+
+		// Specifies the path to the default theme files. If your
+		// presentation uses a different path to the standard reveal
+		// layout then you need to provide this option, but only
+		// when 'themes' is set to 'true'. If you provide your own 
+		// list of themes or 'themes' is set to 'false' the 
+		// 'themesPath' option is ignored.
+		themesPath: 'css/theme/',
+
+		// Specifies if the transitions menu panel will be shown.
+		// Set to 'true' to show the transitions menu panel with
+		// the default transitions list. Alternatively, provide an
+		// array to specify the transitions to make available in
+		// the transitions panel, for example...
+		// ['None', 'Fade', 'Slide']
+		transitions: false,
+
+		// Adds a menu button to the slides to open the menu panel.
+		// Set to 'false' to hide the button.
+		openButton: true,
+
+		// If 'true' allows the slide number in the presentation to
+		// open the menu panel. The reveal.js slideNumber option must 
+		// be displayed for this to take effect
+		openSlideNumber: false,
+
+		// If true allows the user to open and navigate the menu using
+		// the keyboard. Standard keyboard interaction with reveal
+		// will be disabled while the menu is open.
+		keyboard: true,
+
+		// Normally the menu will close on user actions such as
+		// selecting a menu item, or clicking the presentation area.
+		// If 'true', the sticky option will leave the menu open
+		// until it is explicitly closed, that is, using the close
+		// button or pressing the ESC or m key (when the keyboard 
+		// interaction option is enabled).
+		sticky: false,
+
+		// If 'true' standard menu items will be automatically opened
+		// when navigating using the keyboard. Note: this only takes 
+		// effect when both the 'keyboard' and 'sticky' options are enabled.
+		autoOpen: true,
+
+		// If 'true' the menu will not be created until it is explicitly
+		// requested by calling RevealMenu.init(). Note this will delay
+		// the creation of all menu panels, including custom panels, and
+		// the menu button.
+		delayInit: false,
+
+		// If 'true' the menu will be shown when the menu is initialised.
+		openOnInit: false,
+
+		// By default the menu will load it's own font-awesome library
+		// icons. If your presentation needs to load a different
+		// font-awesome library the 'loadIcons' option can be set to false
+		// and the menu will not attempt to load the font-awesome library.
+		loadIcons: true
+	},
+
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'lib/reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'lib/reveal.js/plugin/zoom-js/zoom.js', async: true },
+          { src: 'lib/reveal.js/plugin/math/math.js', async: true },
+          { src: 'lib/reveal.js/plugin/menu/menu.js'},
+          { src: 'lib/reveal.js/plugin/markdown/marked.js'},
+          { src: 'lib/reveal.js/plugin/markdown/markdown.js'},
+          { src: 'lib/reveal.js/plugin/search/search.js'},
+          { src: 'lib/reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'lib/reveal.js/plugin/notes/notes.js', async: true },
+        ]
+      });
+    </script>
+    </body>
+</html>

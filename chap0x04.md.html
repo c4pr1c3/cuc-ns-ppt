@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="黄玮">
+  <title>网络安全</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="lib/reveal.js/css/reveal.css">
+  <style type="text/css">code{white-space: pre;}</style>
+
+
+    <!-- For syntax highlighting using highlight.js-->
+    <link rel="stylesheet" href="lib/reveal.js/lib/css/zenburn.css">
+
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="lib/reveal.js/css/theme/white.css" id="theme">
+  <!-- Printing and PDF exports -->
+<link rel="stylesheet" media="print" href="lib/reveal.js/css/print/pdf.css" />
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'lib/reveal.js/css/print/pdf.css' : 'lib/reveal.js/css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="lib/reveal.js/lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">网络安全</h1>
+  <p class="author">黄玮</p>
+</section>
+
+<section>
+<section id="第四章-网络监听" class="title-slide slide level1">
+<h1>第四章 网络监听</h1>
+
+</section>
+<section id="温故" class="slide level2">
+<h2>温故</h2>
+<ul>
+<li>代理模型中的嗅探问题
+<ul>
+<li>所有通信数据都会经过代理服务器</li>
+</ul></li>
+<li>网络数据包嗅探工具
+<ul>
+<li>Wireshark工具的高级使用
+<ul>
+<li>协议分析 / 网络故障诊断</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="知新" class="slide level2">
+<h2>知新</h2>
+<ul>
+<li>交换式网络环境依然可以网络监听</li>
+<li>网络监听是通信内容机密性的大敌</li>
+<li>如何抓出局域网中的嗅探者</li>
+<li>如何防范网络监听</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="网络监听原理" class="title-slide slide level1">
+<h1>网络监听原理</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>被动监听
+<ul>
+<li>共享式网络环境</li>
+<li>交换式网络环境</li>
+</ul></li>
+<li>主动监听
+<ul>
+<li>数据链路层的漏洞利用</li>
+<li>ARP欺骗</li>
+</ul></li>
+</ul>
+</section>
+<section id="共享式网络环境" class="slide level2">
+<h2>共享式网络环境</h2>
+<ul>
+<li>IEEE 802.3以太局域网采用广播机制
+<ul>
+<li>局域网上的所有主机共享相同的通信链路</li>
+<li>单个主机的标识
+<ul>
+<li>MAC（Media Access Control）地址</li>
+</ul></li>
+</ul></li>
+<li>网卡检查接收到的数据包的目的地址
+<ul>
+<li>正常状态下的网卡操作
+<ul>
+<li>只接收目的MAC地址是自己的数据包，其他数据包丢弃</li>
+</ul></li>
+</ul></li>
+<li>混杂模式
+<ul>
+<li>不检查目的 MAC 地址，来者不拒</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>完全被动的嗅探，很难发现嗅探者</p>
+</blockquote>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x04/sniff-with-hub.gif" alt="" /><figcaption>共享式网络环境中的嗅探</figcaption>
+</figure>
+</section>
+<section id="交换式网络环境" class="slide level2">
+<h2>交换式网络环境</h2>
+<ul>
+<li>交换机的 <code>CAM</code> 表
+<ul>
+<li><code>Content Addressable Memory</code></li>
+<li>存储局域网中每台计算机的 MAC 地址</li>
+<li>MAC 地址关联存储到网卡所连接的交换机端口号</li>
+<li>数据包转发基于 <code>CAM</code> 表查找，不再广播</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x04/sniff-with-switch.gif" alt="" /><figcaption>交换式网络环境中的嗅探</figcaption>
+</figure>
+</section>
+<section class="slide level2">
+
+<p><strong>交换式网络环境就没有被嗅探的可能了吗？</strong></p>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>主动监听！</p>
+</blockquote>
+</section>
+</section>
+<section>
+<section id="主动监听" class="title-slide slide level1">
+<h1>主动监听</h1>
+
+</section>
+<section id="主动监听的原理" class="slide level2">
+<h2>主动监听的原理</h2>
+<ul>
+<li>数据链路层的漏洞利用</li>
+<li>ARP欺骗的三种模式
+<ul>
+<li>终端ARP缓存投毒
+<ul>
+<li>主动嗅探/中间人攻击</li>
+</ul></li>
+<li>交换机 <code>DoS</code>
+<ul>
+<li>强制交换机进入 <code>Hub</code> 模式：广播</li>
+</ul></li>
+<li>交换机投毒
+<ul>
+<li>主动 <strong>污染</strong> 交换机的 <code>MAC-Port</code> 转发表
+<ul>
+<li><code>Content Addressable Memory (CAM)</code></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="arp-review">温故：ARP</h3>
+<ul>
+<li><code>ARP</code>: <code>Address Resolution Protocol</code>
+<ul>
+<li>地址解析协议</li>
+<li>主机在发送帧前将 <code>目标 IP 地址</code> 转换成 <code>目标 MAC 地址</code> 的过程</li>
+<li>局域网中的主机间通信依赖于 <code>ARP</code> 找到目标主机</li>
+<li>局域网中的主机访问外网依赖于 <code>ARP</code> 找到网关</li>
+</ul></li>
+<li>ARP表
+<ul>
+<li>动态学习</li>
+<li>静态配置</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x04/arp-table.png" alt="" /><figcaption>ARP 地址表示例</figcaption>
+</figure>
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x04/arp-req-resp-example.png" /></p>
+<ul>
+<li><code>who has 222.31.66.220? Tell 222.31.66.224</code> <font color="blue">ARP 请求</font>
+<ul>
+<li><font color="blue">提问</font></li>
+</ul></li>
+<li><code>222.31.66.220 is at 00:16:17:ad:e9:18</code> <font color="red">ARP 响应</font>
+<ul>
+<li><font color="red">举手</font></li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="garp-review">温故：GARP</h3>
+<ul>
+<li><code>Gratuitous ARP (GARP)</code>
+<ul>
+<li>无故 ARP</li>
+<li>检查重复地址或 IP 地址冲突（如果收到 ARP 响应则表明存在重复地址或 IP 地址冲突）</li>
+<li>用于通告一个新的数据链路标识
+<ul>
+<li>当一个设备收到一个 <code>arp 请求</code> 时，发现 <code>arp 查找表</code> 中已有发送者的 IP 地址，则更新此 IP 地址对应的 MAC 地址条目</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x04/garp-demo.gif" alt="" /><figcaption>GARP 过程示意</figcaption>
+</figure>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x04/arp-from-a2c.gif" alt="" /><figcaption>终端 ARP 投毒：劫持 A -&gt; C 通信</figcaption>
+</figure>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x04/arp-from-c2a.gif" alt="" /><figcaption>终端 ARP 投毒：劫持 C -&gt; A 通信</figcaption>
+</figure>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x04/dos-switch.gif" alt="" /><figcaption>针对交换机的 DoS 攻击/泛洪/洪泛</figcaption>
+</figure>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x04/poison-switch-cam.gif" alt="" /><figcaption>交换机投毒</figcaption>
+</figure>
+</section>
+</section>
+<section>
+<section id="网络监听工具" class="title-slide slide level1">
+<h1>网络监听工具</h1>
+
+</section>
+<section id="wireshark-intro-1" class="slide level2">
+<h2>Wireshark 简介</h2>
+<p>Wireshark是网络包分析工具，前身是Ethereal，主要用来捕获网络包，具有以下特性</p>
+<ul>
+<li>多平台支持：Win / Mac / *nix</li>
+<li>实时捕获网络数据包</li>
+<li>详细显示数据包的协议信息</li>
+<li>读取/保存数据包</li>
+<li>支持基于规则的数据包/协议统计分析</li>
+<li>支持多种方式过滤捕获/显示网络数据包</li>
+<li>导入/导出其他网络嗅探程序支持的数据包格式</li>
+<li>多种方式查找包</li>
+</ul>
+</section>
+<section id="wireshark-intro-2" class="slide level2">
+<h2>Wireshark 简介</h2>
+<p><img data-src="images/chap0x04/wireshark.png" /></p>
+</section>
+<section id="tshark" class="slide level2">
+<h2>命令行版 Wireshark 的基本使用</h2>
+<pre class="bash"><code># 捕获指定IP地址相关的数据包并保存到文件
+sudo tshark -f &quot;host &lt;ip-address&gt;&quot; -w &lt;output-file.pcap&gt;
+
+# 获取当前系统上所有可捕获的网卡ID
+sudo tshark -D
+
+# 指定数据包捕获所使用的网卡
+sudo tshark –I &lt;capture interface&gt;</code></pre>
+</section>
+<section id="wireshark-feature-1" class="slide level2">
+<h2>不可思议的 Wireshark 功能</h2>
+<p>大流量数据捕获优化</p>
+<ul>
+<li>非实时更新报文窗口</li>
+<li>文件切割保存</li>
+<li>禁用MAC地址/域名/协议类型反向解析</li>
+<li>自定义数据包捕获终结条件</li>
+<li>按报文个数 / 大小 / 捕获时间</li>
+</ul>
+</section>
+<section id="wireshark-feature-2" class="slide level2">
+<h2>不可思议的 Wireshark 功能</h2>
+<p>自定义过滤规则</p>
+<ul>
+<li>数据包捕获时过滤规则——大流量数据捕获优化</li>
+<li>报文显示时过滤规则——协议分析辅助</li>
+</ul>
+</section>
+<section id="wireshark-feature-3" class="slide level2">
+<h2>不可思议的 Wireshark 功能</h2>
+<p>网络状况分析</p>
+<ul>
+<li>网络质量参数分析
+<ul>
+<li>按协议分类报文速率</li>
+<li>丢包率/重传报文数/畸形包数量</li>
+<li>TCP QoS参数
+<ul>
+<li>RTT / 带宽 / 时序图</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="wireshark-feature-4" class="slide level2">
+<h2>不可思议的 Wireshark 功能</h2>
+<p>一键导出防火墙规则</p>
+<ul>
+<li>Cisco IOS / iptables /windows firewall / IPFirewall</li>
+</ul>
+</section>
+<section id="wireshark-feature-5" class="slide level2">
+<h2>不可思议的 Wireshark 功能</h2>
+<p>协议分析神器</p>
+<ul>
+<li>TCP/UDP会话跟踪
+<ul>
+<li>Follow TCP/UDP Stream</li>
+</ul></li>
+<li>VoIP协议分析
+<ul>
+<li>信令 / 语音数据自动识别和提取</li>
+</ul></li>
+<li>应用层负载数据关键词检索
+<ul>
+<li>二进制 / 十六进制 / 文本</li>
+</ul></li>
+<li>一键导出保存应用层负载到
+<ul>
+<li>文本 / 二进制原始数据 / 十六进制 / C语言数组</li>
+</ul></li>
+<li>报文统计规律
+<ul>
+<li>按报文长度 / 按协议分层会话 / 自定义报文显示过滤</li>
+</ul></li>
+</ul>
+</section>
+<section id="wirehsark-capture-filter" class="slide level2">
+<h2>常用报文「捕获」过滤规则举例</h2>
+<pre class="bash"><code># 只捕获IP地址为172.18.5.4的相关报文
+tshark -f &quot;host 172.18.5.4&quot;
+
+# 只捕获指定网段的相关报文
+tshark -f &quot;net 192.168.0.0/24&quot;
+
+# 只捕获特定端口流量
+tshark -f &quot;port 53 or port 80&quot;
+
+# 只捕获指定端口范围的TCP报文
+tshark -f &quot;tcp portrange 1501-1549&quot;</code></pre>
+</section>
+<section id="wireshark-display-filter" class="slide level2">
+<h2>常用报文「显示」过滤规则举例</h2>
+<pre class="bash"><code># 只显示SMTP和ICMP相关报文
+tshark -r sample.pcap &quot;tcp.port eq 25 or icmp&quot;
+
+# 只匹配显示UDP报文头部或负载的连续3字节值为0x81, 0x60, 0x03
+tshark -r sample.pcap &quot;udp contains 81:60:03&quot;
+
+# 应用层正则式匹配查找
+tshark -r sample.pcap &#39;sip.To contains &quot;^a1762$&quot;&#39;
+tshark -r sample.pcap &#39;http.request.uri matches &quot;^id=[\d]*&quot;&#39;</code></pre>
+</section>
+<section id="协议分析样本资源" class="slide level2">
+<h2>协议分析样本资源</h2>
+<ul>
+<li><a href="http://wiki.wireshark.org/SampleCaptures">Wireshark官方的报文样本库</a></li>
+<li><a href="http://pcapr.net">Web 2.0 Packet Samples</a></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>网络流量分析 Show Time</p>
+</blockquote>
+</section>
+<section id="被动监听小结" class="slide level2">
+<h2>被动监听小结</h2>
+<ul>
+<li>网络管理
+<ul>
+<li>网络质量监视</li>
+<li>网络故障排查</li>
+</ul></li>
+<li>网络协议分析
+<ul>
+<li>已知协议的自动化分析辅助</li>
+<li>未知协议的逆向分析辅助</li>
+</ul></li>
+<li>一般方法
+<ul>
+<li>应用命令行版数据捕获工具完成报文捕获</li>
+<li>使用 GUI 工具深入分析捕获的报文</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="一道二术三器" class="title-slide slide level1">
+<h1>一道二术三器</h1>
+
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x04/awesome-mitm.png" /></p>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>不变之「道」：持续对抗</li>
+<li>演进之「术」：中间人攻击</li>
+<li>走马灯「器」：dsniff, ettercap, mitmf, bettercap, ……</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="网络监听的检测与防范" class="title-slide slide level1">
+<h1>网络监听的检测与防范</h1>
+
+</section>
+<section id="回顾网络监听的方法" class="slide level2">
+<h2>回顾：网络监听的方法</h2>
+<ul>
+<li>被动监听
+<ul>
+<li>共享式网络环境</li>
+<li>交换式网络环境</li>
+</ul></li>
+<li>主动监听
+<ul>
+<li>终端 ARP 缓存投毒</li>
+<li>交换机 DoS</li>
+<li>交换机投毒</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x04/generalize-mitm.gif" alt="" /><figcaption>局域网监听方法推广到互联网范围</figcaption>
+</figure>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x04/mitm-all-stack.png" alt="" /><figcaption>小心被监听或劫持的「寻址协议」</figcaption>
+</figure>
+</section>
+<section class="slide level2">
+
+<figure>
+<img data-src="images/chap0x04/mitm-all-tables.png" alt="" /><figcaption>小心被毒化的「查找表」</figcaption>
+</figure>
+</section>
+<section id="扩展任意网络拓扑主动监听的基本原理" class="slide level2">
+<h2>扩展：任意网络拓扑主动监听的基本原理</h2>
+<ul>
+<li>寻址机制是主动监听的攻击重点</li>
+<li>查找：CAM / ARP / 路由 / DNS</li>
+<li>引流是主动监听的核心手段</li>
+<li>让通信流量（双向）通过监听者控制的设备、系统</li>
+<li>获取通信负载是主动监听的核心目标</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x04/detect-promisc-nc.gif" /></p>
+</section>
+<section id="detect-arp-poisoner-1" class="slide level2">
+<h2>检测终端 ARP 缓存投毒者</h2>
+<pre class="bash"><code># 正常状态
+arp -a
+Internet 地址         物理地址              类型
+ 10.0.2.2              52-54-00-12-35-02     动态
+
+# 被投毒状态（同一个 IP 地址对应多个不同 MAC 地址或异常的 IP-MAC ）
+arp -a 
+Internet 地址         物理地址              类型
+ 10.0.2.2              52-54-00-12-35-02     动态
+ 10.0.2.2              25-35-FE-12-35-12     动态</code></pre>
+<blockquote>
+<p>桌面 ARP 防火墙可以有效检测、发现和防护</p>
+</blockquote>
+</section>
+<section id="detect-arp-poisoner-2" class="slide level2">
+<h2>检测终端 ARP 缓存投毒者</h2>
+<ul>
+<li>发送ARP请求包
+<ul>
+<li>正确的 IP 地址</li>
+<li>错误目的 MAC 地址</li>
+</ul></li>
+<li>只有工作于混杂模式的网卡会响应该ARP请求数据包</li>
+<li>工作于混杂模式网卡的操作系统内核会自动回应该 ARP请求数据包</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="arp-br-handler-except">不同操作系统对 ARP 广播包的处理方式有差异</h3>
+<p>例如，虚假广播消息:</p>
+<ul>
+<li>FF:FF:FF:FF:FF:FF:FF:FE (Br47): Last bit missing</li>
+<li>FF:FF:00:00:00:00:00:00 (Br16): Only first 16 bits are the same as for broadcast.</li>
+<li>FF:00:00:00:00:00:00:00 (Br8)</li>
+<li>F0:00:00:00:00:00:00:00 (Br4)</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="不同操作系统的内核过滤机制有差异">不同操作系统的内核过滤机制有差异</h3>
+<p>例如，虚假组播消息:</p>
+<ul>
+<li>01:00:00:00:00:00:00:00 (Gr): Only group-bit set.</li>
+<li>01:00:5E:00:00:00:00:00 (M0): Multicast address zero is usually not used</li>
+<li>01:00:5E:00:00:00:00:01 (M1): (assigned to all) Multicast address one should be received by all in the test system</li>
+<li>01:00:5E:00:00:00:00:02 (M2): (assigned to different set of nodes) Multicast address two should not be received by systems in the test group.</li>
+<li>01:00:5E:00:00:00:00:03 (M3): (not registered)</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x04/weird-arp-resp.png" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="arp-resp-comparison">非混杂模式 VS. 混杂模式网卡对 ARP 请求的响应实例</h3>
+<p><img data-src="images/chap0x04/arp-ping.png" /></p>
+<ul>
+<li>左图：目标主机对「与己无关」的 ARP 请求「毫无反应」</li>
+<li>右图：目标主机对「与己无关」的 ARP 请求「积极响应」</li>
+</ul>
+</section>
+<section id="检测针对交换机的泛洪攻击" class="slide level2">
+<h2>检测针对交换机的泛洪攻击</h2>
+<p>网络抓包分析</p>
+<ul>
+<li>启用交换机的端口镜像</li>
+<li>重点关注
+<ul>
+<li>链路通信质量参数：丢包率/重传率</li>
+<li>未知MAC地址</li>
+</ul></li>
+</ul>
+</section>
+<section id="检测交换机投毒者" class="slide level2">
+<h2>检测交换机投毒者</h2>
+<p>交换机CAM表中的异常更新记录</p>
+<ul>
+<li>同一个MAC地址反复被映射到不同物理端口</li>
+</ul>
+</section>
+<section id="终端用户如何防范网络嗅探攻击" class="slide level2">
+<h2>终端用户如何防范网络嗅探攻击</h2>
+<ul>
+<li>安装桌面型ARP防火墙
+<ul>
+<li>防护终端ARP投毒</li>
+</ul></li>
+<li>配置静态ARP地址表
+<ul>
+<li>绑定网关IP与MAC地址
+<ul>
+<li><code>arp -s &lt;网关IP&gt;  &lt;网关MAC&gt;</code></li>
+</ul></li>
+</ul></li>
+<li>敏感数据加密后再传输并使用加密通信协议
+<ul>
+<li>应用层（负载）加密</li>
+<li>遵循 <code>纵深防御</code> 原则</li>
+</ul></li>
+</ul>
+</section>
+<section id="网络管理员如何防范网络嗅探攻击" class="slide level2">
+<h2>网络管理员如何防范网络嗅探攻击</h2>
+<ul>
+<li>启用并正确配置交换机的安全机制
+<ul>
+<li>交换机的端口安全机制
+<ul>
+<li>交换机物理端口和MAC地址的静态绑定</li>
+<li>限制交换机单个物理端口可以动态绑定的MAC地址数量</li>
+</ul></li>
+<li>划分VLAN</li>
+</ul></li>
+<li>部署内网安全监控设备
+<ul>
+<li>监视异常网络状况
+<ul>
+<li>丢包/ 重传 / 畸形包 / 广播风暴 …</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+</section>
+    </div>
+  </div>
+
+  <script src="lib/reveal.js/lib/js/head.min.js"></script>
+  <script src="lib/reveal.js/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Display the page number of the current slide
+        slideNumber: true,
+        // Push each slide change to the browser history
+        history: true,
+        // Transition style
+        transition: 'fade', // none/fade/slide/convex/concave/zoom
+        math: {
+          mathjax: '',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+menu: {
+		// Specifies which side of the presentation the menu will 
+		// be shown. Use 'left' or 'right'.
+		side: 'left',
+
+		// Specifies the width of the menu.
+		// Can be one of the following:
+		// 'normal', 'wide', 'third', 'half', 'full', or
+		// any valid css length value
+		width: 'normal',
+
+		// Add slide numbers to the titles in the slide list.
+		// Use 'true' or format string (same as reveal.js slide numbers)
+		numbers: true,
+
+		// Specifies which slide elements will be used for generating
+		// the slide titles in the menu. The default selects the first
+		// heading element found in the slide, but you can specify any
+		// valid css selector and the text from the first matching
+		// element will be used.
+		// Note: that a section data-menu-title attribute or an element
+		// with a menu-title class will take precedence over this option
+		titleSelector: 'h1, h2, h3, h4, h5, h6',
+
+		// If slides do not have a matching title, attempt to use the
+		// start of the text content as the title instead
+		useTextContentForMissingTitles: false,
+
+		// Hide slides from the menu that do not have a title.
+		// Set to 'true' to only list slides with titles.
+		hideMissingTitles: false,
+
+		// Adds markers to the slide titles to indicate the 
+		// progress through the presentation. Set to 'false'
+		// to hide the markers.
+		markers: true,
+
+		// Specify custom panels to be included in the menu, by
+		// providing an array of objects with 'title', 'icon'
+		// properties, and either a 'src' or 'content' property.
+		custom: false,
+
+		// Specifies the themes that will be available in the themes
+		// menu panel. Set to 'true' to show the themes menu panel
+		// with the default themes list. Alternatively, provide an
+		// array to specify the themes to make available in the
+		// themes menu panel, for example...
+		// [
+		//     { name: 'Black', theme: 'css/theme/black.css' },
+		//     { name: 'White', theme: 'css/theme/white.css' },
+		//     { name: 'League', theme: 'css/theme/league.css' }
+		// ]
+		themes: false,
+
+		// Specifies the path to the default theme files. If your
+		// presentation uses a different path to the standard reveal
+		// layout then you need to provide this option, but only
+		// when 'themes' is set to 'true'. If you provide your own 
+		// list of themes or 'themes' is set to 'false' the 
+		// 'themesPath' option is ignored.
+		themesPath: 'css/theme/',
+
+		// Specifies if the transitions menu panel will be shown.
+		// Set to 'true' to show the transitions menu panel with
+		// the default transitions list. Alternatively, provide an
+		// array to specify the transitions to make available in
+		// the transitions panel, for example...
+		// ['None', 'Fade', 'Slide']
+		transitions: false,
+
+		// Adds a menu button to the slides to open the menu panel.
+		// Set to 'false' to hide the button.
+		openButton: true,
+
+		// If 'true' allows the slide number in the presentation to
+		// open the menu panel. The reveal.js slideNumber option must 
+		// be displayed for this to take effect
+		openSlideNumber: false,
+
+		// If true allows the user to open and navigate the menu using
+		// the keyboard. Standard keyboard interaction with reveal
+		// will be disabled while the menu is open.
+		keyboard: true,
+
+		// Normally the menu will close on user actions such as
+		// selecting a menu item, or clicking the presentation area.
+		// If 'true', the sticky option will leave the menu open
+		// until it is explicitly closed, that is, using the close
+		// button or pressing the ESC or m key (when the keyboard 
+		// interaction option is enabled).
+		sticky: false,
+
+		// If 'true' standard menu items will be automatically opened
+		// when navigating using the keyboard. Note: this only takes 
+		// effect when both the 'keyboard' and 'sticky' options are enabled.
+		autoOpen: true,
+
+		// If 'true' the menu will not be created until it is explicitly
+		// requested by calling RevealMenu.init(). Note this will delay
+		// the creation of all menu panels, including custom panels, and
+		// the menu button.
+		delayInit: false,
+
+		// If 'true' the menu will be shown when the menu is initialised.
+		openOnInit: false,
+
+		// By default the menu will load it's own font-awesome library
+		// icons. If your presentation needs to load a different
+		// font-awesome library the 'loadIcons' option can be set to false
+		// and the menu will not attempt to load the font-awesome library.
+		loadIcons: true
+	},
+
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'lib/reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'lib/reveal.js/plugin/zoom-js/zoom.js', async: true },
+          { src: 'lib/reveal.js/plugin/math/math.js', async: true },
+          { src: 'lib/reveal.js/plugin/menu/menu.js'},
+          { src: 'lib/reveal.js/plugin/markdown/marked.js'},
+          { src: 'lib/reveal.js/plugin/markdown/markdown.js'},
+          { src: 'lib/reveal.js/plugin/search/search.js'},
+          { src: 'lib/reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'lib/reveal.js/plugin/notes/notes.js', async: true },
+        ]
+      });
+    </script>
+    </body>
+</html>

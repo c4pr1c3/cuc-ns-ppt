@@ -19,8 +19,8 @@ author: 黄玮
 
 ### 网络监听与扫描
 
-* [第四章 网络监听](chap0x04-slim.md.v4.html) | [PDF 打印版](chap0x04-slim.md.v4.html?print-pdf)
-* [第五章 网络扫描](chap0x05-slim.md.v4.html) | [PDF 打印版](chap0x05-slim.md.v4.html?print-pdf)
+* [第四章 网络监听](chap0x04.md.v4.html) | [PDF 打印版](chap0x04.md.v4.html?print-pdf)
+* [第五章 网络扫描](chap0x05.md.v4.html) | [PDF 打印版](chap0x05.md.v4.html?print-pdf)
 
 ---
 

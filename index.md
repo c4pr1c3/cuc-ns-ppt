@@ -26,8 +26,8 @@ author: 黄玮
 
 ### 网络与系统渗透
 
-* [第六章 网络与系统渗透](chap0x06-slim.md.v4.html) | [PDF 打印版](chap0x06-slim.md.v4.html?print-pdf)
-* [第七章 Web应用漏洞攻防](chap0x07-slim.md.v4.html) | [PDF 打印版](chap0x07-slim.md.v4.html?print-pdf)
+* [第六章 网络与系统渗透](chap0x06.md.v4.html) | [PDF 打印版](chap0x06.md.v4.html?print-pdf)
+* [第七章 Web应用漏洞攻防](chap0x07.md.v4.html) | [PDF 打印版](chap0x07.md.v4.html?print-pdf)
 
 ---
 
@@ -35,8 +35,8 @@ author: 黄玮
 
 * [第八章 防火墙](chap0x08-slim.md.v4.html) | [PDF 打印版](chap0x08-slim.md.v4.html?print-pdf)
 * [第九章 入侵检测](chap0x09-slim.md.v4.html) | [PDF 打印版](chap0x09-slim.md.v4.html?print-pdf)
-* [第十章 应用程序安全加固](chap0x10-slim.md.v4.html) | [PDF 打印版](chap0x10-slim.md.v4.html?print-pdf)
-* [第十一章 蜜罐和蜜网](chap0x11-slim.md.v4.html) | [PDF 打印版](chap0x11-slim.md.v4.html?print-pdf)
+* [第十章 应用程序安全加固](chap0x10.md.v4.html) | [PDF 打印版](chap0x10.md.v4.html?print-pdf)
+* [第十一章 蜜罐和蜜网](chap0x11.md.v4.html) | [PDF 打印版](chap0x11.md.v4.html?print-pdf)
 * [第十二章 计算机取证](chap0x12-slim.md.v4.html) | [PDF 打印版](chap0x12-slim.md.v4.html?print-pdf)
 * [第十三章 社会化网络安全](chap0x13-slim.md.v4.html) | [PDF 打印版](chap0x13-slim.md.v4.html?print-pdf)
 

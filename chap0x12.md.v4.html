@@ -955,7 +955,7 @@
 <ul>
 <li>查看当前系统的网络应用使用情况
 <ul>
-<li><code>sudo netstat -aonp --protocol inet</code></li>
+<li><code>sudo ss -tuap</code></li>
 <li><code>sudo lsof -i</code></li>
 </ul></li>
 <li>查看应用程序带宽占用详情
@@ -964,13 +964,19 @@
 </ul></li>
 <li>查找出并发连接数最高的几个IP地址
 <ul>
-<li><code>sudo netstat -anp |grep 'tcp\|udp' | awk '{print $5}' | cut -d: -f1 | sort | uniq -c | sort -nr</code></li>
+<li><code>sudo ss -anp |grep 'tcp\|udp' | awk '{print $5}' |  rev | cut -d: -f2- | rev | sort | uniq -c | sort -nr | grep -v -E "0.0.0.0|\[::\]"</code></li>
 </ul></li>
 </ul>
 </section>
 <section id="challenge-1-of-the-forensic-challenge-2010---pcap-attack-trace" class="slide level2">
-<h2><a href="https://www.honeynet.org/challenges/challenge-1-of-the-forensic-challenge-2010-pcap-attack-trace/">Challenge 1 of the Forensic Challenge 2010 - pcap attack trace</a></h2>
-<p><a href="http://sec.cuc.edu.cn/ftp/archived/www.honeynet.org/challenges/challenge-1-of-the-forensic-challenge-2010-pcap-attack-trace/">Challenge 1 of the Forensic Challenge 2010 - pcap attack trace（校内镜像备份）</a></p>
+<h2><a href="https://www.honeynet.org/challenges/forensic-challenge-1-pcap-attack-trace/">Challenge 1 of the Forensic Challenge 2010 - pcap attack trace</a></h2>
+<ul>
+<li><a href="https://web.archive.org/web/20110917192331/http://www.honeynet.org/node/504">Challenge 1 of the Forensic Challenge 2010 - pcap attack trace（互联网档案馆备份）</a></li>
+<li>校内网盘分享的相关附件</li>
+</ul>
+<pre ><code >分享名称：Challenge 1 of the Forensic Challenge 2010 - pcap attack trace
+分享链接：https://kod.cuc.edu.cn/#s/-_AjCphw
+访问密码：ZDkxB</code></pre>
 </section>
 <section class="slide level2">
 

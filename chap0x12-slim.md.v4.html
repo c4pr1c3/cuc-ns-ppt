@@ -8,13 +8,11 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
-  <link rel="stylesheet" href="lib/reveal.js/css/reveal.css">
-  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="lib/reveal.js.v4/dist/reset.css">
+  <link rel="stylesheet" href="lib/reveal.js.v4/dist/reveal.css">
 
-
-    <!-- For syntax highlighting using highlight.js-->
-    <link rel="stylesheet" href="lib/reveal.js/lib/css/zenburn.css">
-
+  <!-- For syntax highlighting using highlight.js-->
+  <link rel="stylesheet" href="lib/reveal.js.v4/plugin/highlight/monokai.css">
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -23,19 +21,8 @@
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     ul.task-list{list-style: none;}
   </style>
-  <link rel="stylesheet" href="lib/reveal.js/css/theme/white.css" id="theme">
-  <!-- Printing and PDF exports -->
-<link rel="stylesheet" media="print" href="lib/reveal.js/css/print/pdf.css" />
-  <script>
-    var link = document.createElement( 'link' );
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = window.location.search.match( /print-pdf/gi ) ? 'lib/reveal.js/css/print/pdf.css' : 'lib/reveal.js/css/print/paper.css';
-    document.getElementsByTagName( 'head' )[0].appendChild( link );
-  </script>
-  <!--[if lt IE 9]>
-  <script src="lib/reveal.js/lib/js/html5shiv.js"></script>
-  <![endif]-->
+  <link rel="stylesheet" href="lib/reveal.js.v4/dist/theme/my-white.css" id="theme">
+
 </head>
 <body>
   <div class="reveal">
@@ -70,84 +57,6 @@
 <li>计算机取证的概念包含了入侵取证</li>
 <li>了解计算机证据的概念</li>
 <li>了解计算机取证理论和关键技术</li>
-</ul>
-</section>
-</section>
-<section>
-<section id="计算机取证发展史" class="title-slide slide level1">
-<h1>计算机取证发展史</h1>
-
-</section>
-<section id="twenty-70th" class="slide level2">
-<h2>20 世纪 70 年代</h2>
-<ul>
-<li>涉及电子数据的犯罪不断增加
-<ul>
-<li>特别在金融领域，很多执法部门人员不懂计算机，无法询问正确的问题
-<ul>
-<li>或无法有效保存证据</li>
-</ul></li>
-</ul></li>
-</ul>
-</section>
-<section id="twenty-80th" class="slide level2">
-<h2>20 世纪 80 年代</h2>
-<ul>
-<li>PC 逐步发展，出现不同操作系统</li>
-<li>电脑取证工具很简单
-<ul>
-<li>Xtree Gold : 可识别多种文件类型、恢复删除的文件</li>
-<li>Norton DiskEdit / Pctools : 查找删除文件的最好的工具</li>
-</ul></li>
-<li>1984年 FBI 成立了计算机分析响应组 <code>CART</code> (the <code>Computer Analysis and Response Team</code>)</li>
-</ul>
-</section>
-<section id="twenty-90th-1" class="slide level2">
-<h2>20 世纪 90 年代</h2>
-<ul>
-<li><code>International Association of Computer Investigative Specialists</code> (<code>IACIS</code>)
-<ul>
-<li>专门培训取证分析软件</li>
-<li>ExpertWitness for Mac
-<ul>
-<li>第一个图形化计算机取证软件</li>
-<li>恢复删除的文件和文件碎片</li>
-</ul></li>
-<li>磁盘容量增大给调查带来困难</li>
-</ul></li>
-</ul>
-</section>
-<section id="twenty-90th-2" class="slide level2">
-<h2>20 世纪 90 年代</h2>
-<ul>
-<li>1993 年，举行了第一届计算机证据的国际会议</li>
-<li>1995 年，建立计算机证据的国际组织 <code>IOCE</code>（<code>International Organization on Computer Evidence</code>）</li>
-<li>1997 年，八国集团在莫斯科宣称：司法部门的职员应得到新的培训、新装备以应对高技术犯罪。</li>
-<li>1998 年，八国集团指定 <code>IOCE</code> 组织建立处理数据证据的国际准则</li>
-</ul>
-</section>
-<section id="twenty-one-1" class="slide level2">
-<h2>2001 年</h2>
-<ul>
-<li>计算机取证技术概念于 2001 年从国外引入国内，从入侵取证反黑客开始，逐渐形成</li>
-<li>取证相关法律方面的建设仍不健全，随着技术的快速发展，计算机犯罪手段的不断提高，我们需要健全规范的计算机取证流程，加强计算机取证技术研究，制定和完善相关的法律法规</li>
-</ul>
-</section>
-<section id="twenty-one-11" class="slide level2">
-<h2>2011 年</h2>
-<ul>
-<li>云取证概念在 2011 年数字取证领域权威会议 <code>IFIP WG 11.9 International Conference on Digital Forensics</code> 首次提出</li>
-<li>移动取证正在发展成为数字取证的主要工作
-<ul>
-<li>移动设备取证、移动系统取证、移动网络取证、移动应用取证</li>
-</ul></li>
-<li>多媒体数字内容取证
-<ul>
-<li>图像取证、视频取证、音频取证
-<ul>
-<li>复制粘贴、篡改、合成</li>
-</ul></li>
-</ul></li>
 </ul>
 </section>
 </section>
@@ -987,7 +896,7 @@
 <li><a href="https://web.archive.org/web/20110917192331/http://www.honeynet.org/node/504">Challenge 1 of the Forensic Challenge 2010 - pcap attack trace（互联网档案馆备份）</a></li>
 <li>校内网盘分享的相关附件</li>
 </ul>
-<pre><code>分享名称：Challenge 1 of the Forensic Challenge 2010 - pcap attack trace
+<pre ><code >分享名称：Challenge 1 of the Forensic Challenge 2010 - pcap attack trace
 分享链接：https://kod.cuc.edu.cn/#s/-_AjCphw
 访问密码：ZDkxB</code></pre>
 </section>
@@ -1017,11 +926,11 @@
 <section class="slide level2">
 
 <h3 id="manual-investigation-2">手工单步分析</h3>
-<pre class="bash"><code># 1. 统计主机信息
+<pre ><code class="bash"># 1. 统计主机信息
 tshark -r attack-trace.pcap -z ip_hosts,tree -qn
 
 # 2. 谁主动发起网络连接
-tshark -r attack-trace.pcap -Y &quot;tcp.flags==0x02&quot; -n
+tshark -r attack-trace.pcap -Y "tcp.flags==0x02" -n
 
 # 3. 推断攻击持续时间
 # 攻击持续时间 &lt; 捕获到的数据包的起止时间
@@ -1040,7 +949,7 @@ cat -n fast.log
 
 # 4.1. 修改检测规则
 # 找到包含 2003-0533 关键词且该行规则被注释的行，取消注释
-grep 2003-0533 /var/lib/suricata/rules/suricata.rules | grep -E &quot;^#&quot;
+grep 2003-0533 /var/lib/suricata/rules/suricata.rules | grep -E "^#"
 
 # 4.2. 再用修改后的规则检查一次
 suricata -r attack-trace.pcap
@@ -1057,10 +966,10 @@ tshark -r attack-trace.pcap -qnz conv,tcp
 # 扫描/枚举、漏洞利用、后渗透
 
 # 5.1 查看扫描阶段的数据包
-tshark -r attack-trace.pcap -Y &quot;tcp.stream eq 0&quot;
+tshark -r attack-trace.pcap -Y "tcp.stream eq 0"
 
 # 5.2 查看漏洞利用阶段的数据包
-tshark -r attack-trace.pcap -Y &quot;tcp.stream eq 1&quot;
+tshark -r attack-trace.pcap -Y "tcp.stream eq 1"
 
 # 查看该阶段 TCP 会话的应用层负载数据
 tshark -r attack-trace.pcap -q -z follow,tcp,hex,1
@@ -1125,14 +1034,25 @@ tshark -r attack-trace.pcap -q -z follow,tcp,hex,4 -w malware.pcapng</code></pre
     </div>
   </div>
 
-  <script src="lib/reveal.js/lib/js/head.min.js"></script>
-  <script src="lib/reveal.js/js/reveal.js"></script>
+  <script src="lib/reveal.js.v4/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="lib/reveal.js.v4/plugin/notes/notes.js"></script>
+  <script src="lib/reveal.js.v4/plugin/search/search.js"></script>
+  <script src="lib/reveal.js.v4/plugin/zoom/zoom.js"></script>
+  <script src="lib/reveal.js.v4/plugin/math/math.js"></script>
+  <script src="lib/reveal.js.v4/plugin/markdown/markdown.js"></script>
+  <script src="lib/reveal.js.v4/plugin/highlight/highlight.js"></script>
+  <script src="lib/reveal.js.v4/plugin/reveal.js-plugins/menu/menu.js"></script>
+  <script src="lib/reveal.js.v4/plugin/reveal.js-plugins/chalkboard/plugin.js"></script>
+  <script src="lib/reveal.js.v4/plugin/reveal.js-plugins/audio-slideshow/plugin.js"></script>
 
   <script>
-
+    
       // Full list of configuration options available at:
-      // https://github.com/hakimel/reveal.js#configuration
+      // https://revealjs.com/config/
       Reveal.initialize({
+      
         // Display the page number of the current slide
         slideNumber: true,
         // Push each slide change to the browser history
@@ -1155,140 +1075,144 @@ tshark -r attack-trace.pcap -q -z follow,tcp,hex,4 -w malware.pcapng</code></pre
             processClass: 'tex2jax_process'
           },
         },
-  multiplex: {
-    secret: , //【TO REPLACE】 null so the clients do not have control of the master presentation
-    id: '', // 【TO REPLACE】socketId, obtained from socket.io server
-    url: ''  //【TO REPLACE】Location of your socket.io server
-  },
 
-menu: {
-		// Specifies which side of the presentation the menu will 
-		// be shown. Use 'left' or 'right'.
-		side: 'left',
+    menu: {
+  		// Specifies which side of the presentation the menu will 
+  		// be shown. Use 'left' or 'right'.
+  		side: 'left',
+  
+  		// Specifies the width of the menu.
+  		// Can be one of the following:
+  		// 'normal', 'wide', 'third', 'half', 'full', or
+  		// any valid css length value
+  		width: 'normal',
+  
+  		// Add slide numbers to the titles in the slide list.
+  		// Use 'true' or format string (same as reveal.js slide numbers)
+  		numbers: true,
+  
+  		// Specifies which slide elements will be used for generating
+  		// the slide titles in the menu. The default selects the first
+  		// heading element found in the slide, but you can specify any
+  		// valid css selector and the text from the first matching
+  		// element will be used.
+  		// Note: that a section data-menu-title attribute or an element
+  		// with a menu-title class will take precedence over this option
+  		titleSelector: 'h1, h2, h3, h4, h5, h6',
+  
+  		// If slides do not have a matching title, attempt to use the
+  		// start of the text content as the title instead
+  		useTextContentForMissingTitles: false,
+  
+  		// Hide slides from the menu that do not have a title.
+  		// Set to 'true' to only list slides with titles.
+  		hideMissingTitles: false,
+  
+  		// Adds markers to the slide titles to indicate the 
+  		// progress through the presentation. Set to 'false'
+  		// to hide the markers.
+  		markers: true,
+  
+  		// Specify custom panels to be included in the menu, by
+  		// providing an array of objects with 'title', 'icon'
+  		// properties, and either a 'src' or 'content' property.
+  		custom: false,
+  
+  		// Specifies the themes that will be available in the themes
+  		// menu panel. Set to 'true' to show the themes menu panel
+  		// with the default themes list. Alternatively, provide an
+  		// array to specify the themes to make available in the
+  		// themes menu panel, for example...
+  		// [
+  		//     { name: 'Black', theme: 'css/theme/black.css' },
+  		//     { name: 'White', theme: 'css/theme/white.css' },
+  		//     { name: 'League', theme: 'css/theme/league.css' }
+  		// ]
+  		themes: false,
+  
+  		// Specifies the path to the default theme files. If your
+  		// presentation uses a different path to the standard reveal
+  		// layout then you need to provide this option, but only
+  		// when 'themes' is set to 'true'. If you provide your own 
+  		// list of themes or 'themes' is set to 'false' the 
+  		// 'themesPath' option is ignored.
+  		themesPath: 'css/theme/',
+  
+  		// Specifies if the transitions menu panel will be shown.
+  		// Set to 'true' to show the transitions menu panel with
+  		// the default transitions list. Alternatively, provide an
+  		// array to specify the transitions to make available in
+  		// the transitions panel, for example...
+  		// ['None', 'Fade', 'Slide']
+  		transitions: false,
+  
+  		// Adds a menu button to the slides to open the menu panel.
+  		// Set to 'false' to hide the button.
+  		openButton: true,
+  
+  		// If 'true' allows the slide number in the presentation to
+  		// open the menu panel. The reveal.js slideNumber option must 
+  		// be displayed for this to take effect
+  		openSlideNumber: false,
+  
+  		// If true allows the user to open and navigate the menu using
+  		// the keyboard. Standard keyboard interaction with reveal
+  		// will be disabled while the menu is open.
+  		keyboard: true,
+  
+  		// Normally the menu will close on user actions such as
+  		// selecting a menu item, or clicking the presentation area.
+  		// If 'true', the sticky option will leave the menu open
+  		// until it is explicitly closed, that is, using the close
+  		// button or pressing the ESC or m key (when the keyboard 
+  		// interaction option is enabled).
+  		sticky: false,
+  
+  		// If 'true' standard menu items will be automatically opened
+  		// when navigating using the keyboard. Note: this only takes 
+  		// effect when both the 'keyboard' and 'sticky' options are enabled.
+  		autoOpen: true,
+  
+  		// If 'true' the menu will not be created until it is explicitly
+  		// requested by calling RevealMenu.init(). Note this will delay
+  		// the creation of all menu panels, including custom panels, and
+  		// the menu button.
+  		delayInit: false,
+  
+  		// If 'true' the menu will be shown when the menu is initialised.
+  		openOnInit: false,
+  
+  		// By default the menu will load it's own font-awesome library
+  		// icons. If your presentation needs to load a different
+  		// font-awesome library the 'loadIcons' option can be set to false
+  		// and the menu will not attempt to load the font-awesome library.
+  		loadIcons: true
 
-		// Specifies the width of the menu.
-		// Can be one of the following:
-		// 'normal', 'wide', 'third', 'half', 'full', or
-		// any valid css length value
-		width: 'normal',
+    },
 
-		// Add slide numbers to the titles in the slide list.
-		// Use 'true' or format string (same as reveal.js slide numbers)
-		numbers: true,
+    chalkboard: {
+        boardmarkerWidth: 3,
+        chalkWidth: 7,
+        chalkEffect: 1.0,
+        storage: null,
+        src: null,
+        readOnly: undefined,
+        toggleChalkboardButton: { left: "80px" },
+				toggleNotesButton: { left: "130px" },
+        transition: 800,
+        theme: "chalkboard",
+    },
 
-		// Specifies which slide elements will be used for generating
-		// the slide titles in the menu. The default selects the first
-		// heading element found in the slide, but you can specify any
-		// valid css selector and the text from the first matching
-		// element will be used.
-		// Note: that a section data-menu-title attribute or an element
-		// with a menu-title class will take precedence over this option
-		titleSelector: 'h1, h2, h3, h4, h5, h6',
-
-		// If slides do not have a matching title, attempt to use the
-		// start of the text content as the title instead
-		useTextContentForMissingTitles: false,
-
-		// Hide slides from the menu that do not have a title.
-		// Set to 'true' to only list slides with titles.
-		hideMissingTitles: false,
-
-		// Adds markers to the slide titles to indicate the 
-		// progress through the presentation. Set to 'false'
-		// to hide the markers.
-		markers: true,
-
-		// Specify custom panels to be included in the menu, by
-		// providing an array of objects with 'title', 'icon'
-		// properties, and either a 'src' or 'content' property.
-		custom: false,
-
-		// Specifies the themes that will be available in the themes
-		// menu panel. Set to 'true' to show the themes menu panel
-		// with the default themes list. Alternatively, provide an
-		// array to specify the themes to make available in the
-		// themes menu panel, for example...
-		// [
-		//     { name: 'Black', theme: 'css/theme/black.css' },
-		//     { name: 'White', theme: 'css/theme/white.css' },
-		//     { name: 'League', theme: 'css/theme/league.css' }
-		// ]
-		themes: false,
-
-		// Specifies the path to the default theme files. If your
-		// presentation uses a different path to the standard reveal
-		// layout then you need to provide this option, but only
-		// when 'themes' is set to 'true'. If you provide your own 
-		// list of themes or 'themes' is set to 'false' the 
-		// 'themesPath' option is ignored.
-		themesPath: 'css/theme/',
-
-		// Specifies if the transitions menu panel will be shown.
-		// Set to 'true' to show the transitions menu panel with
-		// the default transitions list. Alternatively, provide an
-		// array to specify the transitions to make available in
-		// the transitions panel, for example...
-		// ['None', 'Fade', 'Slide']
-		transitions: false,
-
-		// Adds a menu button to the slides to open the menu panel.
-		// Set to 'false' to hide the button.
-		openButton: true,
-
-		// If 'true' allows the slide number in the presentation to
-		// open the menu panel. The reveal.js slideNumber option must 
-		// be displayed for this to take effect
-		openSlideNumber: false,
-
-		// If true allows the user to open and navigate the menu using
-		// the keyboard. Standard keyboard interaction with reveal
-		// will be disabled while the menu is open.
-		keyboard: true,
-
-		// Normally the menu will close on user actions such as
-		// selecting a menu item, or clicking the presentation area.
-		// If 'true', the sticky option will leave the menu open
-		// until it is explicitly closed, that is, using the close
-		// button or pressing the ESC or m key (when the keyboard 
-		// interaction option is enabled).
-		sticky: false,
-
-		// If 'true' standard menu items will be automatically opened
-		// when navigating using the keyboard. Note: this only takes 
-		// effect when both the 'keyboard' and 'sticky' options are enabled.
-		autoOpen: true,
-
-		// If 'true' the menu will not be created until it is explicitly
-		// requested by calling RevealMenu.init(). Note this will delay
-		// the creation of all menu panels, including custom panels, and
-		// the menu button.
-		delayInit: false,
-
-		// If 'true' the menu will be shown when the menu is initialised.
-		openOnInit: false,
-
-		// By default the menu will load it's own font-awesome library
-		// icons. If your presentation needs to load a different
-		// font-awesome library the 'loadIcons' option can be set to false
-		// and the menu will not attempt to load the font-awesome library.
-		loadIcons: true
-	},
-
-
-        // Optional reveal.js plugins
-        dependencies: [
-          { src: 'lib/reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
-          { src: 'lib/reveal.js/plugin/zoom-js/zoom.js', async: true },
-          { src: 'lib/reveal.js/plugin/math/math.js', async: true },
-          { src: 'lib/reveal.js/plugin/menu/menu.js'},
-          { src: 'lib/reveal.js/plugin/markdown/marked.js'},
-          { src: 'lib/reveal.js/plugin/markdown/markdown.js'},
-          { src: 'lib/reveal.js/plugin/search/search.js'},
-          { src: 'lib/reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
-          { src: 'lib/reveal.js/plugin/notes/notes.js', async: true },
-          { src: 'lib/reveal.js/plugin/socket.io/socket.io.js', async: true },
-          { src: 'lib/reveal.js/plugin/multiplex/master.js', async: true },
-          { src: 'lib/reveal.js/plugin/multiplex/client.js', async: true },
+        // reveal.js plugins
+        plugins: [
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom,
+          RevealMarkdown, 
+          RevealMenu, 
+          RevealHighlight,
+          RevealChalkboard
         ]
       });
     </script>

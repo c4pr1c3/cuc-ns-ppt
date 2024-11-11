@@ -141,7 +141,6 @@ output: revealjs::revealjs_presentation
 
 > 华为、深信服（Sangfor）、<del>启明星辰（Venustech）</del>、山石网科（Hillstone）、新华三（H3C）、阿里云（Alibaba Cloud）
 
-
 # 防火墙技术原理
 
 ---
@@ -320,56 +319,6 @@ output: revealjs::revealjs_presentation
 * 通用 CPU 架构
 * ASIC 架构
 * 网络处理器架构
-
----
-
-### 通用 CPU 架构防火墙 {id="x86-fw"}
-
-* 又被称为x86架构
-    * 采用通用CPU和PCI总线接口
-* 可编程性高
-    * 更灵活
-    * 更易扩展
-* 产品功能主要由软件实现
-* 代表产品
-    * 大部分的开源/商业软件防火墙（基于*nix系统）
-
----
-
-### ASIC 架构防火墙 {id="asic-fw"}
-
-* Application Specific Integrated Circuit
-    * 专用集成电路
-    * 一种带有逻辑处理的加速处理器
-* 把一些原先由 CPU 完成的经常性和重复工作交给 ASIC 芯片来负责完成
-    * 交换机、路由器、智能 IC 卡
-* 通常配合通用CPU单元来完成复杂运算
-* 代表产品
-    * 大部分国外的商业硬件防火墙
-
----
-
-### NP 架构防火墙 {id="np-fw"}
-
-* Network Processor：网络处理器
-* 通用 CPU 架构和 ASIC 架构的折衷
-    * 开发难度
-    * 性能
-    * 灵活性/可扩展性
-* 代表产品
-    * 大部分国内的商业硬件防火墙
-
----
-
-### 三种硬件架构的横向比较
-
-| 架构类型 | X86  | NP   | ASIC |
-| :---     | :--- | :--- | :--- |
-| 灵活性   | ★★★  | ★★   | ★    |
-| 扩展性   | ★★★  | ★★   | ★    |
-| 性能     | ★    | ★★   | ★★★  |
-| 安全性   | ★    | ★★   | ★★★  |
-| 价格     | 低   | 中等 | 较高 |
 
 # 防火墙的配置和应用 {id="setup-iptables"}
 

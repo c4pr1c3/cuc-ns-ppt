@@ -8,13 +8,11 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
-  <link rel="stylesheet" href="lib/reveal.js/css/reveal.css">
-  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="lib/reveal.js.v4/dist/reset.css">
+  <link rel="stylesheet" href="lib/reveal.js.v4/dist/reveal.css">
 
-
-    <!-- For syntax highlighting using highlight.js-->
-    <link rel="stylesheet" href="lib/reveal.js/lib/css/zenburn.css">
-
+  <!-- For syntax highlighting using highlight.js-->
+  <link rel="stylesheet" href="lib/reveal.js.v4/plugin/highlight/monokai.css">
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -23,19 +21,8 @@
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     ul.task-list{list-style: none;}
   </style>
-  <link rel="stylesheet" href="lib/reveal.js/css/theme/white.css" id="theme">
-  <!-- Printing and PDF exports -->
-<link rel="stylesheet" media="print" href="lib/reveal.js/css/print/pdf.css" />
-  <script>
-    var link = document.createElement( 'link' );
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = window.location.search.match( /print-pdf/gi ) ? 'lib/reveal.js/css/print/pdf.css' : 'lib/reveal.js/css/print/paper.css';
-    document.getElementsByTagName( 'head' )[0].appendChild( link );
-  </script>
-  <!--[if lt IE 9]>
-  <script src="lib/reveal.js/lib/js/html5shiv.js"></script>
-  <![endif]-->
+  <link rel="stylesheet" href="lib/reveal.js.v4/dist/theme/my-white.css" id="theme">
+
 </head>
 <body>
   <div class="reveal">
@@ -422,109 +409,6 @@
 <li>网络处理器架构</li>
 </ul>
 </section>
-<section class="slide level2">
-
-<h3 id="x86-fw">通用 CPU 架构防火墙</h3>
-<ul>
-<li>又被称为x86架构
-<ul>
-<li>采用通用CPU和PCI总线接口</li>
-</ul></li>
-<li>可编程性高
-<ul>
-<li>更灵活</li>
-<li>更易扩展</li>
-</ul></li>
-<li>产品功能主要由软件实现</li>
-<li>代表产品
-<ul>
-<li>大部分的开源/商业软件防火墙（基于*nix系统）</li>
-</ul></li>
-</ul>
-</section>
-<section class="slide level2">
-
-<h3 id="asic-fw">ASIC 架构防火墙</h3>
-<ul>
-<li>Application Specific Integrated Circuit
-<ul>
-<li>专用集成电路</li>
-<li>一种带有逻辑处理的加速处理器</li>
-</ul></li>
-<li>把一些原先由 CPU 完成的经常性和重复工作交给 ASIC 芯片来负责完成
-<ul>
-<li>交换机、路由器、智能 IC 卡</li>
-</ul></li>
-<li>通常配合通用CPU单元来完成复杂运算</li>
-<li>代表产品
-<ul>
-<li>大部分国外的商业硬件防火墙</li>
-</ul></li>
-</ul>
-</section>
-<section class="slide level2">
-
-<h3 id="np-fw">NP 架构防火墙</h3>
-<ul>
-<li>Network Processor：网络处理器</li>
-<li>通用 CPU 架构和 ASIC 架构的折衷
-<ul>
-<li>开发难度</li>
-<li>性能</li>
-<li>灵活性/可扩展性</li>
-</ul></li>
-<li>代表产品
-<ul>
-<li>大部分国内的商业硬件防火墙</li>
-</ul></li>
-</ul>
-</section>
-<section class="slide level2">
-
-<h3 id="三种硬件架构的横向比较">三种硬件架构的横向比较</h3>
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">架构类型</th>
-<th style="text-align: left;">X86</th>
-<th style="text-align: left;">NP</th>
-<th style="text-align: left;">ASIC</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">灵活性</td>
-<td style="text-align: left;">★★★</td>
-<td style="text-align: left;">★★</td>
-<td style="text-align: left;">★</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">扩展性</td>
-<td style="text-align: left;">★★★</td>
-<td style="text-align: left;">★★</td>
-<td style="text-align: left;">★</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">性能</td>
-<td style="text-align: left;">★</td>
-<td style="text-align: left;">★★</td>
-<td style="text-align: left;">★★★</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">安全性</td>
-<td style="text-align: left;">★</td>
-<td style="text-align: left;">★★</td>
-<td style="text-align: left;">★★★</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">价格</td>
-<td style="text-align: left;">低</td>
-<td style="text-align: left;">中等</td>
-<td style="text-align: left;">较高</td>
-</tr>
-</tbody>
-</table>
-</section>
 </section>
 <section>
 <section id="setup-iptables" class="title-slide slide level1">
@@ -602,7 +486,7 @@
 <section class="slide level2">
 
 <h3 id="recommended-rules-manage">推荐的 iptables 规则管理方法</h3>
-<pre class="bash"><code># 需要 root 权限
+<pre ><code class="bash"># 需要 root 权限
 # 导出当前防火墙规则到文件
 iptables-save &gt; iptables.rules
 
@@ -726,7 +610,7 @@ iptables-restore &lt; iptables.rules
 </section>
 <section id="moving-from-iptables-to-nftables" class="slide level2">
 <h2><a href="https://wiki.nftables.org/wiki-nftables/index.php/Moving_from_iptables_to_nftables">从 iptables 迁移到 nftables</a></h2>
-<pre class="bash"><code># 检查当前系统内核是否加载了 nf_tables 内核模块
+<pre ><code class="bash"># 检查当前系统内核是否加载了 nf_tables 内核模块
 modinfo nf_tables
 # 如下输出信息表示已加载
 # filename:       /lib/modules/5.7.0-kali1-amd64/kernel/net/netfilter/nf_tables.ko
@@ -755,7 +639,7 @@ apt policy nftables
 #         100 /var/lib/dpkg/status
 
 # 如果没有安装，则执行安装操作
-sudo apt update &amp;&amp; sudo apt install nftables
+sudo apt update && sudo apt install nftables
 
 # 导出 iptables 规则
 iptables-save &gt; iptables.rules
@@ -856,14 +740,25 @@ sudo ip6tables -F</code></pre>
     </div>
   </div>
 
-  <script src="lib/reveal.js/lib/js/head.min.js"></script>
-  <script src="lib/reveal.js/js/reveal.js"></script>
+  <script src="lib/reveal.js.v4/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="lib/reveal.js.v4/plugin/notes/notes.js"></script>
+  <script src="lib/reveal.js.v4/plugin/search/search.js"></script>
+  <script src="lib/reveal.js.v4/plugin/zoom/zoom.js"></script>
+  <script src="lib/reveal.js.v4/plugin/math/math.js"></script>
+  <script src="lib/reveal.js.v4/plugin/markdown/markdown.js"></script>
+  <script src="lib/reveal.js.v4/plugin/highlight/highlight.js"></script>
+  <script src="lib/reveal.js.v4/plugin/reveal.js-plugins/menu/menu.js"></script>
+  <script src="lib/reveal.js.v4/plugin/reveal.js-plugins/chalkboard/plugin.js"></script>
+  <script src="lib/reveal.js.v4/plugin/reveal.js-plugins/audio-slideshow/plugin.js"></script>
 
   <script>
-
+    
       // Full list of configuration options available at:
-      // https://github.com/hakimel/reveal.js#configuration
+      // https://revealjs.com/config/
       Reveal.initialize({
+      
         // Display the page number of the current slide
         slideNumber: true,
         // Push each slide change to the browser history
@@ -887,131 +782,143 @@ sudo ip6tables -F</code></pre>
           },
         },
 
-menu: {
-		// Specifies which side of the presentation the menu will 
-		// be shown. Use 'left' or 'right'.
-		side: 'left',
+    menu: {
+  		// Specifies which side of the presentation the menu will 
+  		// be shown. Use 'left' or 'right'.
+  		side: 'left',
+  
+  		// Specifies the width of the menu.
+  		// Can be one of the following:
+  		// 'normal', 'wide', 'third', 'half', 'full', or
+  		// any valid css length value
+  		width: 'normal',
+  
+  		// Add slide numbers to the titles in the slide list.
+  		// Use 'true' or format string (same as reveal.js slide numbers)
+  		numbers: true,
+  
+  		// Specifies which slide elements will be used for generating
+  		// the slide titles in the menu. The default selects the first
+  		// heading element found in the slide, but you can specify any
+  		// valid css selector and the text from the first matching
+  		// element will be used.
+  		// Note: that a section data-menu-title attribute or an element
+  		// with a menu-title class will take precedence over this option
+  		titleSelector: 'h1, h2, h3, h4, h5, h6',
+  
+  		// If slides do not have a matching title, attempt to use the
+  		// start of the text content as the title instead
+  		useTextContentForMissingTitles: false,
+  
+  		// Hide slides from the menu that do not have a title.
+  		// Set to 'true' to only list slides with titles.
+  		hideMissingTitles: false,
+  
+  		// Adds markers to the slide titles to indicate the 
+  		// progress through the presentation. Set to 'false'
+  		// to hide the markers.
+  		markers: true,
+  
+  		// Specify custom panels to be included in the menu, by
+  		// providing an array of objects with 'title', 'icon'
+  		// properties, and either a 'src' or 'content' property.
+  		custom: false,
+  
+  		// Specifies the themes that will be available in the themes
+  		// menu panel. Set to 'true' to show the themes menu panel
+  		// with the default themes list. Alternatively, provide an
+  		// array to specify the themes to make available in the
+  		// themes menu panel, for example...
+  		// [
+  		//     { name: 'Black', theme: 'css/theme/black.css' },
+  		//     { name: 'White', theme: 'css/theme/white.css' },
+  		//     { name: 'League', theme: 'css/theme/league.css' }
+  		// ]
+  		themes: false,
+  
+  		// Specifies the path to the default theme files. If your
+  		// presentation uses a different path to the standard reveal
+  		// layout then you need to provide this option, but only
+  		// when 'themes' is set to 'true'. If you provide your own 
+  		// list of themes or 'themes' is set to 'false' the 
+  		// 'themesPath' option is ignored.
+  		themesPath: 'css/theme/',
+  
+  		// Specifies if the transitions menu panel will be shown.
+  		// Set to 'true' to show the transitions menu panel with
+  		// the default transitions list. Alternatively, provide an
+  		// array to specify the transitions to make available in
+  		// the transitions panel, for example...
+  		// ['None', 'Fade', 'Slide']
+  		transitions: false,
+  
+  		// Adds a menu button to the slides to open the menu panel.
+  		// Set to 'false' to hide the button.
+  		openButton: true,
+  
+  		// If 'true' allows the slide number in the presentation to
+  		// open the menu panel. The reveal.js slideNumber option must 
+  		// be displayed for this to take effect
+  		openSlideNumber: false,
+  
+  		// If true allows the user to open and navigate the menu using
+  		// the keyboard. Standard keyboard interaction with reveal
+  		// will be disabled while the menu is open.
+  		keyboard: true,
+  
+  		// Normally the menu will close on user actions such as
+  		// selecting a menu item, or clicking the presentation area.
+  		// If 'true', the sticky option will leave the menu open
+  		// until it is explicitly closed, that is, using the close
+  		// button or pressing the ESC or m key (when the keyboard 
+  		// interaction option is enabled).
+  		sticky: false,
+  
+  		// If 'true' standard menu items will be automatically opened
+  		// when navigating using the keyboard. Note: this only takes 
+  		// effect when both the 'keyboard' and 'sticky' options are enabled.
+  		autoOpen: true,
+  
+  		// If 'true' the menu will not be created until it is explicitly
+  		// requested by calling RevealMenu.init(). Note this will delay
+  		// the creation of all menu panels, including custom panels, and
+  		// the menu button.
+  		delayInit: false,
+  
+  		// If 'true' the menu will be shown when the menu is initialised.
+  		openOnInit: false,
+  
+  		// By default the menu will load it's own font-awesome library
+  		// icons. If your presentation needs to load a different
+  		// font-awesome library the 'loadIcons' option can be set to false
+  		// and the menu will not attempt to load the font-awesome library.
+  		loadIcons: true
 
-		// Specifies the width of the menu.
-		// Can be one of the following:
-		// 'normal', 'wide', 'third', 'half', 'full', or
-		// any valid css length value
-		width: 'normal',
+    },
 
-		// Add slide numbers to the titles in the slide list.
-		// Use 'true' or format string (same as reveal.js slide numbers)
-		numbers: true,
+    chalkboard: {
+        boardmarkerWidth: 3,
+        chalkWidth: 7,
+        chalkEffect: 1.0,
+        storage: null,
+        src: null,
+        readOnly: undefined,
+        toggleChalkboardButton: { left: "80px" },
+				toggleNotesButton: { left: "130px" },
+        transition: 800,
+        theme: "chalkboard",
+    },
 
-		// Specifies which slide elements will be used for generating
-		// the slide titles in the menu. The default selects the first
-		// heading element found in the slide, but you can specify any
-		// valid css selector and the text from the first matching
-		// element will be used.
-		// Note: that a section data-menu-title attribute or an element
-		// with a menu-title class will take precedence over this option
-		titleSelector: 'h1, h2, h3, h4, h5, h6',
-
-		// If slides do not have a matching title, attempt to use the
-		// start of the text content as the title instead
-		useTextContentForMissingTitles: false,
-
-		// Hide slides from the menu that do not have a title.
-		// Set to 'true' to only list slides with titles.
-		hideMissingTitles: false,
-
-		// Adds markers to the slide titles to indicate the 
-		// progress through the presentation. Set to 'false'
-		// to hide the markers.
-		markers: true,
-
-		// Specify custom panels to be included in the menu, by
-		// providing an array of objects with 'title', 'icon'
-		// properties, and either a 'src' or 'content' property.
-		custom: false,
-
-		// Specifies the themes that will be available in the themes
-		// menu panel. Set to 'true' to show the themes menu panel
-		// with the default themes list. Alternatively, provide an
-		// array to specify the themes to make available in the
-		// themes menu panel, for example...
-		// [
-		//     { name: 'Black', theme: 'css/theme/black.css' },
-		//     { name: 'White', theme: 'css/theme/white.css' },
-		//     { name: 'League', theme: 'css/theme/league.css' }
-		// ]
-		themes: false,
-
-		// Specifies the path to the default theme files. If your
-		// presentation uses a different path to the standard reveal
-		// layout then you need to provide this option, but only
-		// when 'themes' is set to 'true'. If you provide your own 
-		// list of themes or 'themes' is set to 'false' the 
-		// 'themesPath' option is ignored.
-		themesPath: 'css/theme/',
-
-		// Specifies if the transitions menu panel will be shown.
-		// Set to 'true' to show the transitions menu panel with
-		// the default transitions list. Alternatively, provide an
-		// array to specify the transitions to make available in
-		// the transitions panel, for example...
-		// ['None', 'Fade', 'Slide']
-		transitions: false,
-
-		// Adds a menu button to the slides to open the menu panel.
-		// Set to 'false' to hide the button.
-		openButton: true,
-
-		// If 'true' allows the slide number in the presentation to
-		// open the menu panel. The reveal.js slideNumber option must 
-		// be displayed for this to take effect
-		openSlideNumber: false,
-
-		// If true allows the user to open and navigate the menu using
-		// the keyboard. Standard keyboard interaction with reveal
-		// will be disabled while the menu is open.
-		keyboard: true,
-
-		// Normally the menu will close on user actions such as
-		// selecting a menu item, or clicking the presentation area.
-		// If 'true', the sticky option will leave the menu open
-		// until it is explicitly closed, that is, using the close
-		// button or pressing the ESC or m key (when the keyboard 
-		// interaction option is enabled).
-		sticky: false,
-
-		// If 'true' standard menu items will be automatically opened
-		// when navigating using the keyboard. Note: this only takes 
-		// effect when both the 'keyboard' and 'sticky' options are enabled.
-		autoOpen: true,
-
-		// If 'true' the menu will not be created until it is explicitly
-		// requested by calling RevealMenu.init(). Note this will delay
-		// the creation of all menu panels, including custom panels, and
-		// the menu button.
-		delayInit: false,
-
-		// If 'true' the menu will be shown when the menu is initialised.
-		openOnInit: false,
-
-		// By default the menu will load it's own font-awesome library
-		// icons. If your presentation needs to load a different
-		// font-awesome library the 'loadIcons' option can be set to false
-		// and the menu will not attempt to load the font-awesome library.
-		loadIcons: true
-	},
-
-
-        // Optional reveal.js plugins
-        dependencies: [
-          { src: 'lib/reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
-          { src: 'lib/reveal.js/plugin/zoom-js/zoom.js', async: true },
-          { src: 'lib/reveal.js/plugin/math/math.js', async: true },
-          { src: 'lib/reveal.js/plugin/menu/menu.js'},
-          { src: 'lib/reveal.js/plugin/markdown/marked.js'},
-          { src: 'lib/reveal.js/plugin/markdown/markdown.js'},
-          { src: 'lib/reveal.js/plugin/search/search.js'},
-          { src: 'lib/reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
-          { src: 'lib/reveal.js/plugin/notes/notes.js', async: true },
+        // reveal.js plugins
+        plugins: [
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom,
+          RevealMarkdown, 
+          RevealMenu, 
+          RevealHighlight,
+          RevealChalkboard
         ]
       });
     </script>

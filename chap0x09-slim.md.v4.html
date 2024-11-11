@@ -8,13 +8,11 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
-  <link rel="stylesheet" href="lib/reveal.js/css/reveal.css">
-  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="lib/reveal.js.v4/dist/reset.css">
+  <link rel="stylesheet" href="lib/reveal.js.v4/dist/reveal.css">
 
-
-    <!-- For syntax highlighting using highlight.js-->
-    <link rel="stylesheet" href="lib/reveal.js/lib/css/zenburn.css">
-
+  <!-- For syntax highlighting using highlight.js-->
+  <link rel="stylesheet" href="lib/reveal.js.v4/plugin/highlight/monokai.css">
   <style>
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
@@ -23,19 +21,8 @@
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     ul.task-list{list-style: none;}
   </style>
-  <link rel="stylesheet" href="lib/reveal.js/css/theme/white.css" id="theme">
-  <!-- Printing and PDF exports -->
-<link rel="stylesheet" media="print" href="lib/reveal.js/css/print/pdf.css" />
-  <script>
-    var link = document.createElement( 'link' );
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = window.location.search.match( /print-pdf/gi ) ? 'lib/reveal.js/css/print/pdf.css' : 'lib/reveal.js/css/print/paper.css';
-    document.getElementsByTagName( 'head' )[0].appendChild( link );
-  </script>
-  <!--[if lt IE 9]>
-  <script src="lib/reveal.js/lib/js/html5shiv.js"></script>
-  <![endif]-->
+  <link rel="stylesheet" href="lib/reveal.js.v4/dist/theme/my-white.css" id="theme">
+
 </head>
 <body>
   <div class="reveal">
@@ -62,10 +49,6 @@
 <li>防火墙的实现技术
 <ul>
 <li>软件技术</li>
-<li>硬件架构
-<ul>
-<li>NP / ASIC / x86</li>
-</ul></li>
 </ul></li>
 <li>iptables / nftables 的配置</li>
 </ul>
@@ -562,97 +545,6 @@
 </ul></li>
 </ul>
 </section>
-<section class="slide level2">
-
-<h3 id="ids-arch-centralized-1">网络入侵检测体系架构——集中式</h3>
-<p><img data-src="images/chap0x09/ids-arch-1.png" /></p>
-</section>
-<section class="slide level2">
-
-<h3 id="ids-arch-centralized-2">网络入侵检测体系架构——集中式</h3>
-<ul>
-<li>特点
-<ul>
-<li>分布式信息收集</li>
-<li>汇总上报</li>
-<li>集中关联分析</li>
-</ul></li>
-<li>缺点
-<ul>
-<li>单点故障
-<ul>
-<li>汇总关联分析节点一旦出现故障，则整个系统就会无法工作</li>
-</ul></li>
-<li>单点瓶颈
-<ul>
-<li>汇总关联分析节点的处理能力决定了整个系统的处理能力</li>
-</ul></li>
-</ul></li>
-</ul>
-</section>
-<section class="slide level2">
-
-<ul>
-<li>应用场景
-<ul>
-<li>小型公司网络范围内的 IDS 协作</li>
-<li>不适合于互联网范围内的大规模 IDS 协作（通信延时）</li>
-</ul></li>
-</ul>
-</section>
-<section class="slide level2">
-
-<h3 id="ids-arch-tree-1">网络入侵检测体系架构——等级分布式</h3>
-<p><img data-src="images/chap0x09/ids-arch-2.png" /></p>
-</section>
-<section class="slide level2">
-
-<h3 id="ids-arch-tree-2">网络入侵检测体系架构——等级分布式</h3>
-<ul>
-<li>特点
-<ul>
-<li>分区
-<ul>
-<li>地理位置 / 管理域 / 相近软件平台 / 预期入侵种类</li>
-</ul></li>
-<li>“逐层”汇聚式关联分析</li>
-</ul></li>
-<li>缺点
-<ul>
-<li>可扩展性略高于集中式架构，但仍受困于高层次节点能力</li>
-<li>单点故障仍有可能（高层节点）</li>
-<li>检出率较低
-<ul>
-<li>信息在“汇聚”的过程中会由于“压缩”而导致“损失”和“失真”</li>
-</ul></li>
-</ul></li>
-</ul>
-</section>
-<section class="slide level2">
-
-<h3 id="ids-arch-distributed-1">网络入侵检测体系架构——完全分布式</h3>
-<p><img data-src="images/chap0x09/ids-arch-3.png" /></p>
-</section>
-<section class="slide level2">
-
-<h3 id="ids-arch-distributed-2">网络入侵检测体系架构——完全分布式</h3>
-<ul>
-<li>特点
-<ul>
-<li>无超级管理节点</li>
-<li>节点间通信
-<ul>
-<li>P2P / Gossip协议 / 组播 / 发布/订阅机制</li>
-</ul></li>
-</ul></li>
-<li>缺点
-<ul>
-<li>检测精度低</li>
-<li>可扩展性差</li>
-<li>负载均衡难度高</li>
-</ul></li>
-</ul>
-</section>
 <section id="协作式攻击与分布式检测" class="slide level2">
 <h2>协作式攻击与分布式检测</h2>
 <ul>
@@ -939,7 +831,7 @@
 </section>
 <section id="quick-start-of-suricata" class="slide level2">
 <h2>体验 Suricata</h2>
-<pre class="bash"><code>sudo apt update &amp;&amp; sudo apt install -y suricata
+<pre ><code class="bash">sudo apt update && sudo apt install -y suricata
 
 # 检查当前 suricata 版本
 suricata -V
@@ -1020,7 +912,7 @@ suricata -r attack-trace.pcap
 cat fast.log
 
 # 需要自行安装工具 jq
-cat eve.json | jq -c &#39;select(.event_type==&quot;alert&quot;)&#39;</code></pre>
+cat eve.json | jq -c 'select(.event_type=="alert")'</code></pre>
 </section>
 </section>
 <section>
@@ -1042,7 +934,7 @@ cat eve.json | jq -c &#39;select(.event_type==&quot;alert&quot;)&#39;</code></pr
 <section class="slide level2">
 
 <h3 id="test-of-zeek-install">测试验证 Zeek 的安装</h3>
-<pre class="bash"><code>lsb_release -a
+<pre ><code class="bash">lsb_release -a
 # No LSB modules are available.
 # Distributor ID:   Kali
 # Description:  Kali GNU/Linux Rolling
@@ -1050,20 +942,20 @@ cat eve.json | jq -c &#39;select(.event_type==&quot;alert&quot;)&#39;</code></pr
 # Codename: kali-rolling
 
 cat /etc/os-release
-# PRETTY_NAME=&quot;Kali GNU/Linux Rolling&quot;
-# NAME=&quot;Kali GNU/Linux&quot;
+# PRETTY_NAME="Kali GNU/Linux Rolling"
+# NAME="Kali GNU/Linux"
 # ID=kali
-# VERSION=&quot;2020.3&quot;
-# VERSION_ID=&quot;2020.3&quot;
-# VERSION_CODENAME=&quot;kali-rolling&quot;
+# VERSION="2020.3"
+# VERSION_ID="2020.3"
+# VERSION_CODENAME="kali-rolling"
 # ID_LIKE=debian
-# ANSI_COLOR=&quot;1;31&quot;
-# HOME_URL=&quot;https://www.kali.org/&quot;
-# SUPPORT_URL=&quot;https://forums.kali.org/&quot;
-# BUG_REPORT_URL=&quot;https://bugs.kali.org/&quot;
+# ANSI_COLOR="1;31"
+# HOME_URL="https://www.kali.org/"
+# SUPPORT_URL="https://forums.kali.org/"
+# BUG_REPORT_URL="https://bugs.kali.org/"
 
-# ref: https://software.opensuse.org//download.html?project=security%3Azeek&amp;package=zeek
-echo &#39;deb http://download.opensuse.org/repositories/security:/zeek/Debian_Testing/ /&#39; | sudo tee /etc/apt/sources.list.d/security:zeek.list
+# ref: https://software.opensuse.org//download.html?project=security%3Azeek&package=zeek
+echo 'deb http://download.opensuse.org/repositories/security:/zeek/Debian_Testing/ /' | sudo tee /etc/apt/sources.list.d/security:zeek.list
 curl -fsSL https://download.opensuse.org/repositories/security:zeek/Debian_Testing/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/security:zeek.gpg &gt; /dev/null
 sudo apt update
 sudo apt install zeek-lts
@@ -1129,14 +1021,25 @@ apt show zeek-lts
     </div>
   </div>
 
-  <script src="lib/reveal.js/lib/js/head.min.js"></script>
-  <script src="lib/reveal.js/js/reveal.js"></script>
+  <script src="lib/reveal.js.v4/dist/reveal.js"></script>
+
+  <!-- reveal.js plugins -->
+  <script src="lib/reveal.js.v4/plugin/notes/notes.js"></script>
+  <script src="lib/reveal.js.v4/plugin/search/search.js"></script>
+  <script src="lib/reveal.js.v4/plugin/zoom/zoom.js"></script>
+  <script src="lib/reveal.js.v4/plugin/math/math.js"></script>
+  <script src="lib/reveal.js.v4/plugin/markdown/markdown.js"></script>
+  <script src="lib/reveal.js.v4/plugin/highlight/highlight.js"></script>
+  <script src="lib/reveal.js.v4/plugin/reveal.js-plugins/menu/menu.js"></script>
+  <script src="lib/reveal.js.v4/plugin/reveal.js-plugins/chalkboard/plugin.js"></script>
+  <script src="lib/reveal.js.v4/plugin/reveal.js-plugins/audio-slideshow/plugin.js"></script>
 
   <script>
-
+    
       // Full list of configuration options available at:
-      // https://github.com/hakimel/reveal.js#configuration
+      // https://revealjs.com/config/
       Reveal.initialize({
+      
         // Display the page number of the current slide
         slideNumber: true,
         // Push each slide change to the browser history
@@ -1160,131 +1063,143 @@ apt show zeek-lts
           },
         },
 
-menu: {
-		// Specifies which side of the presentation the menu will 
-		// be shown. Use 'left' or 'right'.
-		side: 'left',
+    menu: {
+  		// Specifies which side of the presentation the menu will 
+  		// be shown. Use 'left' or 'right'.
+  		side: 'left',
+  
+  		// Specifies the width of the menu.
+  		// Can be one of the following:
+  		// 'normal', 'wide', 'third', 'half', 'full', or
+  		// any valid css length value
+  		width: 'normal',
+  
+  		// Add slide numbers to the titles in the slide list.
+  		// Use 'true' or format string (same as reveal.js slide numbers)
+  		numbers: true,
+  
+  		// Specifies which slide elements will be used for generating
+  		// the slide titles in the menu. The default selects the first
+  		// heading element found in the slide, but you can specify any
+  		// valid css selector and the text from the first matching
+  		// element will be used.
+  		// Note: that a section data-menu-title attribute or an element
+  		// with a menu-title class will take precedence over this option
+  		titleSelector: 'h1, h2, h3, h4, h5, h6',
+  
+  		// If slides do not have a matching title, attempt to use the
+  		// start of the text content as the title instead
+  		useTextContentForMissingTitles: false,
+  
+  		// Hide slides from the menu that do not have a title.
+  		// Set to 'true' to only list slides with titles.
+  		hideMissingTitles: false,
+  
+  		// Adds markers to the slide titles to indicate the 
+  		// progress through the presentation. Set to 'false'
+  		// to hide the markers.
+  		markers: true,
+  
+  		// Specify custom panels to be included in the menu, by
+  		// providing an array of objects with 'title', 'icon'
+  		// properties, and either a 'src' or 'content' property.
+  		custom: false,
+  
+  		// Specifies the themes that will be available in the themes
+  		// menu panel. Set to 'true' to show the themes menu panel
+  		// with the default themes list. Alternatively, provide an
+  		// array to specify the themes to make available in the
+  		// themes menu panel, for example...
+  		// [
+  		//     { name: 'Black', theme: 'css/theme/black.css' },
+  		//     { name: 'White', theme: 'css/theme/white.css' },
+  		//     { name: 'League', theme: 'css/theme/league.css' }
+  		// ]
+  		themes: false,
+  
+  		// Specifies the path to the default theme files. If your
+  		// presentation uses a different path to the standard reveal
+  		// layout then you need to provide this option, but only
+  		// when 'themes' is set to 'true'. If you provide your own 
+  		// list of themes or 'themes' is set to 'false' the 
+  		// 'themesPath' option is ignored.
+  		themesPath: 'css/theme/',
+  
+  		// Specifies if the transitions menu panel will be shown.
+  		// Set to 'true' to show the transitions menu panel with
+  		// the default transitions list. Alternatively, provide an
+  		// array to specify the transitions to make available in
+  		// the transitions panel, for example...
+  		// ['None', 'Fade', 'Slide']
+  		transitions: false,
+  
+  		// Adds a menu button to the slides to open the menu panel.
+  		// Set to 'false' to hide the button.
+  		openButton: true,
+  
+  		// If 'true' allows the slide number in the presentation to
+  		// open the menu panel. The reveal.js slideNumber option must 
+  		// be displayed for this to take effect
+  		openSlideNumber: false,
+  
+  		// If true allows the user to open and navigate the menu using
+  		// the keyboard. Standard keyboard interaction with reveal
+  		// will be disabled while the menu is open.
+  		keyboard: true,
+  
+  		// Normally the menu will close on user actions such as
+  		// selecting a menu item, or clicking the presentation area.
+  		// If 'true', the sticky option will leave the menu open
+  		// until it is explicitly closed, that is, using the close
+  		// button or pressing the ESC or m key (when the keyboard 
+  		// interaction option is enabled).
+  		sticky: false,
+  
+  		// If 'true' standard menu items will be automatically opened
+  		// when navigating using the keyboard. Note: this only takes 
+  		// effect when both the 'keyboard' and 'sticky' options are enabled.
+  		autoOpen: true,
+  
+  		// If 'true' the menu will not be created until it is explicitly
+  		// requested by calling RevealMenu.init(). Note this will delay
+  		// the creation of all menu panels, including custom panels, and
+  		// the menu button.
+  		delayInit: false,
+  
+  		// If 'true' the menu will be shown when the menu is initialised.
+  		openOnInit: false,
+  
+  		// By default the menu will load it's own font-awesome library
+  		// icons. If your presentation needs to load a different
+  		// font-awesome library the 'loadIcons' option can be set to false
+  		// and the menu will not attempt to load the font-awesome library.
+  		loadIcons: true
 
-		// Specifies the width of the menu.
-		// Can be one of the following:
-		// 'normal', 'wide', 'third', 'half', 'full', or
-		// any valid css length value
-		width: 'normal',
+    },
 
-		// Add slide numbers to the titles in the slide list.
-		// Use 'true' or format string (same as reveal.js slide numbers)
-		numbers: true,
+    chalkboard: {
+        boardmarkerWidth: 3,
+        chalkWidth: 7,
+        chalkEffect: 1.0,
+        storage: null,
+        src: null,
+        readOnly: undefined,
+        toggleChalkboardButton: { left: "80px" },
+				toggleNotesButton: { left: "130px" },
+        transition: 800,
+        theme: "chalkboard",
+    },
 
-		// Specifies which slide elements will be used for generating
-		// the slide titles in the menu. The default selects the first
-		// heading element found in the slide, but you can specify any
-		// valid css selector and the text from the first matching
-		// element will be used.
-		// Note: that a section data-menu-title attribute or an element
-		// with a menu-title class will take precedence over this option
-		titleSelector: 'h1, h2, h3, h4, h5, h6',
-
-		// If slides do not have a matching title, attempt to use the
-		// start of the text content as the title instead
-		useTextContentForMissingTitles: false,
-
-		// Hide slides from the menu that do not have a title.
-		// Set to 'true' to only list slides with titles.
-		hideMissingTitles: false,
-
-		// Adds markers to the slide titles to indicate the 
-		// progress through the presentation. Set to 'false'
-		// to hide the markers.
-		markers: true,
-
-		// Specify custom panels to be included in the menu, by
-		// providing an array of objects with 'title', 'icon'
-		// properties, and either a 'src' or 'content' property.
-		custom: false,
-
-		// Specifies the themes that will be available in the themes
-		// menu panel. Set to 'true' to show the themes menu panel
-		// with the default themes list. Alternatively, provide an
-		// array to specify the themes to make available in the
-		// themes menu panel, for example...
-		// [
-		//     { name: 'Black', theme: 'css/theme/black.css' },
-		//     { name: 'White', theme: 'css/theme/white.css' },
-		//     { name: 'League', theme: 'css/theme/league.css' }
-		// ]
-		themes: false,
-
-		// Specifies the path to the default theme files. If your
-		// presentation uses a different path to the standard reveal
-		// layout then you need to provide this option, but only
-		// when 'themes' is set to 'true'. If you provide your own 
-		// list of themes or 'themes' is set to 'false' the 
-		// 'themesPath' option is ignored.
-		themesPath: 'css/theme/',
-
-		// Specifies if the transitions menu panel will be shown.
-		// Set to 'true' to show the transitions menu panel with
-		// the default transitions list. Alternatively, provide an
-		// array to specify the transitions to make available in
-		// the transitions panel, for example...
-		// ['None', 'Fade', 'Slide']
-		transitions: false,
-
-		// Adds a menu button to the slides to open the menu panel.
-		// Set to 'false' to hide the button.
-		openButton: true,
-
-		// If 'true' allows the slide number in the presentation to
-		// open the menu panel. The reveal.js slideNumber option must 
-		// be displayed for this to take effect
-		openSlideNumber: false,
-
-		// If true allows the user to open and navigate the menu using
-		// the keyboard. Standard keyboard interaction with reveal
-		// will be disabled while the menu is open.
-		keyboard: true,
-
-		// Normally the menu will close on user actions such as
-		// selecting a menu item, or clicking the presentation area.
-		// If 'true', the sticky option will leave the menu open
-		// until it is explicitly closed, that is, using the close
-		// button or pressing the ESC or m key (when the keyboard 
-		// interaction option is enabled).
-		sticky: false,
-
-		// If 'true' standard menu items will be automatically opened
-		// when navigating using the keyboard. Note: this only takes 
-		// effect when both the 'keyboard' and 'sticky' options are enabled.
-		autoOpen: true,
-
-		// If 'true' the menu will not be created until it is explicitly
-		// requested by calling RevealMenu.init(). Note this will delay
-		// the creation of all menu panels, including custom panels, and
-		// the menu button.
-		delayInit: false,
-
-		// If 'true' the menu will be shown when the menu is initialised.
-		openOnInit: false,
-
-		// By default the menu will load it's own font-awesome library
-		// icons. If your presentation needs to load a different
-		// font-awesome library the 'loadIcons' option can be set to false
-		// and the menu will not attempt to load the font-awesome library.
-		loadIcons: true
-	},
-
-
-        // Optional reveal.js plugins
-        dependencies: [
-          { src: 'lib/reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
-          { src: 'lib/reveal.js/plugin/zoom-js/zoom.js', async: true },
-          { src: 'lib/reveal.js/plugin/math/math.js', async: true },
-          { src: 'lib/reveal.js/plugin/menu/menu.js'},
-          { src: 'lib/reveal.js/plugin/markdown/marked.js'},
-          { src: 'lib/reveal.js/plugin/markdown/markdown.js'},
-          { src: 'lib/reveal.js/plugin/search/search.js'},
-          { src: 'lib/reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
-          { src: 'lib/reveal.js/plugin/notes/notes.js', async: true },
+        // reveal.js plugins
+        plugins: [
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom,
+          RevealMarkdown, 
+          RevealMenu, 
+          RevealHighlight,
+          RevealChalkboard
         ]
       });
     </script>

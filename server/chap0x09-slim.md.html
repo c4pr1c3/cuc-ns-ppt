@@ -62,10 +62,6 @@
 <li>防火墙的实现技术
 <ul>
 <li>软件技术</li>
-<li>硬件架构
-<ul>
-<li>NP / ASIC / x86</li>
-</ul></li>
 </ul></li>
 <li>iptables / nftables 的配置</li>
 </ul>
@@ -559,97 +555,6 @@
 <li>不消耗主机额外资源</li>
 <li>如何适应高速网络环境？</li>
 </ul></li>
-</ul></li>
-</ul>
-</section>
-<section class="slide level2">
-
-<h3 id="ids-arch-centralized-1">网络入侵检测体系架构——集中式</h3>
-<p><img data-src="images/chap0x09/ids-arch-1.png" /></p>
-</section>
-<section class="slide level2">
-
-<h3 id="ids-arch-centralized-2">网络入侵检测体系架构——集中式</h3>
-<ul>
-<li>特点
-<ul>
-<li>分布式信息收集</li>
-<li>汇总上报</li>
-<li>集中关联分析</li>
-</ul></li>
-<li>缺点
-<ul>
-<li>单点故障
-<ul>
-<li>汇总关联分析节点一旦出现故障，则整个系统就会无法工作</li>
-</ul></li>
-<li>单点瓶颈
-<ul>
-<li>汇总关联分析节点的处理能力决定了整个系统的处理能力</li>
-</ul></li>
-</ul></li>
-</ul>
-</section>
-<section class="slide level2">
-
-<ul>
-<li>应用场景
-<ul>
-<li>小型公司网络范围内的 IDS 协作</li>
-<li>不适合于互联网范围内的大规模 IDS 协作（通信延时）</li>
-</ul></li>
-</ul>
-</section>
-<section class="slide level2">
-
-<h3 id="ids-arch-tree-1">网络入侵检测体系架构——等级分布式</h3>
-<p><img data-src="images/chap0x09/ids-arch-2.png" /></p>
-</section>
-<section class="slide level2">
-
-<h3 id="ids-arch-tree-2">网络入侵检测体系架构——等级分布式</h3>
-<ul>
-<li>特点
-<ul>
-<li>分区
-<ul>
-<li>地理位置 / 管理域 / 相近软件平台 / 预期入侵种类</li>
-</ul></li>
-<li>“逐层”汇聚式关联分析</li>
-</ul></li>
-<li>缺点
-<ul>
-<li>可扩展性略高于集中式架构，但仍受困于高层次节点能力</li>
-<li>单点故障仍有可能（高层节点）</li>
-<li>检出率较低
-<ul>
-<li>信息在“汇聚”的过程中会由于“压缩”而导致“损失”和“失真”</li>
-</ul></li>
-</ul></li>
-</ul>
-</section>
-<section class="slide level2">
-
-<h3 id="ids-arch-distributed-1">网络入侵检测体系架构——完全分布式</h3>
-<p><img data-src="images/chap0x09/ids-arch-3.png" /></p>
-</section>
-<section class="slide level2">
-
-<h3 id="ids-arch-distributed-2">网络入侵检测体系架构——完全分布式</h3>
-<ul>
-<li>特点
-<ul>
-<li>无超级管理节点</li>
-<li>节点间通信
-<ul>
-<li>P2P / Gossip协议 / 组播 / 发布/订阅机制</li>
-</ul></li>
-</ul></li>
-<li>缺点
-<ul>
-<li>检测精度低</li>
-<li>可扩展性差</li>
-<li>负载均衡难度高</li>
 </ul></li>
 </ul>
 </section>
@@ -1159,6 +1064,11 @@ apt show zeek-lts
             processClass: 'tex2jax_process'
           },
         },
+  multiplex: {
+    secret: null, //【TO REPLACE】 null so the clients do not have control of the master presentation
+    id: '', // 【TO REPLACE】socketId, obtained from socket.io server
+    url: ''  //【TO REPLACE】Location of your socket.io server
+  },
 
 menu: {
 		// Specifies which side of the presentation the menu will 
@@ -1285,6 +1195,9 @@ menu: {
           { src: 'lib/reveal.js/plugin/search/search.js'},
           { src: 'lib/reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
           { src: 'lib/reveal.js/plugin/notes/notes.js', async: true },
+          { src: 'lib/reveal.js/plugin/socket.io/socket.io.js', async: true },
+          { src: 'lib/reveal.js/plugin/multiplex/master.js', async: true },
+          { src: 'lib/reveal.js/plugin/multiplex/client.js', async: true },
         ]
       });
     </script>
